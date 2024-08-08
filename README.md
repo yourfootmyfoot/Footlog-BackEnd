@@ -12,7 +12,7 @@
 ![Java Badge](https://img.shields.io/badge/Java%2017-%23ED8B00.svg?style=for-the-badge&logo=openjdk&logoColor=fff)
 ![React](https://img.shields.io/badge/react-%2320232a.svg?style=for-the-badge&logo=react&logoColor=%2361DAFB)
 
-## 테스트
+### 테스트
 <img src="https://img.shields.io/badge/JUnit5-25A162?style=for-the-badge&logo=JUnit5&logoColor=white">
 
 
@@ -35,7 +35,7 @@
 ### 빌드 환경
 ![Gradle](https://img.shields.io/badge/Gradle-02303A.svg?style=for-the-badge&logo=Gradle&logoColor=white)
 
-## 협업 툴
+### 협업 툴
 ![Discord](https://img.shields.io/badge/Discord-%235865F2.svg?style=for-the-badge&logo=discord&logoColor=white)
 ![Notion](https://img.shields.io/badge/Notion-%23000000.svg?style=for-the-badge&logo=notion&logoColor=white)
 
