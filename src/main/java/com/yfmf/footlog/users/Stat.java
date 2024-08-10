@@ -60,7 +60,7 @@ public class Stat {
     private void validatePass(int pass) {
 
         if (pass < 0) {
-            throw new IllegalArgumentException("패스 수치는 음수일 수 없습니다");
+            throw new IllegalArgumentException("패스 수치는 음수일 수 없습니다.");
         }
     }
 
