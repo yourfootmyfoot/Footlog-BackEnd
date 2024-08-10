@@ -7,9 +7,7 @@ import jakarta.persistence.Embedded;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.ToString;
+import lombok.*;
 
 import java.time.LocalDate;
 
@@ -18,6 +16,7 @@ import static lombok.AccessLevel.*;
 @Entity
 @Getter
 @NoArgsConstructor(access = PROTECTED)
+@AllArgsConstructor
 @ToString
 public class User {
 
@@ -27,7 +26,7 @@ public class User {
 
     private Long kakaoId;
 
-    private String username;
+    private String userName;
 
     private LocalDate birth;
 
@@ -49,9 +48,12 @@ public class User {
 
     private String phoneNumber;
 
+    private UserRole role;
+
     @Embedded
     private Stat stat;
 
     @Embedded
     private Record record;
+
 }
