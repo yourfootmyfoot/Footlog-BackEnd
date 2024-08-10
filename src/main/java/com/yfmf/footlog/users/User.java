@@ -3,10 +3,7 @@ package com.yfmf.footlog.users;
 import com.yfmf.footlog.enums.Area;
 import com.yfmf.footlog.enums.MainFoot;
 import com.yfmf.footlog.enums.Position;
-import jakarta.persistence.Embedded;
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.Id;
+import jakarta.persistence.*;
 import lombok.*;
 
 import java.time.LocalDate;
@@ -24,8 +21,10 @@ public class User {
     @GeneratedValue
     private Long userId;
 
+    @Column(nullable = false)
     private Long kakaoId;
 
+    @Column(nullable = false)
     private String userName;
 
     private LocalDate birth;
@@ -48,6 +47,7 @@ public class User {
 
     private String phoneNumber;
 
+    @Column(nullable = false)
     private UserRole role;
 
     @Embedded
