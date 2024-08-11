@@ -29,10 +29,13 @@ public class User {
 
     private LocalDate birth;
 
+    @Enumerated(EnumType.STRING)
     private MainFoot mainFoot;
 
+    @Enumerated(EnumType.STRING)
     private Area area;
 
+    @Enumerated(EnumType.STRING)
     private Position position;
 
     private String introduction;
