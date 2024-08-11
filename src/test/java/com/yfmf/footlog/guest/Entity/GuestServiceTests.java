@@ -12,9 +12,6 @@ import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
-import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.annotation.Rollback;
 
 import java.time.LocalDateTime;
 import java.util.Optional;
@@ -24,21 +21,31 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
 
+/*
+* Unit Test
+*
+* 데이터베이스와의 연동 없이
+* 해당 클래스의 메소드의 필드(GuestRepository)를 Mocking하여
+* busuness logic을 테스트하는것. 실수로 인해 데이터베이스에 영향을 주지 않도록 하기 위함 !!!
+*
+*
+* */
 
-public class GuestTests {
-
+class GuestServiceTests {
+    // GuestService를 테스트하기 위해 GuestRepository를 Mocking한다.
     @Mock
     private GuestRepository guestRepository;
-
+    // @Mock으로 Mocking된 GuestRepository를 GuestService에 주입한다.
     @InjectMocks
     private GuestService guestService;
 
+    // 테스트 실행 전 MockitoAnnotations.openMocks(this)를 호출하여 Mock 객체를 초기화한다.
     @BeforeEach
     void setUp() {
         MockitoAnnotations.openMocks(this);
     }
-    //is unit test? or integration test?
-    //unit test
+
+    // registerGuest 메소드를 테스트한다.
     @Test
     void registerGuestShouldReturnSavedGuest() {
         // Given
@@ -47,7 +54,7 @@ public class GuestTests {
         when(guestRepository.save(any(Guest.class))).thenReturn(guest);
 
         // When
-        Guest savedGuest = guestService.registerGuest(guest);
+        Guest savedGuest = guestService.registGuest(guest);
 
         // Then
         assertNotNull(savedGuest);
