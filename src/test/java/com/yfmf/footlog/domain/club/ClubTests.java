@@ -1,7 +1,7 @@
 package com.yfmf.footlog.domain.club;
 
-import com.example.subjectjpa.user.User;
-import com.example.subjectjpa.user.UserRole;
+import com.yfmf.footlog.users.User;
+import com.yfmf.footlog.users.UserRole;
 import jakarta.transaction.Transactional;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
@@ -11,6 +11,7 @@ import org.junit.jupiter.params.provider.MethodSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Stream;
@@ -25,7 +26,25 @@ public class ClubTests {
     private ClubService clubService;
 
     private static Stream<Arguments> createClub() {
-        User user = new User("clubOwner", LocalDateTime.now(), UserRole.ROLE_USER);
+        User user = new User(
+                null,          // userId (자동 생성)
+                123456789L,    // kakaoId
+                "clubOwner",   // userName
+                LocalDate.of(1990, 1, 1), // birth
+                null,          // mainFoot (null 값으로 대체)
+                null,          // area (null 값으로 대체)
+                null,          // position (null 값으로 대체)
+                "안녕하세요", // introduction
+                false,         // isPro
+                180.0,         // height
+                75.0,          // weight
+                null,          // profileImageUrl (null 값으로 대체)
+                "010-1234-5678", // phoneNumber
+                UserRole.ROLE_USER, // role
+                null,          // stat (null 값으로 대체)
+                null           // record (null 값으로 대체)
+        );
+
         return Stream.of(
                 Arguments.of(
                         user,

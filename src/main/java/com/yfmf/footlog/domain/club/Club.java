@@ -1,6 +1,6 @@
 package com.yfmf.footlog.domain.club;
 
-import com.example.subjectjpa.user.User;
+import com.yfmf.footlog.users.User;
 import jakarta.persistence.*;
 
 import java.time.LocalDateTime;
