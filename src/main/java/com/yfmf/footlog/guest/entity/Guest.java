@@ -1,4 +1,4 @@
-package com.yfmf.footlog.guest.Entity;
+package com.yfmf.footlog.guest.entity;
 
 import com.yfmf.footlog.enums.MainFoot;
 import com.yfmf.footlog.enums.Position;

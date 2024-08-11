@@ -1,7 +1,7 @@
 package com.yfmf.footlog.guest.service;
 
 
-import com.yfmf.footlog.guest.Entity.Guest;
+import com.yfmf.footlog.guest.entity.Guest;
 import com.yfmf.footlog.guest.repository.GuestRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
