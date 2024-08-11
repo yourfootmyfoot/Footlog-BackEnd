@@ -1,7 +1,6 @@
 package com.yfmf.footlog.guest.Entity;
 
 
-
 import com.yfmf.footlog.enums.MainFoot;
 import com.yfmf.footlog.enums.Position;
 
@@ -22,20 +21,18 @@ import static org.mockito.Mockito.*;
 
 
 /*
-* Unit Test
-*
-* 데이터베이스와의 연동 없이
-* 해당 클래스의 메소드의 필드(GuestRepository)를 Mocking하여
-* busuness logic을 테스트하는것. 실수로 인해 데이터베이스에 영향을 주지 않도록 하기 위함 !!!
-*
-*
-* */
+ * Unit Test (with Mockito)
+ *
+ * 데이터베이스와의 연동 없이
+ * 해당 클래스의 메소드의 필드(GuestRepository)를 Mocking하여
+ * busuness logic을 테스트하는것. 실수로 인해 데이터베이스에 영향을 주지 않도록 하기 위함 !
+ * */
 
 class GuestServiceTests {
     // GuestService를 테스트하기 위해 GuestRepository를 Mocking한다.
     @Mock
     private GuestRepository guestRepository;
-    // @Mock으로 Mocking된 GuestRepository를 GuestService에 주입한다.
+    // @Mock으로 Mocking된 GuestRepository를 찾아 GuestService에 주입한다.
     @InjectMocks
     private GuestService guestService;
 
