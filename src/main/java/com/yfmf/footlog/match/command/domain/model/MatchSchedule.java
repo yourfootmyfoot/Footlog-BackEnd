@@ -2,17 +2,17 @@ package com.yfmf.footlog.match.command.domain.model;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Embeddable;
-import lombok.Getter;
-import lombok.ToString;
+import lombok.*;
 
 
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.time.temporal.ChronoUnit;
 
-@ToString
 @Getter
+@ToString
 @Embeddable
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class MatchSchedule {
 
     // 경기날짜
@@ -30,10 +30,6 @@ public class MatchSchedule {
     // 경기 시간
     @Column(nullable = false)
     private long matchTime;
-
-    protected MatchSchedule() {
-        this.matchTime = calculateTime(matchStartTime, matchEndTime);
-    }
 
     public MatchSchedule(LocalDate matchDate, LocalTime matchStartTime, LocalTime matchEndTime) {
 
