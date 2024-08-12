@@ -2,18 +2,15 @@ package com.yfmf.footlog.match.command.domain.model;
 
 import com.yfmf.footlog.match.command.domain.model.enums.*;
 import jakarta.persistence.*;
-import lombok.AccessLevel;
-import lombok.AllArgsConstructor;
-import lombok.NoArgsConstructor;
-import lombok.ToString;
+import lombok.*;
 
 import java.time.LocalDateTime;
 
+@Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
 @ToString
 @Entity
-@Table(name = "tbl_match")
 public class Match {
 
     // 경기 아이디
@@ -50,6 +47,7 @@ public class Match {
     @Column(length = 500)
     private String matchIntroduce;
 
+    // 매치 일정
     private MatchSchedule matchSchedule;
 
     // 매치 인원
@@ -88,4 +86,23 @@ public class Match {
     @Column(nullable = false, columnDefinition = "char(1) default 'Y'")
     private MatchStatus matchStatus;
 
+    public Match(LocalDateTime matchEnrollTime, Long matchEnrollUserId, Long matchApplyUserId, Club myClub, Club enemyClub, String matchPhoto, String matchIntroduce, MatchSchedule matchSchedule, MatchPlayerQuantity matchPlayerQuantity, QuarterQuantity quarterQuantity, String fieldLocation, Integer matchCost, Boolean isPro, Integer proQuantity, ClubLevel clubLevel, MatchGender matchGender, MatchStatus matchStatus) {
+        this.matchEnrollTime = matchEnrollTime;
+        this.matchEnrollUserId = matchEnrollUserId;
+        this.matchApplyUserId = matchApplyUserId;
+        this.myClub = myClub;
+        this.enemyClub = enemyClub;
+        this.matchPhoto = matchPhoto;
+        this.matchIntroduce = matchIntroduce;
+        this.matchSchedule = matchSchedule;
+        this.matchPlayerQuantity = matchPlayerQuantity;
+        this.quarterQuantity = quarterQuantity;
+        this.fieldLocation = fieldLocation;
+        this.matchCost = matchCost;
+        this.isPro = isPro;
+        this.proQuantity = proQuantity;
+        this.clubLevel = clubLevel;
+        this.matchGender = matchGender;
+        this.matchStatus = matchStatus;
+    }
 }
