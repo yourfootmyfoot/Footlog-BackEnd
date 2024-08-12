@@ -2,18 +2,16 @@ package com.yfmf.footlog.match.command.domain.model;
 
 import com.yfmf.footlog.match.command.domain.model.enums.*;
 import jakarta.persistence.*;
-import lombok.AccessLevel;
-import lombok.AllArgsConstructor;
-import lombok.NoArgsConstructor;
-import lombok.ToString;
+import lombok.*;
 
 import java.time.LocalDateTime;
 
-@NoArgsConstructor(access = AccessLevel.PROTECTED)
-@AllArgsConstructor
-@ToString
+@Table
 @Entity
-@Table(name = "tbl_match")
+@Getter
+@ToString
+@AllArgsConstructor
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Match {
 
     // 경기 아이디
@@ -69,12 +67,8 @@ public class Match {
     private Integer matchCost;
 
     // 팀원 중 선출 여부
-    @Column(nullable = false)
-    private Boolean isPro;
-
-    // 선출 인원 표시
-    @Column
-    private Integer proQuantity;
+    @Embedded
+    private Pro pro;
 
     // 실력수치
     @Column(nullable = false)
