@@ -21,5 +21,5 @@ public class UpdateGuestDto {
 
     private Position position;
 
-    private boolean isAvailable;
+    private Boolean isAvailable;
 }
