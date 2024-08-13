@@ -1,4 +1,4 @@
-package com.yfmf.footlog.users;
+package com.yfmf.footlog.users.entity;
 
 import jakarta.persistence.Embeddable;
 import lombok.Getter;

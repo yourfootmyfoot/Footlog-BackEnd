@@ -1,8 +1,9 @@
-package com.yfmf.footlog.users;
+package com.yfmf.footlog.users.entity;
 
 import com.yfmf.footlog.enums.Area;
 import com.yfmf.footlog.enums.MainFoot;
 import com.yfmf.footlog.enums.Position;
+import com.yfmf.footlog.users.UserRole;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -15,6 +16,7 @@ import static lombok.AccessLevel.*;
 @NoArgsConstructor(access = PROTECTED)
 @AllArgsConstructor
 @ToString
+@Table(name = "users")
 public class User {
 
     @Id
