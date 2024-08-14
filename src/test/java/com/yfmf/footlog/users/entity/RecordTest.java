@@ -1,6 +1,5 @@
-package com.yfmf.footlog.users;
+package com.yfmf.footlog.users.entity;
 
-import org.assertj.core.api.Assertions;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
