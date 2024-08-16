@@ -1,5 +1,6 @@
 package com.yfmf.footlog.match.command.domain.model;
 
+
 import com.yfmf.footlog.match.command.domain.model.enums.*;
 import lombok.*;
 
@@ -11,7 +12,7 @@ import java.time.LocalDateTime;
 @ToString
 @NoArgsConstructor
 @AllArgsConstructor
-public class LoadMatchInfoResponseDTO {
+public class RegistMatchRequestDTO {
 
     private LocalDateTime matchEnrollTime;
     private Long matchEnrollUserId;
@@ -30,7 +31,8 @@ public class LoadMatchInfoResponseDTO {
     private MatchGender matchGender;
     private MatchStatus matchStatus;
 
-    public LoadMatchInfoResponseDTO(Match match) {
+    // Id 없이 추가
+    public RegistMatchRequestDTO(Match match) {
         this(
                 match.getMatchEnrollTime(),
                 match.getMatchEnrollUserId(),
@@ -48,6 +50,6 @@ public class LoadMatchInfoResponseDTO {
                 match.getClubLevel(),
                 match.getMatchGender(),
                 match.getMatchStatus()
-                );
+        );
     }
 }
