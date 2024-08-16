@@ -4,6 +4,7 @@ import com.yfmf.footlog.enums.Area;
 import com.yfmf.footlog.enums.MainFoot;
 import com.yfmf.footlog.enums.Position;
 import com.yfmf.footlog.users.UserRole;
+import com.yfmf.footlog.users.dto.UserUpdateRequestDto;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -14,7 +15,6 @@ import static lombok.AccessLevel.*;
 @Entity
 @Getter
 @NoArgsConstructor(access = PROTECTED)
-@AllArgsConstructor
 @ToString
 @Table(name = "users")
 public class User {
@@ -61,4 +61,40 @@ public class User {
     @Embedded
     private Record record;
 
+    @Builder
+    public User(Long userId, Long kakaoId, String userName, LocalDate birth, MainFoot mainFoot, Area area, Position position, String introduction, Boolean isPro, Double height, Double weight, String profileImageUrl, String phoneNumber, UserRole role, Stat stat, Record record) {
+        this.userId = userId;
+        this.kakaoId = kakaoId;
+        this.userName = userName;
+        this.birth = birth;
+        this.mainFoot = mainFoot;
+        this.area = area;
+        this.position = position;
+        this.introduction = introduction;
+        this.isPro = isPro;
+        this.height = height;
+        this.weight = weight;
+        this.profileImageUrl = profileImageUrl;
+        this.phoneNumber = phoneNumber;
+        this.role = role;
+        this.stat = stat;
+        this.record = record;
+    }
+
+    public void update(UserUpdateRequestDto requestDto) {
+        this.userName = requestDto.getUserName();
+        this.birth = requestDto.getBirth();
+        this.mainFoot = requestDto.getMainFoot();
+        this.area = requestDto.getArea();
+        this.position = requestDto.getPosition();
+        this.introduction = requestDto.getIntroduction();
+        this.isPro = requestDto.getIsPro();
+        this.height = requestDto.getHeight();
+        this.weight = requestDto.getWeight();
+        this.profileImageUrl = requestDto.getProfileImageUrl();
+        this.phoneNumber = requestDto.getPhoneNumber();
+        this.role = requestDto.getRole();
+        this.stat = requestDto.getStat();
+        this.record = requestDto.getRecord();
+    }
 }
