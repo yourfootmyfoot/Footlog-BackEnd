@@ -1,4 +1,4 @@
-package com.yfmf.footlog.users;
+package com.yfmf.footlog.users.entity;
 
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;

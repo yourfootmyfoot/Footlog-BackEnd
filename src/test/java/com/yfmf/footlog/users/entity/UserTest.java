@@ -1,9 +1,9 @@
-package com.yfmf.footlog.users;
+package com.yfmf.footlog.users.entity;
 
 import com.yfmf.footlog.enums.Area;
 import com.yfmf.footlog.enums.MainFoot;
 import com.yfmf.footlog.enums.Position;
-import org.assertj.core.api.Assertions;
+import com.yfmf.footlog.users.UserRole;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
@@ -12,7 +12,6 @@ import java.time.LocalDate;
 import java.util.stream.Stream;
 
 import static org.assertj.core.api.Assertions.*;
-import static org.junit.jupiter.api.Assertions.*;
 
 class UserTest {
 
