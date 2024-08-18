@@ -1,5 +1,7 @@
 package com.yfmf.footlog.match.command.domain.model;
 
+import com.yfmf.footlog.match.command.domain.model.dto.LoadMatchResponseDTO;
+import com.yfmf.footlog.match.command.domain.model.dto.MatchRegistRequestDTO;
 import jakarta.transaction.Transactional;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;

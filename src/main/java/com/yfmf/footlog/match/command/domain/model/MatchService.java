@@ -1,5 +1,8 @@
 package com.yfmf.footlog.match.command.domain.model;
 
+import com.yfmf.footlog.match.command.domain.model.dao.MatchMapper;
+import com.yfmf.footlog.match.command.domain.model.dto.LoadMatchResponseDTO;
+import com.yfmf.footlog.match.command.domain.model.dto.MatchRegistRequestDTO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -9,6 +12,11 @@ import java.util.List;
 public class MatchService {
 
     private MatchRepository matchRepository;
+    private MatchMapper matchMapper;
+
+    public MatchService(MatchMapper matchMapper) {
+        this.matchMapper = matchMapper;
+    }
 
     // 의존성 주입
     @Autowired
@@ -64,5 +72,10 @@ public class MatchService {
         matchRepository.deleteById(matchId);
 
 
+    }
+
+    public List<LoadMatchResponseDTO> findAllMatches() {
+
+        return matchMapper.findAllMatches();
     }
 }

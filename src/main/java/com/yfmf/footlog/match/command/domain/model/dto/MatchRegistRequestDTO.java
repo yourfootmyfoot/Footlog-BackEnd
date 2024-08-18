@@ -1,5 +1,7 @@
-package com.yfmf.footlog.match.command.domain.model;
+package com.yfmf.footlog.match.command.domain.model.dto;
 
+import com.yfmf.footlog.match.command.domain.model.MatchSchedule;
+import com.yfmf.footlog.match.command.domain.model.Pro;
 import com.yfmf.footlog.match.command.domain.model.enums.*;
 import lombok.*;
 
