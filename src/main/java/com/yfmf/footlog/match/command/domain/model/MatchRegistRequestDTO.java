@@ -25,8 +25,7 @@ public class MatchRegistRequestDTO {
     private QuarterQuantity quarterQuantity;
     private String fieldLocation;
     private Integer matchCost;
-    private Boolean isPro;
-    private Integer proQuantity;
+    private Pro pro;
     private ClubLevel clubLevel;
     private MatchGender matchGender;
     private MatchStatus matchStatus;

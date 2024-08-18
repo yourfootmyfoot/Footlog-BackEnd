@@ -42,23 +42,27 @@ public class MatchService {
                 matchInfo.getQuarterQuantity(),
                 matchInfo.getFieldLocation(),
                 matchInfo.getMatchCost(),
-                matchInfo.getIsPro(),
-                matchInfo.getProQuantity(),
+                matchInfo.getPro(),
                 matchInfo.getClubLevel(),
                 matchInfo.getMatchGender(),
                 matchInfo.getMatchStatus()
-        )
+        );
 
         matchRepository.save(newMatch);
     }
 
     // 경기 수정
-    public void modifyMatch(int matchId) {
+    public void modifyMatch(Long matchId, String MatchIntroduce) {
+        Match foundMatch = matchRepository.findById(matchId).orElseThrow(IllegalAccessError::new);
+        foundMatch.setMatchIntroduce(MatchIntroduce);
 
     }
 
     // 경기 삭제
-    public void removeMatch(int matchId) {
+    public void removeMatch(Long matchId) {
+
+        matchRepository.deleteById(matchId);
+
 
     }
 }

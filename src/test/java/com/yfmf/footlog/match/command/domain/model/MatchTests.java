@@ -50,10 +50,10 @@ public class MatchTests {
     @CsvSource({"1, 수정할 경기 이름 1", "2, 수정할 경기 이름 2"})
     @ParameterizedTest
     @DisplayName("경기 ID로 경기 수정 테스트")
-    void testFindMatchById(int matchId) {
+    void testFindMatchById(Long matchId, String matchIntroduce) {
 
         Assertions.assertDoesNotThrow(
-                () -> matchService.modifyMatch(matchId)
+                () -> matchService.modifyMatch(matchId, matchIntroduce)
         );
 
         matchService.loadAllMatches().forEach(System.out::println);
@@ -62,9 +62,9 @@ public class MatchTests {
 
     @Transactional
     @ParameterizedTest
-    @ValueSource(ints = {1})
+    @ValueSource(longs = {1})
     @DisplayName("경기 ID로 경기 삭제")
-    void testRemoveMatchById(int matchId) {
+    void testRemoveMatchById(Long matchId) {
         Assertions.assertDoesNotThrow(
                 () -> matchService.removeMatch(matchId)
         );

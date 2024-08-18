@@ -83,4 +83,29 @@ public class Match {
     @Column(nullable = false, columnDefinition = "char(1) default 'Y'")
     private MatchStatus matchStatus;
 
+    public Match(LocalDateTime matchEnrollTime, Long matchEnrollUserId, Long matchApplyUserId, Club myClub, Club enemyClub, String matchPhoto, String matchIntroduce,
+                 MatchSchedule matchSchedule, MatchPlayerQuantity matchPlayerQuantity, QuarterQuantity quarterQuantity, String fieldLocation, Integer matchCost, Pro pro,
+                 ClubLevel clubLevel, MatchGender matchGender, MatchStatus matchStatus) {
+        this.matchEnrollTime = matchEnrollTime;
+        this.matchEnrollUserId = matchEnrollUserId;
+        this.matchApplyUserId = matchApplyUserId;
+        this.myClub = myClub;
+        this.enemyClub = enemyClub;
+        this.matchPhoto = matchPhoto;
+        this.matchIntroduce = matchIntroduce;
+        this.matchSchedule = matchSchedule;
+        this.matchPlayerQuantity = matchPlayerQuantity;
+        this.quarterQuantity = quarterQuantity;
+        this.fieldLocation = fieldLocation;
+        this.matchCost = matchCost;
+        this.pro = pro;
+        this.clubLevel = clubLevel;
+        this.matchGender = matchGender;
+        this.matchStatus = matchStatus;
+    }
+
+    public void setMatchIntroduce(String matchIntroduce) {
+        this.matchIntroduce = matchIntroduce;
+    }
+
 }
