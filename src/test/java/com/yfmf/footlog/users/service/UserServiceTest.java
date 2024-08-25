@@ -141,7 +141,7 @@ class UserServiceTest {
     @DisplayName("유저 수정 테스트")
     @ParameterizedTest
     @MethodSource("getUser")
-    void userDeleteTest(Long kakaoId, String userName, LocalDate birth, MainFoot mainFoot, Area area,
+    void userUpdateTest(Long kakaoId, String userName, LocalDate birth, MainFoot mainFoot, Area area,
                         Position position, String introduction, Boolean isPro, Double height, Double weight,
                         String profileImageUrl, String phoneNumber, UserRole role, Stat stat, Record record) {
 
