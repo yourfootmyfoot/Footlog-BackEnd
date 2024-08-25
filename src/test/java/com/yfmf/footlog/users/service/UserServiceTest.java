@@ -200,4 +200,36 @@ class UserServiceTest {
 
         assertThat(updatedUser.getUserName()).isEqualTo("변경된 테스트 유저 1");
     }
+
+    @DisplayName("유저 삭제 테스트")
+    @ParameterizedTest
+    @MethodSource("getUser")
+    void userDeleteTest(Long kakaoId, String userName, LocalDate birth, MainFoot mainFoot, Area area,
+                        Position position, String introduction, Boolean isPro, Double height, Double weight,
+                        String profileImageUrl, String phoneNumber, UserRole role, Stat stat, Record record) {
+
+        UserSaveRequestDto userSaveRequestDto = UserSaveRequestDto.builder()
+                .kakaoId(kakaoId)
+                .userName(userName)
+                .birth(birth)
+                .mainFoot(mainFoot)
+                .area(area)
+                .position(position)
+                .introduction(introduction)
+                .isPro(isPro)
+                .height(height)
+                .weight(weight)
+                .profileImageUrl(profileImageUrl)
+                .phoneNumber(phoneNumber)
+                .role(role)
+                .stat(stat)
+                .record(record)
+                .build();
+
+        Long deleteId = userService.save(userSaveRequestDto);
+
+        userService.delete(deleteId);
+
+        assertThat(userService.findAll().size()).isEqualTo(1);
+    }
 }
