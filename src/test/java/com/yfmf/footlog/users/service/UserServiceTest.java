@@ -28,6 +28,7 @@ import java.util.Optional;
 import java.util.stream.Stream;
 
 import static org.assertj.core.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.*;
 
 @SpringBootTest
 @Transactional
@@ -165,6 +166,46 @@ class UserServiceTest {
         assertThat(updatedUser.getUserName()).isEqualTo("변경된 테스트 유저 1");
     }
 
+    @DisplayName("미등록 유저 변경 테스트")
+    @Test
+    void nonUserUpdateTest() {
+
+        Long updateId = 999L;
+
+        UserUpdateRequestDto userUpdateRequestDto = new UserUpdateRequestDto(
+                "변경된 테스트 유저 1",
+                LocalDate.now(),
+                MainFoot.왼발,
+                Area.서울,
+                Position.ST,
+                "자기 소개",
+                false,
+                172.2,
+                73.4,
+                "URL이 어쩌구 저쩌구",
+                "010-1234-5678",
+                UserRole.ROLE_USER,
+                new Stat(
+                        20,
+                        40,
+                        50,
+                        60,
+                        80,
+                        100
+                ),
+                new Record(
+                        1,
+                        2,
+                        3,
+                        4
+                )
+        );
+
+        assertThrows(RuntimeException.class, () -> {
+            userService.update(updateId, userUpdateRequestDto);
+        });
+    }
+
     @DisplayName("유저 삭제 테스트")
     @ParameterizedTest
     @MethodSource("getUser")
@@ -195,5 +236,15 @@ class UserServiceTest {
         userService.delete(deleteId);
 
         assertThat(userService.findAll().size()).isEqualTo(0);
+    }
+
+    @DisplayName("미등록 유저 삭제 테스트")
+    @Test
+    void nonUserDeleteTest() {
+        Long deleteId = 999L;
+
+        assertThrows(RuntimeException.class, () -> {
+            userService.delete(deleteId);
+        });
     }
 }
