@@ -32,10 +32,7 @@ class UserServiceTest {
 
     @Autowired
     private UserService userService;
-
-    @Autowired
-    private UserRepository userRepository;
-
+    
     private static Stream<Arguments> getUser() {
         return Stream.of(
                 Arguments.of(
@@ -97,7 +94,7 @@ class UserServiceTest {
 
         userService.save(requestDto);
 
-        List<User> userList = userRepository.findAll();
+        List<User> userList = userService.findAll();
 
         assertThat(userList.size()).isEqualTo(1);
     }

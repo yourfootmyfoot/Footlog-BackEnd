@@ -8,6 +8,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
+
 @Service
 @Transactional
 @RequiredArgsConstructor
@@ -34,6 +36,10 @@ public class UserService {
                 .orElseThrow(() -> new RuntimeException("해당 유저가 없습니다. id=" + id));
 
         userRepository.delete(user);
+    }
+
+    public List<User> findAll() {
+        return userRepository.findAll();
     }
 
 }
