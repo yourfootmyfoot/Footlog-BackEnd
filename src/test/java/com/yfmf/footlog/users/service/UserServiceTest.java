@@ -11,6 +11,8 @@ import com.yfmf.footlog.users.entity.Stat;
 import com.yfmf.footlog.users.entity.User;
 import com.yfmf.footlog.users.repository.UserRepository;
 import org.assertj.core.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
@@ -32,7 +34,43 @@ class UserServiceTest {
 
     @Autowired
     private UserService userService;
-    
+
+    @BeforeEach
+    void setUp() {
+
+        UserSaveRequestDto requestDto = UserSaveRequestDto.builder()
+                .kakaoId(1L)
+                .userName("userName")
+                .birth(LocalDate.now())
+                .mainFoot(MainFoot.양발)
+                .area(Area.경기)
+                .position(Position.CB)
+                .introduction("introduction")
+                .isPro(true)
+                .height(172.1)
+                .weight(77.7)
+                .profileImageUrl("profileImageUrl")
+                .phoneNumber("phoneNumber")
+                .role(UserRole.ROLE_ADMIN)
+                .stat(new Stat(
+                        20,
+                        40,
+                        50,
+                        60,
+                        80,
+                        100
+                ))
+                .record(new Record(
+                        1,
+                        2,
+                        3,
+                        4
+                ))
+                .build();
+
+        userService.save(requestDto);
+    }
+
     private static Stream<Arguments> getUser() {
         return Stream.of(
                 Arguments.of(
@@ -67,6 +105,7 @@ class UserServiceTest {
         );
     }
 
+    @DisplayName("User 생성 테스트")
     @ParameterizedTest
     @MethodSource("getUser")
     void saveUserTest(Long kakaoId, String userName, LocalDate birth, MainFoot mainFoot, Area area,
@@ -78,7 +117,6 @@ class UserServiceTest {
                 .userName(userName)
                 .birth(birth)
                 .mainFoot(mainFoot)
-                .userName(userName)
                 .area(area)
                 .position(position)
                 .introduction(introduction)
@@ -96,6 +134,6 @@ class UserServiceTest {
 
         List<User> userList = userService.findAll();
 
-        assertThat(userList.size()).isEqualTo(1);
+        assertThat(userList.size()).isEqualTo(2);
     }
 }
