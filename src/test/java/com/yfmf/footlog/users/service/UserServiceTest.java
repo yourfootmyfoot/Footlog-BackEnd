@@ -36,42 +36,6 @@ class UserServiceTest {
     @Autowired
     private UserService userService;
 
-    @BeforeEach
-    void setUp() {
-
-        UserSaveRequestDto requestDto = UserSaveRequestDto.builder()
-                .kakaoId(1L)
-                .userName("userName")
-                .birth(LocalDate.now())
-                .mainFoot(MainFoot.양발)
-                .area(Area.경기)
-                .position(Position.CB)
-                .introduction("introduction")
-                .isPro(true)
-                .height(172.1)
-                .weight(77.7)
-                .profileImageUrl("profileImageUrl")
-                .phoneNumber("phoneNumber")
-                .role(UserRole.ROLE_ADMIN)
-                .stat(new Stat(
-                        20,
-                        40,
-                        50,
-                        60,
-                        80,
-                        100
-                ))
-                .record(new Record(
-                        1,
-                        2,
-                        3,
-                        4
-                ))
-                .build();
-
-        userService.save(requestDto);
-    }
-
     private static Stream<Arguments> getUser() {
         return Stream.of(
                 Arguments.of(
@@ -135,7 +99,7 @@ class UserServiceTest {
 
         List<User> userList = userService.findAll();
 
-        assertThat(userList.size()).isEqualTo(2);
+        assertThat(userList.size()).isEqualTo(1);
     }
 
     @DisplayName("유저 수정 테스트")
@@ -230,6 +194,6 @@ class UserServiceTest {
 
         userService.delete(deleteId);
 
-        assertThat(userService.findAll().size()).isEqualTo(1);
+        assertThat(userService.findAll().size()).isEqualTo(0);
     }
 }
