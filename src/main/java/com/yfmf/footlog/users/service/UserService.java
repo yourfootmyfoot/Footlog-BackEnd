@@ -38,6 +38,7 @@ public class UserService {
         userRepository.delete(user);
     }
 
+    //테스트 코드용 기능입니다. 실제 Read 작업은 별개로 진행합니다.
     public List<User> findAll() {
         return userRepository.findAll();
     }
