@@ -42,4 +42,9 @@ public class UserService {
         return userRepository.findAll();
     }
 
+    public User findById(Long id) {
+        return userRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("해당 유저가 없습니다. id=" + id));
+    }
+
 }
