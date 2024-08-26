@@ -1,6 +1,6 @@
 package com.yfmf.footlog.domain.club;
 
-import com.yfmf.footlog.users.User;
+import com.yfmf.footlog.users.entity.User;
 import jakarta.persistence.*;
 
 import java.time.LocalDateTime;
@@ -36,7 +36,7 @@ public class Club {
     @Enumerated(EnumType.STRING)
     private PeakHours peakHours;  //구단활동시간대 아침,찾,저녁,심야
 
-    @Column(name = "PEAK_DAYS")
+    @Column(name = "PEAK_DAYS") // 자주 운동하는 날
     @Enumerated(EnumType.STRING)
     private List<PeakDays> peakDays;  // 월~일
 

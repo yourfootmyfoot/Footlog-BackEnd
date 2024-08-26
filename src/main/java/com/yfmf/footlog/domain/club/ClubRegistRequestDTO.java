@@ -1,7 +1,8 @@
 package com.yfmf.footlog.domain.club;
 
 
-import com.yfmf.footlog.users.User;
+
+import com.yfmf.footlog.users.entity.User;
 
 import java.time.LocalDateTime;
 import java.util.List;
