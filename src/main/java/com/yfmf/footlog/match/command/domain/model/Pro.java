@@ -21,7 +21,6 @@ public class Pro {
 
     public Pro(Boolean isPro, Integer proQuantity) {
 
-
         this.isPro = isPro;
         this.proQuantity = proQuantity;
     }
