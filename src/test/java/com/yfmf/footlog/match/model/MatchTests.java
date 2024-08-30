@@ -1,8 +1,12 @@
-package com.yfmf.footlog.match.command.domain.model;
+package com.yfmf.footlog.match.model;
 
 import com.yfmf.footlog.domain.club.Club;
-import com.yfmf.footlog.match.command.domain.model.dto.LoadMatchResponseDTO;
-import com.yfmf.footlog.match.command.domain.model.dto.MatchRegistRequestDTO;
+import com.yfmf.footlog.match.model.dto.LoadMatchResponseDTO;
+import com.yfmf.footlog.match.model.dto.MatchRegistRequestDTO;
+import com.yfmf.footlog.match.model.entity.MatchSchedule;
+import com.yfmf.footlog.match.model.entity.MatchService;
+import com.yfmf.footlog.match.model.entity.Pro;
+import com.yfmf.footlog.match.model.enums.*;
 import jakarta.transaction.Transactional;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
@@ -20,12 +24,6 @@ import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.List;
 import java.util.stream.Stream;
-
-import static com.yfmf.footlog.match.command.domain.model.enums.ClubLevel.*;
-import static com.yfmf.footlog.match.command.domain.model.enums.MatchGender.*;
-import static com.yfmf.footlog.match.command.domain.model.enums.MatchPlayerQuantity.*;
-import static com.yfmf.footlog.match.command.domain.model.enums.MatchStatus.*;
-import static com.yfmf.footlog.match.command.domain.model.enums.QuarterQuantity.*;
 
 @Transactional
 @SpringBootTest
@@ -60,14 +58,14 @@ public class MatchTests {
                                 "매치 사진",
                                 "매치 설명",
                                 new MatchSchedule(LocalDate.now(), LocalTime.now(), LocalTime.now()),
-                                PLAYER_QUANTITY_ELEVEN,
-                                QUARTER_QUANTITY_FOUR,
+                                MatchPlayerQuantity.PLAYER_QUANTITY_ELEVEN,
+                                QuarterQuantity.QUARTER_QUANTITY_FOUR,
                                 "종합운동장",
                                 10000,
                                 new Pro(),
-                                LEVEL_MEDIUM,
-                                GENDER_MALE,
-                                MATCH_STATUS_IN_PROGRESS
+                                ClubLevel.LEVEL_MEDIUM,
+                                MatchGender.GENDER_MALE,
+                                MatchStatus.MATCH_STATUS_IN_PROGRESS
                         )
                 ));
     }

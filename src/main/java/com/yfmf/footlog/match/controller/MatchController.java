@@ -1,7 +1,7 @@
-package com.yfmf.footlog.match.command.domain.controller;
+package com.yfmf.footlog.match.controller;
 
-import com.yfmf.footlog.match.command.domain.model.dto.LoadMatchResponseDTO;
-import com.yfmf.footlog.match.command.domain.model.MatchService;
+import com.yfmf.footlog.match.model.dto.LoadMatchResponseDTO;
+import com.yfmf.footlog.match.model.entity.MatchService;
 import org.springframework.stereotype.Controller;
 
 import java.util.List;

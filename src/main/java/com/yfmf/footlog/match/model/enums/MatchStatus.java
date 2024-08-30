@@ -1,4 +1,4 @@
-package com.yfmf.footlog.match.command.domain.model.enums;
+package com.yfmf.footlog.match.model.enums;
 
 public enum MatchStatus {
     MATCH_STATUS_WAITING,    // 대기

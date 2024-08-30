@@ -1,7 +1,6 @@
-package com.yfmf.footlog.match.command.domain.model;
+package com.yfmf.footlog.match.model.entity;
 
 import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.stereotype.Repository;
 
 
 public interface MatchRepository extends JpaRepository<Match, Long> {
