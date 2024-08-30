@@ -1,6 +1,8 @@
-package com.yfmf.footlog.match.model.entity;
+package com.yfmf.footlog.match.entity;
 
+import com.yfmf.footlog.domain.club.Club;
 import com.yfmf.footlog.match.command.domain.model.enums.*;
+import com.yfmf.footlog.match.enums.*;
 import com.yfmf.footlog.match.model.enums.*;
 import jakarta.persistence.*;
 import lombok.*;

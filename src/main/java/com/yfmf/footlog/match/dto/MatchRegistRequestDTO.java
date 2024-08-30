@@ -1,8 +1,10 @@
-package com.yfmf.footlog.match.model.dto;
+package com.yfmf.footlog.match.dto;
 
-import com.yfmf.footlog.match.model.entity.Match;
-import com.yfmf.footlog.match.model.entity.MatchSchedule;
-import com.yfmf.footlog.match.model.entity.Pro;
+import com.yfmf.footlog.domain.club.Club;
+import com.yfmf.footlog.match.entity.Match;
+import com.yfmf.footlog.match.enums.*;
+import com.yfmf.footlog.match.entity.MatchSchedule;
+import com.yfmf.footlog.match.entity.Pro;
 import com.yfmf.footlog.match.command.domain.model.enums.*;
 import com.yfmf.footlog.match.model.enums.*;
 import lombok.*;

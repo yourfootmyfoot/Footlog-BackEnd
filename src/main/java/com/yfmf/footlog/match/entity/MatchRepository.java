@@ -1,4 +1,4 @@
-package com.yfmf.footlog.match.model.entity;
+package com.yfmf.footlog.match.entity;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 

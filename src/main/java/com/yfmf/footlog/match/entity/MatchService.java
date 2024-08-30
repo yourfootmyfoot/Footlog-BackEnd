@@ -1,8 +1,8 @@
-package com.yfmf.footlog.match.model.entity;
+package com.yfmf.footlog.match.entity;
 
-import com.yfmf.footlog.match.model.dao.MatchMapper;
-import com.yfmf.footlog.match.model.dto.LoadMatchResponseDTO;
-import com.yfmf.footlog.match.model.dto.MatchRegistRequestDTO;
+import com.yfmf.footlog.match.dto.LoadMatchResponseDTO;
+import com.yfmf.footlog.match.dto.MatchRegistRequestDTO;
+import com.yfmf.footlog.match.dao.MatchMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 

@@ -1,6 +1,6 @@
-package com.yfmf.footlog.match.model.dao;
+package com.yfmf.footlog.match.dao;
 
-import com.yfmf.footlog.match.model.dto.LoadMatchResponseDTO;
+import com.yfmf.footlog.match.dto.LoadMatchResponseDTO;
 import org.apache.ibatis.annotations.Mapper;
 
 import java.util.List;
