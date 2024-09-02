@@ -78,4 +78,12 @@ public class MatchService {
 
         return matchMapper.findAllMatches();
     }
+
+    // matchId로 찾기
+    public LoadMatchResponseDTO findMatchByMatchId(Long matchId) {
+
+        return new LoadMatchResponseDTO(
+                matchRepository.findById(matchId)
+                        .orElseThrow(IllegalAccessError::new));
+    }
 }

@@ -5,8 +5,6 @@ import com.yfmf.footlog.match.entity.Match;
 import com.yfmf.footlog.match.enums.*;
 import com.yfmf.footlog.match.entity.MatchSchedule;
 import com.yfmf.footlog.match.entity.Pro;
-import com.yfmf.footlog.match.command.domain.model.enums.*;
-import com.yfmf.footlog.match.model.enums.*;
 import lombok.*;
 
 import java.time.LocalDateTime;

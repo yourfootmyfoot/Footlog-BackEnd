@@ -3,10 +3,12 @@ package com.yfmf.footlog.match.controller;
 import com.yfmf.footlog.match.dto.LoadMatchResponseDTO;
 import com.yfmf.footlog.match.entity.MatchService;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
-@Controller
+@RestController
+@RequestMapping("/match")
 public class MatchController {
 
     private MatchService matchService;
@@ -18,10 +20,12 @@ public class MatchController {
         this.matchService = matchService;
     }
 
-    public void findAllMatches() {
-
-        List<LoadMatchResponseDTO> matchList = matchService.findAllMatches();
-        matchList.forEach(System.out::println);
+    // 매치 id로 매치 정보 반환
+    @GetMapping("/detail/{matchId}")
+    public LoadMatchResponseDTO findAllMatches(@PathVariable Long matchId) {
+        
+        return matchService.findMatchByMatchId(matchId);
     }
+
 
 }
