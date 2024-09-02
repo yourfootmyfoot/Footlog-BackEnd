@@ -6,13 +6,17 @@ import com.yfmf.footlog.domain.club.enums.PeakDays;
 import com.yfmf.footlog.domain.club.enums.PeakHours;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotNull;
+import lombok.Getter;
+import lombok.Setter;
 
 import java.time.LocalDateTime;
 import java.util.List;
 
+@Getter
+@Setter
 public class ClubRegistRequestDTO {
 
-    @Schema(description = "구단주의 userId", example = "1")
+    @Schema(hidden = true)
     @NotNull(message = "구단주의 userId를 입력해주세요.")
     private Long userId;
 

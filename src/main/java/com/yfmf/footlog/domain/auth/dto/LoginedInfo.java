@@ -5,6 +5,6 @@ import lombok.Data;
 
 @Data
 public class LoginedInfo {
-    private String userName;
+    private Long userId;
     private UserRole role;
 }

@@ -3,6 +3,7 @@ package com.yfmf.footlog.domain.club.controller;
 import com.yfmf.footlog.domain.auth.dto.LoginedInfo;
 import com.yfmf.footlog.domain.auth.exception.LoginRequiredException;
 import com.yfmf.footlog.domain.club.dto.ClubRegistRequestDTO;
+import com.yfmf.footlog.domain.club.dto.ClubRegistResponseDTO;
 import com.yfmf.footlog.domain.club.entity.Club;
 import com.yfmf.footlog.domain.club.exception.ClubDuplicatedException;
 import com.yfmf.footlog.domain.club.exception.ClubNotFoundException;
@@ -41,6 +42,13 @@ public class ClubController {
     @Operation(summary = "구단 등록", description = "새로운 구단을 등록합니다.")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "구단이 성공적으로 등록되었습니다."),
+            @ApiResponse(responseCode = "401", description = "로그인이 필요합니다.", content = @Content(
+                    mediaType = "application/json",
+                    schema = @Schema(implementation = ErrorResponse.class),
+                    examples = @ExampleObject(
+                            value = "{\"status\": 401, \"errorType\": \"Unauthorized\", \"message\": \"로그인이 필요합니다.\"}"
+                    )
+            )),
             @ApiResponse(responseCode = "409", description = "이미 존재하는 클럽 코드입니다.", content = @Content(
                     mediaType = "application/json",
                     schema = @Schema(implementation = ErrorResponse.class),
@@ -50,21 +58,25 @@ public class ClubController {
             ))
     })
     @PostMapping
-    public ResponseEntity<String> createClub(@RequestBody ClubRegistRequestDTO clubInfo,
-                                             @AuthenticationPrincipal LoginedInfo logined) {
+    public ResponseEntity<ClubRegistResponseDTO> createClub(@RequestBody ClubRegistRequestDTO clubInfo,
+                                                            @AuthenticationPrincipal LoginedInfo logined) {
 
         // 로그인된 사용자인지 확인
         if (logined == null) {
-            throw new LoginRequiredException("로그인 후 이용이 가능합니다.", "[DestinationWish] addDestinationWish");
+            throw new LoginRequiredException("로그인 후 이용이 가능합니다.", "[CourseWish] addCourseWish");
         }
 
+        // 로그인된 사용자의 ID를 설정
+        clubInfo.setUserId(logined.getUserId());
+
         try {
-            clubService.registClub(clubInfo);
-            return ResponseEntity.ok("구단이 성공적으로 등록되었습니다.");
+            ClubRegistResponseDTO responseDto = clubService.registClub(clubInfo);
+            return ResponseEntity.ok(responseDto);
         } catch (ClubDuplicatedException e) {
-            return ResponseEntity.status(HttpStatus.CONFLICT).body(e.getMessage());
+            return ResponseEntity.status(HttpStatus.CONFLICT).body(null);
         }
     }
+
 
     /**
      * 모든 구단 조회

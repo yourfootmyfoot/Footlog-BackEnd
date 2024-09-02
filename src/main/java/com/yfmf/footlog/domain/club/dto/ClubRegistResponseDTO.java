@@ -4,10 +4,14 @@ import com.yfmf.footlog.domain.club.enums.PeakDays;
 import com.yfmf.footlog.domain.club.enums.PeakHours;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotNull;
+import lombok.Getter;
+import lombok.Setter;
 
 import java.time.LocalDateTime;
 import java.util.List;
 
+@Getter
+@Setter
 public class ClubRegistResponseDTO {
     @Schema(description = "구단주의 userId", example = "1")
     private Long userId;
@@ -29,4 +33,19 @@ public class ClubRegistResponseDTO {
 
     @Schema(description = "자주 운동하는 요일", example = "일")
     private List<PeakDays> peakDays;
+
+    // 기본 생성자
+    public ClubRegistResponseDTO() {}
+
+    // 모든 필드를 받는 생성자
+    public ClubRegistResponseDTO(Long userId, String clubName, String clubIntroduction, String clubCode,
+                                 LocalDateTime erollDate, PeakHours peakHours, List<PeakDays> peakDays) {
+        this.userId = userId;
+        this.clubName = clubName;
+        this.clubIntroduction = clubIntroduction;
+        this.clubCode = clubCode;
+        this.erollDate = erollDate;
+        this.peakHours = peakHours;
+        this.peakDays = peakDays;
+    }
 }

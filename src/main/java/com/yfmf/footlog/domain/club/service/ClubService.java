@@ -1,5 +1,6 @@
 package com.yfmf.footlog.domain.club.service;
 
+import com.yfmf.footlog.domain.club.dto.ClubRegistResponseDTO;
 import com.yfmf.footlog.domain.club.exception.ClubDuplicatedException;
 import com.yfmf.footlog.domain.club.exception.ClubNotFoundException;
 import com.yfmf.footlog.domain.club.repository.ClubRepository;
@@ -24,7 +25,7 @@ public class ClubService {
 
     // 클럽 등록
     @Transactional
-    public void registClub(ClubRegistRequestDTO clubInfo) {
+    public ClubRegistResponseDTO registClub(ClubRegistRequestDTO clubInfo) {
         // 중복된 클럽 코드 확인
         if (clubRepository.existsByClubCode(clubInfo.getClubCode())) {
             throw new ClubDuplicatedException("이미 존재하는 클럽 코드입니다.", "[ClubService] registClub");
@@ -41,7 +42,19 @@ public class ClubService {
                 clubInfo.getPeakDays()
         );
         clubRepository.save(newClub);
+
+        // 클럽 등록 결과 반환
+        return new ClubRegistResponseDTO(
+                newClub.getUserId(),
+                newClub.getClubName(),
+                newClub.getClubIntroduction(),
+                newClub.getClubCode(),
+                newClub.getErollDate(),
+                newClub.getPeakHours(),
+                newClub.getPeakDays()
+        );
     }
+
 
     // 모든 클럽 조회
     public List<Club> getAllClubs() {
