@@ -1,49 +1,56 @@
 package com.yfmf.footlog.guest.service;
 
-
+import com.yfmf.footlog.guest.dto.CreateGuestDto;
+import com.yfmf.footlog.guest.dto.UpdateGuestDto;
 import com.yfmf.footlog.guest.entity.Guest;
 import com.yfmf.footlog.guest.repository.GuestRepository;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Optional;
 
 @Service
+@RequiredArgsConstructor
 public class GuestService {
 
     private final GuestRepository guestRepository;
 
-    public GuestService(GuestRepository guestRepository) {
-        this.guestRepository = guestRepository;
-    }
+    public Guest registerGuest(CreateGuestDto createGuestDto) {
 
-    @Transactional
-    public Guest registGuest(Guest guest) {
+        validateCreateGuestDto(createGuestDto);
+
+        Guest guest = Guest.builder()
+                .name(createGuestDto.getName())
+                .isAvailable(createGuestDto.getIsAvailable())
+                .build();
+
         return guestRepository.save(guest);
     }
 
-    @Transactional
-    public Guest updateGuest(long guestId, Guest updatedGuest) {
-        Optional<Guest> existingGuest = guestRepository.findById(guestId);
-        if (existingGuest.isPresent()) {
-            Guest guest = existingGuest.get();
-            guest.setName(updatedGuest.getName());
-            guest.setCreatedAt(updatedGuest.getCreatedAt());
-            guest.setMainFoot(updatedGuest.getMainFoot());
-            guest.setPosition(updatedGuest.getPosition());
-            guest.setAvailable(updatedGuest.isAvailable());
-            return guestRepository.save(guest);
+    public Guest updateGuest(UpdateGuestDto updateGuestDto) {
+        Guest existingGuest = guestRepository.findById(updateGuestDto.getId())
+                .orElseThrow(() -> new IllegalArgumentException("Guest not found"));
+
+        Guest updatedGuest = Guest.builder()
+                .id(existingGuest.getId())
+                .name(updateGuestDto.getName() != null ? updateGuestDto.getName() : existingGuest.getName())
+                .isAvailable(updateGuestDto.getIsAvailable() != null ? updateGuestDto.getIsAvailable() : existingGuest.getIsAvailable())
+                .build();
+
+        return guestRepository.save(updatedGuest);
+    }
+
+    public void deleteGuest(Long id) {
+        if (guestRepository.existsById(id)) {
+            guestRepository.deleteById(id);
         } else {
-            throw new IllegalArgumentException("Guest not found with id: " + guestId);
+            throw new IllegalArgumentException("Guest not found");
         }
     }
 
-    @Transactional
-    public void deleteGuest(long guestId) {
-        if (guestRepository.existsById(guestId)) {
-            guestRepository.deleteById(guestId);
-        } else {
-            throw new IllegalArgumentException("Guest not found with id: " + guestId);
+    private void validateCreateGuestDto(CreateGuestDto createGuestDto) {
+        if (createGuestDto.getCreatedAt() == null) {
+            throw new IllegalArgumentException("createdAt cannot be null");
         }
     }
 }

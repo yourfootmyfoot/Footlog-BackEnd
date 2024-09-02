@@ -25,6 +25,6 @@ public class CreateGuestDto {
 
     private Position position;
 
-    private boolean isAvailable;
+    private Boolean isAvailable;
 
 }
