@@ -21,10 +21,7 @@ public class GuestService {
 
         Guest guest = Guest.builder()
                 .name(createGuestDto.getName())
-                .createdAt(createGuestDto.getCreatedAt())
-                .mainFoot(createGuestDto.getMainFoot())
-                .position(createGuestDto.getPosition())
-                .isAvailable(createGuestDto.isAvailable())
+                .isAvailable(createGuestDto.getIsAvailable())
                 .build();
 
         return guestRepository.save(guest);
@@ -34,21 +31,14 @@ public class GuestService {
         Guest existingGuest = guestRepository.findById(updateGuestDto.getId())
                 .orElseThrow(() -> new IllegalArgumentException("Guest not found"));
 
-            Guest updatedGuest = Guest.builder()
-                    .id(existingGuest.getId())
-                    .name(updateGuestDto.getName() != null ? updateGuestDto.getName() : existingGuest.getName())
-                    .createdAt(existingGuest.getCreatedAt())
-                    .mainFoot(updateGuestDto.getMainFoot() != null ? updateGuestDto.getMainFoot() : existingGuest.getMainFoot())
-                    .position(updateGuestDto.getPosition() != null ? updateGuestDto.getPosition() : existingGuest.getPosition())
-                    .isAvailable(updateGuestDto.isAvailable())
-                    .build();
+        Guest updatedGuest = Guest.builder()
+                .id(existingGuest.getId())
+                .name(updateGuestDto.getName() != null ? updateGuestDto.getName() : existingGuest.getName())
+                .isAvailable(updateGuestDto.getIsAvailable() != null ? updateGuestDto.getIsAvailable() : existingGuest.getIsAvailable())
+                .build();
 
-            return guestRepository.save(updatedGuest);
-        } else {
-            throw new IllegalArgumentException("Guest not found");
-        }
+        return guestRepository.save(updatedGuest);
     }
-
 
     public void deleteGuest(Long id) {
         if (guestRepository.existsById(id)) {

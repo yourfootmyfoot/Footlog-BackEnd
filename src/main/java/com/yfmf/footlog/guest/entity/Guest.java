@@ -1,14 +1,9 @@
 package com.yfmf.footlog.guest.entity;
 
-import com.yfmf.footlog.enums.MainFoot;
-import com.yfmf.footlog.enums.Position;
 import jakarta.persistence.*;
 import lombok.*;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
+import java.time.LocalDateTime;
 
 @Entity
 @Getter
@@ -23,6 +18,9 @@ public class Guest {
 
     private String name;
 
+    @Column(nullable = false)
     private Boolean isAvailable;
+
+    private LocalDateTime createdAt;
 
 }
