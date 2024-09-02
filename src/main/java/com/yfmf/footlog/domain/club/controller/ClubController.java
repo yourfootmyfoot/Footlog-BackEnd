@@ -21,44 +21,46 @@ public class ClubController {
         this.clubService = clubService;
     }
 
-    // 클럽 등록
+    // 구단 등록
     @PostMapping
     public ResponseEntity<String> createClub(@RequestBody ClubRegistRequestDTO clubInfo) {
         clubService.registClub(clubInfo);
-        return ResponseEntity.ok("Club registered successfully");
+        return ResponseEntity.ok("구단이 성공적으로 등록되었습니다.");
     }
 
-    // 모든 클럽 조회
+    // 모든 구단 조회
     @GetMapping
     public List<Club> getAllClubs() {
         return clubService.getAllClubs();
     }
 
-    // 특정 클럽 조회
-    @GetMapping("/{id}")
-    public ResponseEntity<Club> getClubById(@PathVariable Long id) {
-        Optional<Club> club = clubService.getClubById(id);
-        return club.map(ResponseEntity::ok)
-                .orElseGet(() -> ResponseEntity.notFound().build());
+    // 구단주 아이도로 구단 조회
+    @GetMapping("/owner/{userId}")
+    public ResponseEntity<List<Club>> getClubsByUserId(@PathVariable Long userId) {
+        List<Club> clubs = clubService.getClubsByUserId(userId);
+        if (clubs.isEmpty()) {
+            return ResponseEntity.notFound().build();
+        }
+        return ResponseEntity.ok(clubs);
     }
 
-    // 클럽 업데이트
+    // 구단 업데이트
     @PutMapping("/{id}")
     public ResponseEntity<String> updateClub(@PathVariable Long id, @RequestBody ClubRegistRequestDTO clubInfo) {
         try {
             clubService.updateClub(id, clubInfo);
-            return ResponseEntity.ok("Club updated successfully");
+            return ResponseEntity.ok("구단이 성공적으로 업데이트되었습니다.");
         } catch (RuntimeException e) {
             return ResponseEntity.notFound().build();
         }
     }
 
-    // 클럽 삭제
+    // 구단 삭제
     @DeleteMapping("/{id}")
     public ResponseEntity<String> deleteClub(@PathVariable Long id) {
         try {
             clubService.deleteClub(id);
-            return ResponseEntity.ok("Club deleted successfully");
+            return ResponseEntity.ok("구단이 성공적으로 삭제되었습니다.");
         } catch (RuntimeException e) {
             return ResponseEntity.notFound().build();
         }

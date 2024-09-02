@@ -41,8 +41,8 @@ public class ClubService {
     }
 
     // 특정 클럽 조회
-    public Optional<Club> getClubById(Long clubId) {
-        return clubRepository.findById(clubId);
+    public List<Club> getClubsByUserId(Long userId) {
+        return clubRepository.findByUserId(userId);
     }
 
     // 클럽 업데이트
