@@ -1,5 +1,7 @@
 package com.yfmf.footlog.domain.club.entity;
 
+import com.yfmf.footlog.domain.club.enums.PeakDays;
+import com.yfmf.footlog.domain.club.enums.PeakHours;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
