@@ -1,5 +1,6 @@
 package com.yfmf.footlog.exception;
 
+import com.yfmf.footlog.domain.auth.exception.LoginRequiredException;
 import com.yfmf.footlog.domain.club.exception.ClubDuplicatedException;
 import com.yfmf.footlog.domain.club.exception.ClubNotFoundException;
 import com.yfmf.footlog.domain.club.exception.IllegalClubArgumentException;
@@ -46,6 +47,16 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(IllegalClubArgumentException.class)
     public ResponseEntity<ErrorResponse> handleIllegalClubArgumentException(IllegalClubArgumentException e) {
+        ErrorResponse response = new ErrorResponse();
+        response.setErrorType(e.getErrorCode().getErrorType());
+        response.setMessage(e.getMessage());
+        response.setStatus(e.getErrorCode().getStatus().value());
+        return ResponseEntity.status(response.getStatus()).body(response);
+    }
+
+    // Auth 관련 오류 처리
+    @ExceptionHandler(LoginRequiredException.class)
+    public ResponseEntity<ErrorResponse> handleLoginRequiredException(LoginRequiredException e) {
         ErrorResponse response = new ErrorResponse();
         response.setErrorType(e.getErrorCode().getErrorType());
         response.setMessage(e.getMessage());

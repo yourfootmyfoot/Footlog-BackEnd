@@ -1,5 +1,7 @@
 package com.yfmf.footlog.domain.club.controller;
 
+import com.yfmf.footlog.domain.auth.dto.LoginedInfo;
+import com.yfmf.footlog.domain.auth.exception.LoginRequiredException;
 import com.yfmf.footlog.domain.club.dto.ClubRegistRequestDTO;
 import com.yfmf.footlog.domain.club.entity.Club;
 import com.yfmf.footlog.domain.club.exception.ClubDuplicatedException;
@@ -16,6 +18,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -47,7 +50,14 @@ public class ClubController {
             ))
     })
     @PostMapping
-    public ResponseEntity<String> createClub(@RequestBody ClubRegistRequestDTO clubInfo) {
+    public ResponseEntity<String> createClub(@RequestBody ClubRegistRequestDTO clubInfo,
+                                             @AuthenticationPrincipal LoginedInfo logined) {
+
+        // 로그인된 사용자인지 확인
+        if (logined == null) {
+            throw new LoginRequiredException("로그인 후 이용이 가능합니다.", "[DestinationWish] addDestinationWish");
+        }
+
         try {
             clubService.registClub(clubInfo);
             return ResponseEntity.ok("구단이 성공적으로 등록되었습니다.");

@@ -38,7 +38,7 @@ public class Club {
 
     @Column(name = "PEAK_HOURS")
     @Enumerated(EnumType.STRING)
-    private PeakHours peakHours;  //구단활동시간대 아침,찾,저녁,심야
+    private PeakHours peakHours;  //구단활동시간대 아침,낮,저녁,심야
 
 
     @ElementCollection  // 이는 자주 운동하는 날을 별도의 테이블에 저장하고, 해당 테이블이 Club 엔티티와 연관되도록 합니다.
