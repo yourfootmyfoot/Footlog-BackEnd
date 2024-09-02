@@ -1,13 +1,15 @@
 package com.yfmf.footlog.login;
 
+import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.RequestMapping;
 
-@RestController
+@Controller
+@RequestMapping("/login")
 public class LoginController {
 
-    @GetMapping("/login")
+    @GetMapping
     public String login() {
-        return "Login Page";
+        return "login";
     }
 }
