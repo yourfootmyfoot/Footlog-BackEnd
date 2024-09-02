@@ -7,7 +7,6 @@ import com.yfmf.footlog.match.entity.MatchSchedule;
 import com.yfmf.footlog.match.entity.MatchService;
 import com.yfmf.footlog.match.entity.Pro;
 import com.yfmf.footlog.match.enums.*;
-import com.yfmf.footlog.match.model.enums.*;
 import jakarta.transaction.Transactional;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;

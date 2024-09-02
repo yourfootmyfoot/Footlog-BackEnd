@@ -9,7 +9,7 @@ import jakarta.persistence.Embeddable;
 @Getter
 @ToString
 @Embeddable
-@NoArgsConstructor(access = AccessLevel.PROTECTED)
+@NoArgsConstructor
 public class Pro {
     // 프로 존재 여부
     @Column(nullable = false)

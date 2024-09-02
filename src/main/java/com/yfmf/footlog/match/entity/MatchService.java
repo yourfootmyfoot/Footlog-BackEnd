@@ -1,9 +1,8 @@
 package com.yfmf.footlog.match.entity;
 
-import com.yfmf.footlog.match.dao.MatchRepository;
+import com.yfmf.footlog.match.repository.MatchRepository;
 import com.yfmf.footlog.match.dto.LoadMatchResponseDTO;
 import com.yfmf.footlog.match.dto.MatchRegistRequestDTO;
-import com.yfmf.footlog.match.dao.MatchMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -13,11 +12,6 @@ import java.util.List;
 public class MatchService {
 
     private MatchRepository matchRepository;
-    private MatchMapper matchMapper;
-
-    public MatchService(MatchMapper matchMapper) {
-        this.matchMapper = matchMapper;
-    }
 
     // 의존성 주입
     @Autowired
@@ -75,10 +69,6 @@ public class MatchService {
 
     }
 
-    public List<LoadMatchResponseDTO> findAllMatches() {
-
-        return matchMapper.findAllMatches();
-    }
 
     // matchId로 찾기
     public LoadMatchResponseDTO findMatchByMatchId(Long matchId) {
