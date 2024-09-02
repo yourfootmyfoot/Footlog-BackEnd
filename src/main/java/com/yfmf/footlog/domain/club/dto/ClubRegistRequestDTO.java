@@ -1,15 +1,16 @@
-package com.yfmf.footlog.domain.club;
+package com.yfmf.footlog.domain.club.dto;
 
 
 
-import com.yfmf.footlog.users.entity.User;
+import com.yfmf.footlog.domain.club.entity.PeakDays;
+import com.yfmf.footlog.domain.club.entity.PeakHours;
 
 import java.time.LocalDateTime;
 import java.util.List;
 
 public class ClubRegistRequestDTO {
 
-    private User clubOwner;
+    private Long userId;
     private String clubName;
     private String clubIntroduction;
     private String clubCode;
@@ -20,11 +21,11 @@ public class ClubRegistRequestDTO {
     public ClubRegistRequestDTO() {
     }
 
-    public ClubRegistRequestDTO(User clubOwner,
+    public ClubRegistRequestDTO(Long userId,
                                 String clubName, String clubIntroduction,
                                 String clubCode, LocalDateTime erollDate,
                                 List<PeakDays> peakDays, PeakHours peakHours) {
-        this.clubOwner = clubOwner;
+        this.userId = userId;
         this.clubName = clubName;
         this.clubIntroduction = clubIntroduction;
         this.clubCode = clubCode;
@@ -33,12 +34,12 @@ public class ClubRegistRequestDTO {
         this.peakDays = peakDays;
     }
 
-    public User getClubOwner() {
-        return clubOwner;
+    public Long getUserId() {
+        return userId;
     }
 
-    public void setClubOwner(User clubOwner) {
-        this.clubOwner = clubOwner;
+    public void setUserId(Long userId) {
+        this.userId = userId;
     }
 
     public String getClubName() {
@@ -92,7 +93,7 @@ public class ClubRegistRequestDTO {
     @Override
     public String toString() {
         return "ClubRegistRequestDTO{" +
-                ", clubOwner=" + clubOwner +
+                ", clubOwner=" + userId +
                 ", clubName='" + clubName + '\'' +
                 ", clubIntroduction='" + clubIntroduction + '\'' +
                 ", clubCode='" + clubCode + '\'' +

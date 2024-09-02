@@ -1,6 +1,6 @@
 package com.yfmf.footlog.match.command.domain.model;
 
-import com.yfmf.footlog.domain.club.Club;
+import com.yfmf.footlog.domain.club.entity.Club;
 import com.yfmf.footlog.match.command.domain.model.dto.LoadMatchResponseDTO;
 import com.yfmf.footlog.match.command.domain.model.dto.MatchRegistRequestDTO;
 import jakarta.transaction.Transactional;
