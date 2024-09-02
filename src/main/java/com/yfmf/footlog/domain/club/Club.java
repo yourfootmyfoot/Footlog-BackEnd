@@ -19,6 +19,7 @@ public class Club {
     @ManyToOne
     @JoinColumn(name = "CLUB_OWNER")
     private User clubOwner;  //구단주
+    private Long userId;
 
     @Column(name = "CLUB_NAME")
     private String clubName;  //구단이름
