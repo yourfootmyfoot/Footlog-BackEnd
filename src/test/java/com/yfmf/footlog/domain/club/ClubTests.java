@@ -1,8 +1,8 @@
 package com.yfmf.footlog.domain.club;
 
 import com.yfmf.footlog.domain.club.dto.ClubRegistRequestDTO;
-import com.yfmf.footlog.domain.club.entity.PeakDays;
-import com.yfmf.footlog.domain.club.entity.PeakHours;
+import com.yfmf.footlog.domain.club.enums.PeakDays;
+import com.yfmf.footlog.domain.club.enums.PeakHours;
 import com.yfmf.footlog.domain.club.repository.ClubRepository;
 import com.yfmf.footlog.domain.club.service.ClubService;
 import com.yfmf.footlog.users.UserRole;

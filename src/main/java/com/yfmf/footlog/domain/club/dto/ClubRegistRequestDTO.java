@@ -2,8 +2,8 @@ package com.yfmf.footlog.domain.club.dto;
 
 
 
-import com.yfmf.footlog.domain.club.entity.PeakDays;
-import com.yfmf.footlog.domain.club.entity.PeakHours;
+import com.yfmf.footlog.domain.club.enums.PeakDays;
+import com.yfmf.footlog.domain.club.enums.PeakHours;
 
 import java.time.LocalDateTime;
 import java.util.List;
