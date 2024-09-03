@@ -20,19 +20,25 @@ import java.nio.charset.StandardCharsets;
 @EnableWebSecurity
 @Configuration
 public class SecurityConfig {
-    
+
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http, OAuth2UserService oAuth2UserService) throws Exception {
 
         http
-                .csrf(AbstractHttpConfigurer::disable)
+                .csrf(AbstractHttpConfigurer::disable) //CSRF 비활성화
                 .authorizeHttpRequests(config ->
-                        config.anyRequest().permitAll())
+                        config.anyRequest().permitAll()
+                                .requestMatchers("/login").permitAll()
+                                .requestMatchers("/oauth2/authorization/**").permitAll()
+                )
                 .oauth2Login(oauth2Config ->
                         oauth2Config.loginPage("/login")
-                                .successHandler(successHandler())
+                                .authorizationEndpoint(authorization ->
+                                        authorization.baseUri("/oauth2/authorization"))
                                 .userInfoEndpoint(userInfoEndpointConfig ->
-                                        userInfoEndpointConfig.userService(oAuth2UserService)));
+                                        userInfoEndpointConfig.userService(oAuth2UserService))
+                                .successHandler(successHandler())
+                );
 
 
         return http.build();

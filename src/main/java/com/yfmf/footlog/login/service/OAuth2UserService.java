@@ -1,5 +1,6 @@
 package com.yfmf.footlog.login.service;
 
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.AuthorityUtils;
 import org.springframework.security.oauth2.client.userinfo.DefaultOAuth2UserService;
@@ -11,6 +12,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 
+@Slf4j
 @Service
 public class OAuth2UserService extends DefaultOAuth2UserService {
 
