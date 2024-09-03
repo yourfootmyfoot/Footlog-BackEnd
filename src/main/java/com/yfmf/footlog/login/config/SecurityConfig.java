@@ -20,8 +20,7 @@ import java.nio.charset.StandardCharsets;
 @EnableWebSecurity
 @Configuration
 public class SecurityConfig {
-
-
+    
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http, OAuth2UserService oAuth2UserService) throws Exception {
 
