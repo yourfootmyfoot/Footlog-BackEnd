@@ -23,11 +23,12 @@ public class User {
     @GeneratedValue
     private Long userId;
 
-    @Column(nullable = false)
-    private Long kakaoId;
+    private String kakaoId;
 
     @Column(nullable = false)
     private String userName;
+
+    private String email;
 
     private LocalDate birth;
 
@@ -62,10 +63,11 @@ public class User {
     private Record record;
 
     @Builder
-    public User(Long userId, Long kakaoId, String userName, LocalDate birth, MainFoot mainFoot, Area area, Position position, String introduction, Boolean isPro, Double height, Double weight, String profileImageUrl, String phoneNumber, UserRole role, Stat stat, Record record) {
+    public User(Long userId, String kakaoId, String userName, String email, LocalDate birth, MainFoot mainFoot, Area area, Position position, String introduction, Boolean isPro, Double height, Double weight, String profileImageUrl, String phoneNumber, UserRole role, Stat stat, Record record) {
         this.userId = userId;
         this.kakaoId = kakaoId;
         this.userName = userName;
+        this.email = email;
         this.birth = birth;
         this.mainFoot = mainFoot;
         this.area = area;
@@ -83,6 +85,7 @@ public class User {
 
     public void update(UserUpdateRequestDto requestDto) {
         this.userName = requestDto.getUserName();
+        this.email = requestDto.getEmail();
         this.birth = requestDto.getBirth();
         this.mainFoot = requestDto.getMainFoot();
         this.area = requestDto.getArea();
