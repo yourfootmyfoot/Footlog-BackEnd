@@ -23,7 +23,7 @@ public class User {
     @GeneratedValue
     private Long userId;
 
-    private String kakaoId;
+    private String socialId;
 
     @Column(nullable = false)
     private String userName;
@@ -63,9 +63,9 @@ public class User {
     private Record record;
 
     @Builder
-    public User(Long userId, String kakaoId, String userName, String email, LocalDate birth, MainFoot mainFoot, Area area, Position position, String introduction, Boolean isPro, Double height, Double weight, String profileImageUrl, String phoneNumber, UserRole role, Stat stat, Record record) {
+    public User(Long userId, String socialId, String userName, String email, LocalDate birth, MainFoot mainFoot, Area area, Position position, String introduction, Boolean isPro, Double height, Double weight, String profileImageUrl, String phoneNumber, UserRole role, Stat stat, Record record) {
         this.userId = userId;
-        this.kakaoId = kakaoId;
+        this.socialId = socialId;
         this.userName = userName;
         this.email = email;
         this.birth = birth;
