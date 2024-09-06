@@ -53,7 +53,7 @@ public class User {
 
     private String phoneNumber;
 
-    @Column(nullable = false)
+//    @Column(nullable = false)
     private UserRole role;
 
     @Embedded
@@ -61,6 +61,13 @@ public class User {
 
     @Embedded
     private Record record;
+
+    @Builder
+    public User(String socialId, String userName, UserRole role) {
+        this.socialId = socialId;
+        this.userName = userName;
+        this.email = email;
+    }
 
     @Builder
     public User(Long userId, String socialId, String userName, String email, LocalDate birth, MainFoot mainFoot, Area area, Position position, String introduction, Boolean isPro, Double height, Double weight, String profileImageUrl, String phoneNumber, UserRole role, Stat stat, Record record) {

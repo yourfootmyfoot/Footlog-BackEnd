@@ -22,11 +22,11 @@ public class KakaoResponse implements OAuth2Response {
 
     @Override
     public String getEmail() {
-        return attribute.get("email").toString();
+        return attribute.get("account_email").toString();
     }
 
     @Override
     public String getName() {
-        return attribute.get("name").toString();
+        return attribute.get("profile_nickname").toString();
     }
 }

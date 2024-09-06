@@ -18,6 +18,7 @@ import java.time.LocalDate;
 public class UserUpdateRequestDto {
 
     private String userName;
+    private String email;
     private LocalDate birth;
     private MainFoot mainFoot;
     private Area area;

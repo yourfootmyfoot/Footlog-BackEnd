@@ -4,7 +4,6 @@ import com.yfmf.footlog.enums.Area;
 import com.yfmf.footlog.enums.MainFoot;
 import com.yfmf.footlog.enums.Position;
 import com.yfmf.footlog.users.UserRole;
-import com.yfmf.footlog.users.dto.UserSaveRequestDto;
 import com.yfmf.footlog.users.dto.UserUpdateRequestDto;
 import com.yfmf.footlog.users.entity.Record;
 import com.yfmf.footlog.users.entity.Stat;
