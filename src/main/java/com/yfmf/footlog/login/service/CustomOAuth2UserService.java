@@ -1,6 +1,7 @@
 package com.yfmf.footlog.login.service;
 
 import com.yfmf.footlog.login.dto.KakaoResponse;
+import com.yfmf.footlog.login.dto.NaverResponse;
 import com.yfmf.footlog.login.dto.OAuth2Response;
 import com.yfmf.footlog.login.dto.CustomOAuth2User;
 import com.yfmf.footlog.users.dto.UserOAuth2Dto;
@@ -36,7 +37,10 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
         if (registrationId.equals("kakao")) {
 
             oAuth2Response = new KakaoResponse(oAuth2User.getAttributes());
-        } else { // 네이버 로그인 예정
+        } else if (registrationId.equals("naver")) {
+
+            oAuth2Response = new NaverResponse(oAuth2User.getAttributes());
+        } else {
 
             return null;
         }
@@ -46,10 +50,8 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
 
         if (foundUser == null) {
 
-//            userDto.setUsername(oAuth2Response.getName());
-//            userDto.setSocialId(oAuth2Response.getProviderId());
-            userDto.setUsername("test");
-            userDto.setSocialId("12121212");
+            userDto.setUsername(oAuth2Response.getName());
+            userDto.setSocialId(oAuth2Response.getProviderId());
             User user = userDto.toEntity();
 
             userRepository.save(user);
