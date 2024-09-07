@@ -1,7 +1,9 @@
 package com.yfmf.footlog.login.config;
 
+import com.yfmf.footlog.login.filter.CustomLogoutFilter;
 import com.yfmf.footlog.login.handler.CustomSuccessHandler;
 import com.yfmf.footlog.login.jwt.filter.JwtFilter;
+import com.yfmf.footlog.login.repository.RefreshRepository;
 import com.yfmf.footlog.login.service.CustomOAuth2UserService;
 import com.yfmf.footlog.login.jwt.util.JwtUtil;
 import jakarta.servlet.http.HttpServletRequest;
@@ -14,6 +16,7 @@ import org.springframework.security.config.annotation.web.configurers.AbstractHt
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.security.web.authentication.logout.LogoutFilter;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 
@@ -27,6 +30,7 @@ public class SecurityConfig {
     private final CustomOAuth2UserService customOAuth2UserService;
     private final CustomSuccessHandler customSuccessHandler;
     private final JwtUtil jwtUtil;
+    private final RefreshRepository refreshRepository;
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
@@ -44,6 +48,8 @@ public class SecurityConfig {
                 // HTTP Basic 인증 방식 disable
                 .httpBasic(AbstractHttpConfigurer::disable)
                 // JwtFilter 추가
+
+                .addFilterBefore(new CustomLogoutFilter(jwtUtil, refreshRepository), LogoutFilter.class)
                 .addFilterAfter(new JwtFilter(jwtUtil), UsernamePasswordAuthenticationFilter.class)
                 // oauth2
                 .oauth2Login(auth ->
