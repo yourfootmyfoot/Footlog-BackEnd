@@ -40,7 +40,7 @@ public class SecurityConfig {
                 // HTTP Basic 인증 방식 disable
                 .httpBasic(AbstractHttpConfigurer::disable)
                 // JwtFilter 추가
-                .addFilterBefore(new JwtFilter(jwtUtil), UsernamePasswordAuthenticationFilter.class)
+                .addFilterAfter(new JwtFilter(jwtUtil), UsernamePasswordAuthenticationFilter.class)
                 // oauth2
                 .oauth2Login(auth ->
                         auth.userInfoEndpoint(userInfoEndpointConfig ->
@@ -49,10 +49,9 @@ public class SecurityConfig {
                 // 경로별 인가 작업
                 .authorizeHttpRequests(auth ->
                         auth
-                                .anyRequest().permitAll())
-//                                .requestMatchers("/", "/login").permitAll()
-//                                .requestMatchers("/css/**", "/js/**", "/images/**", "/favicon.*").permitAll())
-//                                .anyRequest().authenticated())
+                                .requestMatchers("/", "/login").permitAll()
+                                .requestMatchers("/css/**", "/js/**", "/images/**", "/favicon.*").permitAll()
+                                .anyRequest().authenticated())
                 // 세션 설정: STATELESS -> Oauth2 사용
                 .sessionManagement(session ->
                         session.sessionCreationPolicy(SessionCreationPolicy.STATELESS));
