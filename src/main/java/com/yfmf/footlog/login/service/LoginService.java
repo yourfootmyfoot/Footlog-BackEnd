@@ -1,6 +1,9 @@
 package com.yfmf.footlog.login.service;
 
+import com.yfmf.footlog.login.dto.RefreshDto;
+import com.yfmf.footlog.login.entity.Refresh;
 import com.yfmf.footlog.login.jwt.util.JwtUtil;
+import com.yfmf.footlog.login.repository.RefreshRepository;
 import io.jsonwebtoken.ExpiredJwtException;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
@@ -8,6 +11,8 @@ import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+
+import java.util.Date;
 
 import static org.springframework.http.HttpStatus.BAD_REQUEST;
 import static org.springframework.http.HttpStatus.OK;
@@ -17,6 +22,7 @@ import static org.springframework.http.HttpStatus.OK;
 public class LoginService {
 
     private final JwtUtil jwtUtil;
+    private final RefreshRepository refreshRepository;
 
     public ResponseEntity<?> tokenReissue(HttpServletRequest request, HttpServletResponse response) {
 
@@ -48,15 +54,25 @@ public class LoginService {
             return new ResponseEntity<>("유효한 리프레시 토큰이 아닙니다.", BAD_REQUEST);
         }
 
+        // 토큰이 저장되어 있는지 확인
+        Boolean isExist = refreshRepository.existsByRefresh(refresh);
+        if (!isExist) {
+            return new ResponseEntity<>("유효하지 않은 토큰입니다.", BAD_REQUEST);
+        }
+
         String username = jwtUtil.getUsername(refresh);
         String role = jwtUtil.getRole(refresh);
 
         // 새로운 토큰 발급
         String newAccess = jwtUtil.createJwt("access", username, role, 600000L);
-//        String newRefresh = jwtUtil.createJwt("refresh", username, role, 600000L);
+        String newRefresh = jwtUtil.createJwt("refresh", username, role, 86400000L);
+
+        // 기존 값 제거 후 새로운 리프리시 토큰 저장
+        refreshRepository.deleteByRefresh(refresh);
+        addRefreshEntity(username, newRefresh, 86400000L);
 
         response.setHeader("access", newAccess);
-//        response.addCookie(createCookie("refresh", newRefresh));
+        response.addCookie(createCookie("refresh", newRefresh));
 
         return new ResponseEntity<>(OK);
     }
@@ -70,5 +86,18 @@ public class LoginService {
         cookie.setHttpOnly(true);
 
         return cookie;
+    }
+
+    private void addRefreshEntity(String username, String refresh, Long expiredMs) {
+
+        Date date = new Date(System.currentTimeMillis() + expiredMs);
+
+        RefreshDto refreshDto = new RefreshDto();
+        refreshDto.setUsername(username);
+        refreshDto.setRefresh(refresh);
+        refreshDto.setExpiration(date.toString());
+        Refresh newRefresh = refreshDto.toEntity();
+
+        refreshRepository.save(newRefresh);
     }
 }
