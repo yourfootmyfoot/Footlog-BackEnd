@@ -53,7 +53,10 @@ public class SecurityConfig {
                 // 경로별 인가 작업
                 .authorizeHttpRequests(auth ->
                         auth
-                                .requestMatchers("/", "/login").permitAll()
+                                // 로그인 경로 허용
+                                .requestMatchers("/login").permitAll()
+                                // 토큰 재발급 경로 허용
+                                .requestMatchers("/reissue").permitAll()
                                 .requestMatchers("/css/**", "/js/**", "/images/**", "/favicon.*").permitAll()
                                 .anyRequest().authenticated())
                 // 세션 설정: STATELESS -> Oauth2 사용
