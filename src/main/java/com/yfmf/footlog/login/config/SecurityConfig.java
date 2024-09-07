@@ -36,7 +36,11 @@ public class SecurityConfig {
                 .csrf(AbstractHttpConfigurer::disable)
                 // From 로그인 방식 disable
                 .formLogin(formLogin ->
-                        formLogin.loginPage("/login"))
+                        formLogin
+                                .loginPage("/login")
+                                .successForwardUrl("/")
+                                .failureUrl("/login")
+                )
                 // HTTP Basic 인증 방식 disable
                 .httpBasic(AbstractHttpConfigurer::disable)
                 // JwtFilter 추가
