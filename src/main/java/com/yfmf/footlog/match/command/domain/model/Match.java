@@ -32,11 +32,13 @@ public class Match {
     private Long matchApplyUserId;
 
     // 내 구단 - 구단 라인업, 매치 생성 매니저, 구단 이름, 구단 로고, 구단
-    @Embedded
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "MY_CLUB_ID")
     private Club myClub;
 
     // 상대 구단 - 구단 이름, 구단 로고
-    @Embedded
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "ENEMY_CLUB_ID")
     private Club enemyClub;
 
     // 매치 대표사진/로고
