@@ -53,10 +53,10 @@ public class LoginService {
 
         // 새로운 토큰 발급
         String newAccess = jwtUtil.createJwt("access", username, role, 600000L);
-        String newRefresh = jwtUtil.createJwt("refresh", username, role, 600000L);
+//        String newRefresh = jwtUtil.createJwt("refresh", username, role, 600000L);
 
         response.setHeader("access", newAccess);
-        response.addCookie(createCookie("refresh", newRefresh));
+//        response.addCookie(createCookie("refresh", newRefresh));
 
         return new ResponseEntity<>(OK);
     }
