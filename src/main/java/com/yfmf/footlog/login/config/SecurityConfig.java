@@ -38,24 +38,21 @@ public class SecurityConfig {
         http
                 // CSRF disable
                 .csrf(AbstractHttpConfigurer::disable)
-                // From 로그인 방식 disable
-                .formLogin(formLogin ->
-                        formLogin
-                                .loginPage("/login")
-                                .successForwardUrl("/")
-                                .failureUrl("/login")
-                )
                 // HTTP Basic 인증 방식 disable
                 .httpBasic(AbstractHttpConfigurer::disable)
+                // Form 로그인 방식 disable
+                .formLogin(AbstractHttpConfigurer::disable)
                 // JwtFilter 추가
-
                 .addFilterBefore(new CustomLogoutFilter(jwtUtil, refreshRepository), LogoutFilter.class)
                 .addFilterAfter(new JwtFilter(jwtUtil), UsernamePasswordAuthenticationFilter.class)
                 // oauth2
                 .oauth2Login(auth ->
                         auth.userInfoEndpoint(userInfoEndpointConfig ->
                                         userInfoEndpointConfig.userService(customOAuth2UserService))
-                                .successHandler(customSuccessHandler))
+                                .successHandler(customSuccessHandler)
+                                .loginPage("/login")
+                                .defaultSuccessUrl("/")
+                                .failureUrl("/login"))
                 // 경로별 인가 작업
                 .authorizeHttpRequests(auth ->
                         auth
