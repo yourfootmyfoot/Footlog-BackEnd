@@ -1,6 +1,8 @@
-package com.yfmf.footlog.match.command.domain.model;
+package com.yfmf.footlog.domain.match.entity;
 
-import com.yfmf.footlog.match.command.domain.model.enums.*;
+
+import com.yfmf.footlog.domain.club.entity.Club;
+import com.yfmf.footlog.domain.match.enums.*;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -32,13 +34,13 @@ public class Match {
     private Long matchApplyUserId;
 
     // 내 구단 - 구단 라인업, 매치 생성 매니저, 구단 이름, 구단 로고, 구단
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "MY_CLUB_ID")
+    @OneToOne
+    @JoinColumn(nullable = false)
     private Club myClub;
 
     // 상대 구단 - 구단 이름, 구단 로고
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "ENEMY_CLUB_ID")
+    @OneToOne
+    @JoinColumn(nullable = false)
     private Club enemyClub;
 
     // 매치 대표사진/로고
@@ -55,9 +57,11 @@ public class Match {
 
     // 매치 인원
     @Column(nullable = false)
+    @Enumerated(EnumType.STRING)
     private MatchPlayerQuantity matchPlayerQuantity;
 
     // 쿼터 수
+    @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private QuarterQuantity quarterQuantity;
 
@@ -75,14 +79,17 @@ public class Match {
 
     // 실력수치
     @Column(nullable = false)
+    @Enumerated(EnumType.STRING)
     private ClubLevel clubLevel;
 
     // 성별 - male, female, mix
     @Column(nullable = false)
+    @Enumerated(EnumType.STRING)
     private MatchGender matchGender;
 
     // 경기 상태 - 매칭 전 'N', 진행 중 'Y', 종료 'E'
     @Column(nullable = false, columnDefinition = "char(1) default 'Y'")
+    @Enumerated(EnumType.STRING)
     private MatchStatus matchStatus;
 
     public Match(LocalDateTime matchEnrollTime, Long matchEnrollUserId, Long matchApplyUserId, Club myClub, Club enemyClub, String matchPhoto, String matchIntroduce,

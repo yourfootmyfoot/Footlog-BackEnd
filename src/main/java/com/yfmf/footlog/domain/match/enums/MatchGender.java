@@ -1,4 +1,4 @@
-package com.yfmf.footlog.match.command.domain.model.enums;
+package com.yfmf.footlog.domain.match.enums;
 
 public enum MatchGender {
     GENDER_MALE,

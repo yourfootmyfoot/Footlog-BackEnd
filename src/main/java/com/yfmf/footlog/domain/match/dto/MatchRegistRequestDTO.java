@@ -1,9 +1,10 @@
-package com.yfmf.footlog.match.command.domain.model.dto;
+package com.yfmf.footlog.domain.match.dto;
 
-import com.yfmf.footlog.match.command.domain.model.Match;
-import com.yfmf.footlog.match.command.domain.model.MatchSchedule;
-import com.yfmf.footlog.match.command.domain.model.Pro;
-import com.yfmf.footlog.match.command.domain.model.enums.*;
+import com.yfmf.footlog.domain.club.entity.Club;
+import com.yfmf.footlog.domain.match.entity.Pro;
+import com.yfmf.footlog.domain.match.enums.*;
+import com.yfmf.footlog.domain.match.entity.Match;
+import com.yfmf.footlog.domain.match.entity.MatchSchedule;
 import lombok.*;
 
 import java.time.LocalDateTime;
