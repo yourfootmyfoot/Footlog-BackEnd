@@ -58,16 +58,16 @@ public class ClubController {
             ))
     })
     @PostMapping
-    public ResponseEntity<ClubRegistResponseDTO> createClub(@RequestBody ClubRegistRequestDTO clubInfo,
-                                                            @AuthenticationPrincipal LoginedInfo logined) {
+    public ResponseEntity<ClubRegistResponseDTO> createClub(@RequestBody ClubRegistRequestDTO clubInfo
+                                                            /*@AuthenticationPrincipal LoginedInfo logined */) {
 
         // 로그인된 사용자인지 확인
-        if (logined == null) {
-            throw new LoginRequiredException("로그인 후 이용이 가능합니다.", "[CourseWish] addCourseWish");
-        }
+//        if (logined == null) {
+//            throw new LoginRequiredException("로그인 후 이용이 가능합니다.", "[CourseWish] addCourseWish");
+//        }
 
         // 로그인된 사용자의 ID를 설정
-        clubInfo.setUserId(logined.getUserId());
+//        clubInfo.setUserId(logined.getUserId());
 
         try {
             ClubRegistResponseDTO responseDto = clubService.registClub(clubInfo);
