@@ -66,7 +66,7 @@ public class User {
     public User(String socialId, String userName, UserRole role) {
         this.socialId = socialId;
         this.userName = userName;
-        this.email = email;
+        this.role = role;
     }
 
     @Builder
