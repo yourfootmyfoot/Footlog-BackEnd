@@ -1,4 +1,4 @@
-package com.yfmf.footlog.domain.club;
+package com.yfmf.footlog.domain.club.enums;
 
 public enum PeakHours {
 

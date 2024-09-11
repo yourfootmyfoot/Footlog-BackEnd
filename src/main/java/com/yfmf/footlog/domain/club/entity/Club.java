@@ -1,13 +1,18 @@
-package com.yfmf.footlog.domain.club;
+package com.yfmf.footlog.domain.club.entity;
 
-import com.yfmf.footlog.users.User;
+import com.yfmf.footlog.domain.club.enums.PeakDays;
+import com.yfmf.footlog.domain.club.enums.PeakHours;
 import jakarta.persistence.*;
+import lombok.Getter;
+import lombok.Setter;
 
 import java.time.LocalDateTime;
 import java.util.List;
 
 @Entity
 @Table(name = "tbl_club")
+@Setter
+@Getter
 public class Club {
 
 
@@ -16,9 +21,8 @@ public class Club {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long clubId;
 
-    @ManyToOne
-    @JoinColumn(name = "CLUB_OWNER")
-    private User clubOwner;  //구단주
+    @Column(name = "CLUB_OWNER")
+    private Long userId; //구단주
 
     @Column(name = "CLUB_NAME")
     private String clubName;  //구단이름
@@ -36,18 +40,21 @@ public class Club {
     @Enumerated(EnumType.STRING)
     private PeakHours peakHours;  //구단활동시간대 아침,찾,저녁,심야
 
-    @Column(name = "PEAK_DAYS")
+
+    @ElementCollection  // 이는 자주 운동하는 날을 별도의 테이블에 저장하고, 해당 테이블이 Club 엔티티와 연관되도록 합니다.
+    @CollectionTable(name = "tbl_club_peak_days", joinColumns = @JoinColumn(name = "CLUB_ID"))
+    @Column(name = "PEAK_DAYS") // 자주 운동하는 날
     @Enumerated(EnumType.STRING)
     private List<PeakDays> peakDays;  // 월~일
 
     public Club() {
     }
 
-    public Club(User clubOwner,
+    public Club(Long userId,
                 String clubName, String clubIntroduction,
                 String clubCode, LocalDateTime erollDate,
                 PeakHours peakHours, List<PeakDays> peakDays) {
-        this.clubOwner = clubOwner;
+        this.userId = userId;
         this.clubName = clubName;
         this.clubIntroduction = clubIntroduction;
         this.clubCode = clubCode;
@@ -60,7 +67,7 @@ public class Club {
     public String toString() {
         return "Club{" +
                 "clubId=" + clubId +
-                ", clubOwner=" + clubOwner +
+                ", clubOwner=" + userId +
                 ", clubName='" + clubName + '\'' +
                 ", clubIntroduction='" + clubIntroduction + '\'' +
                 ", clubCode='" + clubCode + '\'' +
