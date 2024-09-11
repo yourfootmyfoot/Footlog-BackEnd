@@ -54,6 +54,7 @@ public class User {
     private String phoneNumber;
 
 //    @Column(nullable = false)
+    @Enumerated(EnumType.STRING)
     private UserRole role;
 
     @Embedded
