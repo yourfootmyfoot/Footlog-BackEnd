@@ -1,6 +1,6 @@
-package com.yfmf.footlog.match.repository;
+package com.yfmf.footlog.domain.match.repository;
 
-import com.yfmf.footlog.match.entity.Match;
+import com.yfmf.footlog.domain.match.entity.Match;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 
