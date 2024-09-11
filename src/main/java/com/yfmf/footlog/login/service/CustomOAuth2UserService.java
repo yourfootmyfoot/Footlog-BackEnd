@@ -32,6 +32,7 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
         log.info("OAuth2User: {}", oAuth2User);
 
         String registrationId = userRequest.getClientRegistration().getRegistrationId();
+        log.info("registrationId: {}", registrationId);
         OAuth2Response oAuth2Response = null;
 
         if (registrationId.equals("kakao")) {
@@ -54,12 +55,16 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
             userDto.setSocialId(oAuth2Response.getProviderId());
             User user = userDto.toEntity();
 
+            log.info("user: {}", user);
+
             userRepository.save(user);
         } else {
 
             userDto.setUsername(foundUser.getUserName());
             userDto.setSocialId(foundUser.getSocialId());
         }
+
+        userDto.setRole("ROLE_USER");
 
         return new CustomOAuth2User(userDto);
     }
