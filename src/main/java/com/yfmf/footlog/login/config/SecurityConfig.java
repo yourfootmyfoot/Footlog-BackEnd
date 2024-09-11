@@ -20,6 +20,7 @@ import org.springframework.security.web.authentication.logout.LogoutFilter;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 
+import java.util.Arrays;
 import java.util.Collections;
 
 @Configuration
@@ -51,13 +52,12 @@ public class SecurityConfig {
                                         userInfoEndpointConfig.userService(customOAuth2UserService))
                                 .successHandler(customSuccessHandler)
                                 .loginPage("/login")
-                                .defaultSuccessUrl("/")
-                                .failureUrl("/login"))
+                                .failureUrl("/login?error=true"))
                 // 경로별 인가 작업
                 .authorizeHttpRequests(auth ->
                         auth
                                 // 로그인 경로 허용
-                                .requestMatchers("/login").permitAll()
+                                .requestMatchers("/login", "/oauth2/**").permitAll()
                                 // 토큰 재발급 경로 허용
                                 .requestMatchers("/reissue").permitAll()
                                 .requestMatchers("/css/**", "/js/**", "/images/**", "/favicon.*").permitAll()
@@ -86,8 +86,7 @@ public class SecurityConfig {
                                 config.setMaxAge(3600L);
 
                                 // 넘겨줄 정보에 대한 허용
-                                config.setExposedHeaders(Collections.singletonList("Set-Cookie"));
-                                config.setExposedHeaders(Collections.singletonList("Authorization"));
+                                config.setExposedHeaders(Arrays.asList("Set-Cookie", "Authorization"));
 
                                 return config;
                             }
