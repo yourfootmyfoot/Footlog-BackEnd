@@ -1,11 +1,8 @@
-package com.yfmf.footlog.match.controller;
+package com.yfmf.footlog.domain.match.controller;
 
-import com.yfmf.footlog.match.dto.LoadMatchResponseDTO;
-import com.yfmf.footlog.match.entity.MatchService;
-import org.springframework.stereotype.Controller;
+import com.yfmf.footlog.domain.match.dto.LoadMatchResponseDTO;
+import com.yfmf.footlog.domain.match.entity.MatchService;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
 
 @RestController
 @RequestMapping("/match")

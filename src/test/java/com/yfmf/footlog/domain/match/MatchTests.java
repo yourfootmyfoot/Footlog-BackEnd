@@ -1,11 +1,11 @@
-package com.yfmf.footlog.match;
+package com.yfmf.footlog.domain.match;
 
-import com.yfmf.footlog.domain.club.Club;
-import com.yfmf.footlog.match.dto.LoadMatchResponseDTO;
-import com.yfmf.footlog.match.dto.MatchRegistRequestDTO;
-import com.yfmf.footlog.match.entity.MatchSchedule;
-import com.yfmf.footlog.match.entity.MatchService;
-import com.yfmf.footlog.match.entity.Pro;
+import com.yfmf.footlog.domain.club.entity.Club;
+import com.yfmf.footlog.domain.match.dto.LoadMatchResponseDTO;
+import com.yfmf.footlog.domain.match.dto.MatchRegistRequestDTO;
+import com.yfmf.footlog.domain.match.entity.MatchSchedule;
+import com.yfmf.footlog.domain.match.entity.MatchService;
+import com.yfmf.footlog.domain.match.entity.Pro;
 import jakarta.transaction.Transactional;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
@@ -24,11 +24,11 @@ import java.time.LocalTime;
 import java.util.List;
 import java.util.stream.Stream;
 
-import static com.yfmf.footlog.match.enums.ClubLevel.LEVEL_MEDIUM;
-import static com.yfmf.footlog.match.enums.MatchGender.GENDER_MALE;
-import static com.yfmf.footlog.match.enums.MatchPlayerQuantity.PLAYER_QUANTITY_ELEVEN;
-import static com.yfmf.footlog.match.enums.MatchStatus.MATCH_STATUS_IN_PROGRESS;
-import static com.yfmf.footlog.match.enums.QuarterQuantity.QUARTER_QUANTITY_FOUR;
+import static com.yfmf.footlog.domain.match.enums.ClubLevel.LEVEL_MEDIUM;
+import static com.yfmf.footlog.domain.match.enums.MatchGender.GENDER_MALE;
+import static com.yfmf.footlog.domain.match.enums.MatchPlayerQuantity.PLAYER_QUANTITY_ELEVEN;
+import static com.yfmf.footlog.domain.match.enums.MatchStatus.MATCH_STATUS_IN_PROGRESS;
+import static com.yfmf.footlog.domain.match.enums.QuarterQuantity.QUARTER_QUANTITY_FOUR;
 
 
 @Transactional

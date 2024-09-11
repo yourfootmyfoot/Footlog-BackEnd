@@ -1,4 +1,4 @@
-package com.yfmf.footlog.match.entity;
+package com.yfmf.footlog.domain.match.entity;
 
 
 import lombok.*;
