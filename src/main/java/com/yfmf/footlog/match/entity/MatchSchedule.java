@@ -1,4 +1,4 @@
-package com.yfmf.footlog.match.command.domain.model;
+package com.yfmf.footlog.match.entity;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Embeddable;
