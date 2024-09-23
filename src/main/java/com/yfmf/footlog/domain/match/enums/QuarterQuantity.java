@@ -1,14 +1,14 @@
 package com.yfmf.footlog.domain.match.enums;
 
 public enum QuarterQuantity {
-    QUARTER_QUANTITY_ONE(1),
-    QUARTER_QUANTITY_TWO(2),
-    QUARTER_QUANTITY_THREE(3),
-    QUARTER_QUANTITY_FOUR(4),
-    QUARTER_QUANTITY_FIVE(5),
-    QUARTER_QUANTITY_SIX(6),
-    QUARTER_QUANTITY_SEVEN(7),
-    QUARTER_QUANTITY_EIGHT(8);
+    ONE(1),
+    TWO(2),
+    THREE(3),
+    FOUR(4),
+    FIVE(5),
+    SIX(6),
+    SEVEN(7),
+    EIGHT(8);
 
     private int quarterValue;
 

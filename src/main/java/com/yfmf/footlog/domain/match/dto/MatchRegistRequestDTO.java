@@ -17,7 +17,6 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 public class MatchRegistRequestDTO {
 
-    private LocalDateTime matchEnrollTime;
     private Long matchEnrollUserId;
     private Long matchApplyUserId;
     private Club myClub;
@@ -37,7 +36,6 @@ public class MatchRegistRequestDTO {
     // Id 없이 추가
     public MatchRegistRequestDTO(Match match) {
         this(
-                match.getMatchEnrollTime(),
                 match.getMatchEnrollUserId(),
                 match.getMatchApplyUserId(),
                 match.getMyClub(),

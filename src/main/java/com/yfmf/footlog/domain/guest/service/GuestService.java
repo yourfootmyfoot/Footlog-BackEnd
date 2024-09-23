@@ -1,9 +1,9 @@
-package com.yfmf.footlog.guest.service;
+package com.yfmf.footlog.domain.guest.service;
 
-import com.yfmf.footlog.guest.dto.CreateGuestDto;
-import com.yfmf.footlog.guest.dto.UpdateGuestDto;
-import com.yfmf.footlog.guest.entity.Guest;
-import com.yfmf.footlog.guest.repository.GuestRepository;
+import com.yfmf.footlog.domain.guest.dto.CreateGuestDto;
+import com.yfmf.footlog.domain.guest.dto.UpdateGuestDto;
+import com.yfmf.footlog.domain.guest.entity.Guest;
+import com.yfmf.footlog.domain.guest.repository.GuestRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 

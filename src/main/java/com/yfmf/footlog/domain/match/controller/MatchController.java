@@ -1,7 +1,7 @@
 package com.yfmf.footlog.domain.match.controller;
 
 import com.yfmf.footlog.domain.match.dto.LoadMatchResponseDTO;
-import com.yfmf.footlog.domain.match.entity.MatchService;
+import com.yfmf.footlog.domain.match.service.MatchService;
 import org.springframework.web.bind.annotation.*;
 
 @RestController

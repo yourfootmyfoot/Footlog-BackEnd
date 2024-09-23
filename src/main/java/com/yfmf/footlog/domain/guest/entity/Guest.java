@@ -1,4 +1,4 @@
-package com.yfmf.footlog.guest.entity;
+package com.yfmf.footlog.domain.guest.entity;
 
 import jakarta.persistence.*;
 import lombok.*;

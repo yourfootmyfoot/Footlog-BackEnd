@@ -18,7 +18,6 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 public class LoadMatchResponseDTO {
 
-    private LocalDateTime matchEnrollTime;
     private Long matchEnrollUserId;
     private Long matchApplyUserId;
     private Club myClub;
@@ -37,7 +36,6 @@ public class LoadMatchResponseDTO {
 
     public LoadMatchResponseDTO(Match match) {
         this(
-                match.getMatchEnrollTime(),
                 match.getMatchEnrollUserId(),
                 match.getMatchApplyUserId(),
                 match.getMyClub(),
