@@ -104,6 +104,10 @@ public class ClubService {
         club.setErollDate(clubInfo.getErollDate());
         club.setTimes(clubInfo.getTimes());
         club.setDays(clubInfo.getDays());
+        club.setSkillLevel(clubInfo.getSkillLevel());
+        club.setStadiumName(clubInfo.getStadiumName());
+        club.setCity(clubInfo.getCity());
+        club.setRegion(clubInfo.getRegion());
         clubRepository.save(club);
     }
 
