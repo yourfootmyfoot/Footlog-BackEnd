@@ -3,6 +3,7 @@ package com.yfmf.footlog.domain.club.dto;
 import com.yfmf.footlog.domain.club.enums.PeakDays;
 import com.yfmf.footlog.domain.club.enums.PeakHours;
 import io.swagger.v3.oas.annotations.media.Schema;
+import jakarta.persistence.Column;
 import jakarta.validation.constraints.NotNull;
 import lombok.Getter;
 import lombok.Setter;
@@ -34,12 +35,25 @@ public class ClubRegistResponseDTO {
     @Schema(description = "자주 운동하는 시간대", example = "[\"아침\", \"저녁\"]")
     private List<PeakHours> times;
 
+    @Schema(description = "구단 실력", example = "아마추어")
+    private String skillLevel;
+
+    @Schema(description = "주사용 운동장", example = "울산문수월드컵경기장")
+    private String stadiumName;  // 운동하는 경기장 이름
+
+    @Schema(description = "활동 도시", example = "서울")
+    private String city;  // 도시명
+
+    @Schema(description = "활동 지역", example = "강남구")
+    private String region;  // 지역명
+
     // 기본 생성자
     public ClubRegistResponseDTO() {}
 
     // 모든 필드를 받는 생성자
     public ClubRegistResponseDTO(Long userId, String clubName, String clubIntroduction, String clubCode,
-                                 LocalDateTime erollDate, List<PeakDays> days, List<PeakHours> times) {
+                                 LocalDateTime erollDate, List<PeakDays> days, List<PeakHours> times, String skillLevel,
+                                 String stadiumName, String city, String region) {
         this.userId = userId;
         this.clubName = clubName;
         this.clubIntroduction = clubIntroduction;
@@ -47,5 +61,9 @@ public class ClubRegistResponseDTO {
         this.erollDate = erollDate;
         this.days = days;
         this.times = times;
+        this.skillLevel = skillLevel;
+        this.stadiumName = stadiumName;
+        this.city = city;
+        this.region = region;
     }
 }

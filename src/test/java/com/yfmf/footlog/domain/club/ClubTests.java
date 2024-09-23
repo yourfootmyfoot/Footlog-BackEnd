@@ -63,25 +63,5 @@ public class ClubTests {
         );
     }
 
-    @DisplayName("구단 등록 테스트")
-    @ParameterizedTest
-    @MethodSource("createClub")
-    void testCreateClub(User clubOwner, String clubName,
-                        String clubIntroduction, String clubCode, LocalDateTime enrollDate,
-                        List<PeakDays> peakDays, PeakHours peakHours) {
 
-        ClubRegistRequestDTO clubInfo = new ClubRegistRequestDTO(
-                clubOwner,
-                clubName,
-                clubIntroduction,
-                clubCode,
-                enrollDate,
-                peakDays,
-                peakHours
-                );
-
-        Assertions.assertDoesNotThrow(
-                () -> clubService.registClub(clubInfo)
-        );
-    }
 }

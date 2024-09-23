@@ -39,7 +39,11 @@ public class ClubService {
                 clubInfo.getClubCode(),
                 clubInfo.getErollDate(),
                 clubInfo.getDays(),   // days 저장 (Enum)
-                clubInfo.getTimes()   // times 저장 (Enum)
+                clubInfo.getTimes(),   // times 저장 (Enum)
+                clubInfo.getSkillLevel(),  // 실력 등급 저장
+                clubInfo.getStadiumName(),
+                clubInfo.getCity(),
+                clubInfo.getRegion()
         );
         clubRepository.save(newClub);
 
@@ -51,7 +55,11 @@ public class ClubService {
                 newClub.getClubCode(),
                 newClub.getErollDate(),
                 newClub.getDays(),  // days 반환
-                newClub.getTimes()  // times 반환
+                newClub.getTimes(),  // times 반환
+                newClub.getSkillLevel(),
+                newClub.getStadiumName(),
+                newClub.getCity(),
+                newClub.getRegion()
         );
     }
 

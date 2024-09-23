@@ -11,8 +11,8 @@ import java.util.List;
 
 @Entity
 @Table(name = "tbl_club")
-@Setter
 @Getter
+@Setter
 public class Club {
 
 
@@ -48,10 +48,24 @@ public class Club {
     @Enumerated(EnumType.STRING)
     private List<PeakHours> times;  // 자주 운동하는 시간대 (Enum)
 
+    @Column(nullable = false)
+    private String skillLevel;  // 실력 등급 (예: 입문자, 아마추어 등)
+
+    // Location 정보 추가
+    @Column(name = "STADIUM_NAME")
+    private String stadiumName;  // 운동하는 경기장 이름
+
+    @Column(name = "CITY")
+    private String city;  // 도시명
+
+    @Column(name = "REGION")
+    private String region;  // 지역명
+
     public Club() {
     }
 
-    public Club(Long userId, String clubName, String clubIntroduction, String clubCode, LocalDateTime erollDate, List<PeakDays> days, List<PeakHours> times) {
+    public Club(Long userId, String clubName, String clubIntroduction, String clubCode, LocalDateTime erollDate,
+                List<PeakDays> days, List<PeakHours> times, String skillLevel, String stadiumName, String city, String region) {
         this.userId = userId;
         this.clubName = clubName;
         this.clubIntroduction = clubIntroduction;
@@ -59,6 +73,10 @@ public class Club {
         this.erollDate = erollDate;
         this.days = days;
         this.times = times;
+        this.skillLevel = skillLevel;
+        this.stadiumName = stadiumName;
+        this.city = city;
+        this.region = region;
     }
 
     @Override
@@ -72,6 +90,10 @@ public class Club {
                 ", erollDate=" + erollDate +
                 ", peakHours=" + times +
                 ", peakDays=" + days +
+                ", skillLevel=" + skillLevel +
+                ", stadiumName=" + stadiumName +
+                ", city=" + city +
+                ", region=" + region +
                 '}';
     }
 }

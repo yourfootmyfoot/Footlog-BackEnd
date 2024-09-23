@@ -5,6 +5,7 @@ package com.yfmf.footlog.domain.club.dto;
 import com.yfmf.footlog.domain.club.enums.PeakDays;
 import com.yfmf.footlog.domain.club.enums.PeakHours;
 import io.swagger.v3.oas.annotations.media.Schema;
+import jakarta.persistence.Column;
 import jakarta.validation.constraints.NotNull;
 import lombok.Getter;
 import lombok.Setter;
@@ -44,10 +45,28 @@ public class ClubRegistRequestDTO {
     @NotNull(message = "자주 운동하는 시간대를 입력해주세요.")
     private List<PeakHours> times;  // Enum 사용
 
+    @Schema(description = "실력 등급", example = "입문자")
+    @NotNull(message = "실력 등급을 입력해주세요.")
+    private String skillLevel;
+
+    @Column(name = "STADIUM_NAME")
+    @NotNull(message = "주로 사용하는 운동장을 입력해주세요.")
+    private String stadiumName;  // 운동하는 경기장 이름
+
+    @Column(name = "CITY")
+    @NotNull(message = "활동하는 도시를 입력해주세요.")
+    private String city;  // 도시명
+
+    @Column(name = "REGION")
+    @NotNull(message = "활동하는 지역을 입력해주세요.")
+    private String region;  // 지역명
+
     public ClubRegistRequestDTO() {
     }
 
-    public ClubRegistRequestDTO(Long userId, String clubName, String clubIntroduction, String clubCode, LocalDateTime erollDate, List<PeakDays> days, List<PeakHours> times) {
+    public ClubRegistRequestDTO(Long userId, String clubName, String clubIntroduction, String clubCode,
+                                LocalDateTime erollDate, List<PeakDays> days, List<PeakHours> times, String skillLevel,
+                                String stadiumName, String city, String region) {
         this.userId = userId;
         this.clubName = clubName;
         this.clubIntroduction = clubIntroduction;
@@ -55,6 +74,10 @@ public class ClubRegistRequestDTO {
         this.erollDate = erollDate;
         this.days = days;
         this.times = times;
+        this.skillLevel = skillLevel;
+        this.clubCode = stadiumName;
+        this.city = city;
+        this.region = region;
     }
 
     @Override
@@ -67,6 +90,10 @@ public class ClubRegistRequestDTO {
                 ", erollDate=" + erollDate +
                 ", peakHours=" + times +
                 ", peakDays=" + days +
+                ", skillLevel='" + skillLevel + '\'' +
+                ", stadiumName='" + stadiumName + '\'' +
+                ", city='" + city + '\'' +
+                ", region='" + region + '\'' +
                 '}';
     }
 }
