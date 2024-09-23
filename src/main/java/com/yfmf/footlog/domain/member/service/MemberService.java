@@ -133,7 +133,7 @@ public class MemberService {
     public MemberResponseDTO.authTokenDTO reissueToken(HttpServletRequest httpServletRequest) {
 
         // Request Header 에서 JWT Token 추출
-        String token = jwtTokenProvider.resolveToken(httpServletRequest);
+        String token = jwtTokenProvider.resolveToken(httpServletRequest, "accessToken");
 
         // 토큰 유효성 검사
         if(token == null || !jwtTokenProvider.validateToken(token)) {
@@ -180,10 +180,15 @@ public class MemberService {
         
         log.info("로그아웃 - Refresh Token 확인");
 
-        String token = jwtTokenProvider.resolveToken(httpServletRequest);
+        String token = jwtTokenProvider.resolveToken(httpServletRequest, "refreshToken");
 
         if(token == null || !jwtTokenProvider.validateToken(token)) {
             throw new ApplicationException(ErrorCode.FAILED_VALIDATE__REFRESH_TOKEN);
+        }
+
+        // Refresh Token 확인
+        if (!jwtTokenProvider.isRefreshToken(token)) {
+            throw new ApplicationException(ErrorCode.IS_NOT_REFRESH_TOKEN);
         }
 
         // RefreshToken 조회 및 null 체크
@@ -193,6 +198,7 @@ public class MemberService {
                     return new ApplicationException(ErrorCode.FAILED_GET_RERFRESH_TOKEN);
                 });
 
+        // RefreshToken 삭제
         refreshTokenRepository.delete(refreshToken);
         log.info("로그아웃 성공");
     }

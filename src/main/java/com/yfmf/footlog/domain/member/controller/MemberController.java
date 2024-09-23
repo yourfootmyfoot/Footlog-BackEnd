@@ -7,7 +7,9 @@ import com.yfmf.footlog.domain.member.dto.MemberResponseDTO;
 import com.yfmf.footlog.domain.member.service.MemberService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -70,11 +72,27 @@ public class MemberController {
      */
     @Operation(summary = "로그아웃", description = "Refresh Token을 사용하여 로그아웃을 처리합니다.")
     @PostMapping("/logout")
-    public ResponseEntity<?> logout(HttpServletRequest httpServletRequest) {
-
+    public ResponseEntity<?> logout(HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse) {
         log.info("로그아웃 시도");
 
+        // 로그아웃 처리 (Refresh Token 확인 및 제거)
         memberService.logout(httpServletRequest);
+
+        // Access Token 쿠키 삭제
+        Cookie accessTokenCookie = new Cookie("accessToken", null);
+        accessTokenCookie.setHttpOnly(true);
+        accessTokenCookie.setMaxAge(0);  // 쿠키 만료
+        accessTokenCookie.setPath("/");
+
+        // Refresh Token 쿠키 삭제
+        Cookie refreshTokenCookie = new Cookie("refreshToken", null);
+        refreshTokenCookie.setHttpOnly(true);
+        refreshTokenCookie.setMaxAge(0);  // 쿠키 만료
+        refreshTokenCookie.setPath("/");
+
+        // 쿠키 응답에 추가
+        httpServletResponse.addCookie(accessTokenCookie);
+        httpServletResponse.addCookie(refreshTokenCookie);
 
         return ResponseEntity.ok().body(ApiUtils.success(null));
     }
