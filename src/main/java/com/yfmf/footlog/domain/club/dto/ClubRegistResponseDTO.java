@@ -42,18 +42,24 @@ public class ClubRegistResponseDTO {
     private String stadiumName;  // 운동하는 경기장 이름
 
     @Schema(description = "활동 도시", example = "서울")
-    private String city;  // 도시명
+    private String city;
 
     @Schema(description = "활동 지역", example = "강남구")
-    private String region;  // 지역명
+    private String region;
 
+    @Schema(description = "연령대", example = "20대")
+    private String ageGroup;
+
+    @Schema(description = "성별", example = "남성")
+    private String gender;
     // 기본 생성자
     public ClubRegistResponseDTO() {}
 
     // 모든 필드를 받는 생성자
     public ClubRegistResponseDTO(Long userId, String clubName, String clubIntroduction, String clubCode,
-                                 LocalDateTime erollDate, List<PeakDays> days, List<PeakHours> times, String skillLevel,
-                                 String stadiumName, String city, String region) {
+                                 LocalDateTime erollDate, List<PeakDays> days, List<PeakHours> times,
+                                 String skillLevel, String stadiumName, String city, String region,
+                                 String ageGroup, String gender) {
         this.userId = userId;
         this.clubName = clubName;
         this.clubIntroduction = clubIntroduction;
@@ -65,5 +71,26 @@ public class ClubRegistResponseDTO {
         this.stadiumName = stadiumName;
         this.city = city;
         this.region = region;
+        this.ageGroup = ageGroup;
+        this.gender = gender;
+    }
+
+    @Override
+    public String toString() {
+        return "ClubRegistResponseDTO{" +
+                "userId=" + userId +
+                ", clubName='" + clubName + '\'' +
+                ", clubIntroduction='" + clubIntroduction + '\'' +
+                ", clubCode='" + clubCode + '\'' +
+                ", erollDate=" + erollDate +
+                ", days=" + days +
+                ", times=" + times +
+                ", skillLevel='" + skillLevel + '\'' +
+                ", stadiumName='" + stadiumName + '\'' +
+                ", city='" + city + '\'' +
+                ", region='" + region + '\'' +
+                ", ageGroup='" + ageGroup + '\'' +
+                ", gender='" + gender + '\'' +
+                '}';
     }
 }

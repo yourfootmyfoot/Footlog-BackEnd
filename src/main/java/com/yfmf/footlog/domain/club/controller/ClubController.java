@@ -68,7 +68,7 @@ public class ClubController {
 
         // 로그인된 사용자의 ID를 설정
 //        clubInfo.setUserId(logined.getUserId());
-
+        System.out.println(clubInfo);
         try {
             ClubRegistResponseDTO responseDto = clubService.registClub(clubInfo);
             return ResponseEntity.ok(responseDto);

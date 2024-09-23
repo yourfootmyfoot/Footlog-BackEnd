@@ -49,24 +49,32 @@ public class ClubRegistRequestDTO {
     @NotNull(message = "실력 등급을 입력해주세요.")
     private String skillLevel;
 
-    @Column(name = "STADIUM_NAME")
-    @NotNull(message = "주로 사용하는 운동장을 입력해주세요.")
-    private String stadiumName;  // 운동하는 경기장 이름
+    @Schema(description = "주 활동 구장", example = "서울월드컵경기장")
+    @NotNull(message = "주로 사용하는 경기장을 입력해주세요.")
+    private String stadiumName;
 
-    @Column(name = "CITY")
+    @Schema(description = "활동 도시", example = "서울")
     @NotNull(message = "활동하는 도시를 입력해주세요.")
-    private String city;  // 도시명
+    private String city;
 
-    @Column(name = "REGION")
+    @Schema(description = "활동 지역", example = "마포구")
     @NotNull(message = "활동하는 지역을 입력해주세요.")
-    private String region;  // 지역명
+    private String region;
+
+    @Schema(description = "연령대", example = "20대")
+    @NotNull(message = "연령대를 입력해주세요.")
+    private String ageGroup;
+
+    @Schema(description = "성별", example = "남성")
+    @NotNull(message = "성별을 입력해주세요.")
+    private String gender;
 
     public ClubRegistRequestDTO() {
     }
 
     public ClubRegistRequestDTO(Long userId, String clubName, String clubIntroduction, String clubCode,
                                 LocalDateTime erollDate, List<PeakDays> days, List<PeakHours> times, String skillLevel,
-                                String stadiumName, String city, String region) {
+                                String stadiumName, String city, String region, String ageGroup, String gender) {
         this.userId = userId;
         this.clubName = clubName;
         this.clubIntroduction = clubIntroduction;
@@ -75,9 +83,11 @@ public class ClubRegistRequestDTO {
         this.days = days;
         this.times = times;
         this.skillLevel = skillLevel;
-        this.clubCode = stadiumName;
+        this.stadiumName = stadiumName;
         this.city = city;
         this.region = region;
+        this.ageGroup = ageGroup;
+        this.gender = gender;
     }
 
     @Override
@@ -94,6 +104,8 @@ public class ClubRegistRequestDTO {
                 ", stadiumName='" + stadiumName + '\'' +
                 ", city='" + city + '\'' +
                 ", region='" + region + '\'' +
+                ", ageGroup='" + ageGroup + '\'' +
+                ", gender='" + gender + '\'' +
                 '}';
     }
 }

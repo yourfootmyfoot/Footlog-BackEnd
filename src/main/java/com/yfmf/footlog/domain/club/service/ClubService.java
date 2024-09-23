@@ -38,13 +38,16 @@ public class ClubService {
                 clubInfo.getClubIntroduction(),
                 clubInfo.getClubCode(),
                 clubInfo.getErollDate(),
-                clubInfo.getDays(),   // days 저장 (Enum)
-                clubInfo.getTimes(),   // times 저장 (Enum)
-                clubInfo.getSkillLevel(),  // 실력 등급 저장
+                clubInfo.getDays(),
+                clubInfo.getTimes(),
+                clubInfo.getSkillLevel(),
                 clubInfo.getStadiumName(),
                 clubInfo.getCity(),
-                clubInfo.getRegion()
+                clubInfo.getRegion(),
+                clubInfo.getAgeGroup(),  // 연령대 추가
+                clubInfo.getGender()     // 성별 추가
         );
+        System.out.println(newClub);
         clubRepository.save(newClub);
 
         // 클럽 등록 결과 반환
@@ -54,12 +57,14 @@ public class ClubService {
                 newClub.getClubIntroduction(),
                 newClub.getClubCode(),
                 newClub.getErollDate(),
-                newClub.getDays(),  // days 반환
-                newClub.getTimes(),  // times 반환
+                newClub.getDays(),
+                newClub.getTimes(),
                 newClub.getSkillLevel(),
                 newClub.getStadiumName(),
                 newClub.getCity(),
-                newClub.getRegion()
+                newClub.getRegion(),
+                newClub.getAgeGroup(),  // 연령대 반환
+                newClub.getGender()     // 성별 반환
         );
     }
 
@@ -101,7 +106,6 @@ public class ClubService {
         club.setClubName(clubInfo.getClubName());
         club.setClubIntroduction(clubInfo.getClubIntroduction());
         club.setClubCode(clubInfo.getClubCode());
-        club.setErollDate(clubInfo.getErollDate());
         club.setTimes(clubInfo.getTimes());
         club.setDays(clubInfo.getDays());
         club.setSkillLevel(clubInfo.getSkillLevel());

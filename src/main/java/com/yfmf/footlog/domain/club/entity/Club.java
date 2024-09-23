@@ -51,6 +51,12 @@ public class Club {
     @Column(nullable = false)
     private String skillLevel;  // 실력 등급 (예: 입문자, 아마추어 등)
 
+    @Column(name = "AGE_GROUP") // 나이대 필드
+    private String ageGroup;
+
+    @Column(name = "GENDER") // 성별 필드
+    private String gender;
+
     // Location 정보 추가
     @Column(name = "STADIUM_NAME")
     private String stadiumName;  // 운동하는 경기장 이름
@@ -65,7 +71,8 @@ public class Club {
     }
 
     public Club(Long userId, String clubName, String clubIntroduction, String clubCode, LocalDateTime erollDate,
-                List<PeakDays> days, List<PeakHours> times, String skillLevel, String stadiumName, String city, String region) {
+                List<PeakDays> days, List<PeakHours> times, String skillLevel, String stadiumName,
+                String city, String region, String ageGroup, String gender) {
         this.userId = userId;
         this.clubName = clubName;
         this.clubIntroduction = clubIntroduction;
@@ -77,6 +84,8 @@ public class Club {
         this.stadiumName = stadiumName;
         this.city = city;
         this.region = region;
+        this.ageGroup = ageGroup;
+        this.gender = gender;
     }
 
     @Override
@@ -94,6 +103,8 @@ public class Club {
                 ", stadiumName=" + stadiumName +
                 ", city=" + city +
                 ", region=" + region +
+                ", ageGroup=" + ageGroup +
+                ", gender=" + gender +
                 '}';
     }
 }
