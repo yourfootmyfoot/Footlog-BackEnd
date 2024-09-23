@@ -10,7 +10,10 @@ public enum ErrorCode {
     /*Club 도메인 예외*/
     INVALID_CLUB(HttpStatus.NOT_FOUND, "Invalid club", "해당하는 구단이 없습니다.", "CLUB-001"),
     DUPLICATED_CLUB(HttpStatus.CONFLICT, "Duplicated club", "해당 구단이 이미 존재합니다.", "CLUB-002"),
-    ILLEGAL_CLUB_ARGUMENT(HttpStatus.BAD_REQUEST, "Illegal argument", "구단에 알맞은 인자값이 아닙니다.", "CLUB-003");
+    ILLEGAL_CLUB_ARGUMENT(HttpStatus.BAD_REQUEST, "Illegal argument", "구단에 알맞은 인자값이 아닙니다.", "CLUB-003"),
+
+    /*Auth 도메인 예외 */
+    LOGIN_REQUIRED(HttpStatus.UNAUTHORIZED, "login required", "로그인 후 이용이 가능합니다.", "AUTH-001");
 
     private final String description;
     private final HttpStatus status;

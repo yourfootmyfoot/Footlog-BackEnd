@@ -1,5 +1,6 @@
 package com.yfmf.footlog.domain.club.service;
 
+import com.yfmf.footlog.domain.club.dto.ClubRegistResponseDTO;
 import com.yfmf.footlog.domain.club.exception.ClubDuplicatedException;
 import com.yfmf.footlog.domain.club.exception.ClubNotFoundException;
 import com.yfmf.footlog.domain.club.repository.ClubRepository;
@@ -24,7 +25,7 @@ public class ClubService {
 
     // 클럽 등록
     @Transactional
-    public void registClub(ClubRegistRequestDTO clubInfo) {
+    public ClubRegistResponseDTO registClub(ClubRegistRequestDTO clubInfo) {
         // 중복된 클럽 코드 확인
         if (clubRepository.existsByClubCode(clubInfo.getClubCode())) {
             throw new ClubDuplicatedException("이미 존재하는 클럽 코드입니다.", "[ClubService] registClub");
@@ -37,24 +38,58 @@ public class ClubService {
                 clubInfo.getClubIntroduction(),
                 clubInfo.getClubCode(),
                 clubInfo.getErollDate(),
-                clubInfo.getPeakHours(),
-                clubInfo.getPeakDays()
+                clubInfo.getDays(),
+                clubInfo.getTimes(),
+                clubInfo.getSkillLevel(),
+                clubInfo.getStadiumName(),
+                clubInfo.getCity(),
+                clubInfo.getRegion(),
+                clubInfo.getAgeGroup(),  // 연령대 추가
+                clubInfo.getGender()     // 성별 추가
         );
+        System.out.println(newClub);
         clubRepository.save(newClub);
+
+        // 클럽 등록 결과 반환
+        return new ClubRegistResponseDTO(
+                newClub.getUserId(),
+                newClub.getClubName(),
+                newClub.getClubIntroduction(),
+                newClub.getClubCode(),
+                newClub.getErollDate(),
+                newClub.getDays(),
+                newClub.getTimes(),
+                newClub.getSkillLevel(),
+                newClub.getStadiumName(),
+                newClub.getCity(),
+                newClub.getRegion(),
+                newClub.getAgeGroup(),  // 연령대 반환
+                newClub.getGender()     // 성별 반환
+        );
     }
+
 
     // 모든 클럽 조회
     public List<Club> getAllClubs() {
         return clubRepository.findAll();
     }
 
-    // 특정 클럽 조회
+    // 구단주 아이디로 특정 클럽 조회
     public List<Club> getClubsByUserId(Long userId) {
         List<Club> clubs = clubRepository.findByUserId(userId);
         if (clubs.isEmpty()) {
             throw new ClubNotFoundException("해당 구단주로 등록된 클럽이 존재하지 않습니다.", "[ClubService] getClubsByUserId");
         }
         return clubs;
+    }
+
+    // 클럽 아이디로 특정 클럽 조회
+    public Club getClubByClubId(Long clubId) {
+        Club club = clubRepository.findByClubId(clubId);
+        if (club == null) {
+            throw new ClubNotFoundException("해당 구단주로 등록된 클럽이 존재하지 않습니다.", "[ClubService] getClubsByClubId");
+        }
+        return club;
     }
 
 
@@ -71,9 +106,12 @@ public class ClubService {
         club.setClubName(clubInfo.getClubName());
         club.setClubIntroduction(clubInfo.getClubIntroduction());
         club.setClubCode(clubInfo.getClubCode());
-        club.setErollDate(clubInfo.getErollDate());
-        club.setPeakHours(clubInfo.getPeakHours());
-        club.setPeakDays(clubInfo.getPeakDays());
+        club.setTimes(clubInfo.getTimes());
+        club.setDays(clubInfo.getDays());
+        club.setSkillLevel(clubInfo.getSkillLevel());
+        club.setStadiumName(clubInfo.getStadiumName());
+        club.setCity(clubInfo.getCity());
+        club.setRegion(clubInfo.getRegion());
         clubRepository.save(club);
     }
 
