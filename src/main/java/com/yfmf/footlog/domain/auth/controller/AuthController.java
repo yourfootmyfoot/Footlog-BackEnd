@@ -28,7 +28,7 @@ public class AuthController {
     // 로그인 상태 확인 API
     @GetMapping("/status")
     public ResponseEntity<Map<String, Object>> checkLoginStatus(HttpServletRequest request) {
-        String token = jwtTokenProvider.resolveToken(request);  // 헤더 또는 쿠키에서 토큰을 추출
+        String token = jwtTokenProvider.resolveToken(request, "accessToken");  // 헤더 또는 쿠키에서 토큰을 추출
 
         Map<String, Object> response = new HashMap<>();
 

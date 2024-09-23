@@ -23,7 +23,7 @@ public class JWTTokenFilter extends GenericFilterBean {
     public void doFilter(ServletRequest servletRequest, ServletResponse servletResponse, FilterChain filterChain) throws IOException, ServletException {
 
         // Request Header 에서 JWT Token 추출
-        String token = jwtTokenProvider.resolveToken((HttpServletRequest) servletRequest);
+        String token = jwtTokenProvider.resolveToken((HttpServletRequest) servletRequest, "accessToken");
         String requestURI = ((HttpServletRequest) servletRequest).getRequestURI();
 
         // 토큰 유효성 검사

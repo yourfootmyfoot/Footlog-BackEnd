@@ -14,8 +14,6 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
-import org.springframework.security.core.userdetails.User;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 
@@ -161,23 +159,18 @@ public class JWTTokenProvider {
         return type.equals(TYPE_REFRESH);
     }
 
-    public String resolveToken(HttpServletRequest request) {
-        String bearerToken = request.getHeader(AUTHORIZATION_HEADER);
-
-        if(StringUtils.hasText(bearerToken) && bearerToken.startsWith(BEARER_TYPE)) {
-            return bearerToken.substring(7);
-        }
-
-        // 쿠키에서 토큰 추출
+    public String resolveToken(HttpServletRequest request, String tokenType) {
         Cookie[] cookies = request.getCookies();
         if (cookies != null) {
             for (Cookie cookie : cookies) {
-                if (cookie.getName().equals("accessToken")) {
+                if (tokenType.equals("accessToken") && cookie.getName().equals("accessToken")) {
+                    return cookie.getValue();
+                } else if (tokenType.equals("refreshToken") && cookie.getName().equals("refreshToken")) {
                     return cookie.getValue();
                 }
             }
         }
-
         return null;
     }
+
 }
