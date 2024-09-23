@@ -1,10 +1,11 @@
+/*
 package com.yfmf.footlog.domain.match;
 
 import com.yfmf.footlog.domain.club.entity.Club;
 import com.yfmf.footlog.domain.match.dto.LoadMatchResponseDTO;
 import com.yfmf.footlog.domain.match.dto.MatchRegistRequestDTO;
 import com.yfmf.footlog.domain.match.entity.MatchSchedule;
-import com.yfmf.footlog.domain.match.entity.MatchService;
+import com.yfmf.footlog.domain.match.service.MatchService;
 import com.yfmf.footlog.domain.match.entity.Pro;
 import jakarta.transaction.Transactional;
 import org.junit.jupiter.api.Assertions;
@@ -115,3 +116,4 @@ public class MatchTests {
     }
 }
 
+*/

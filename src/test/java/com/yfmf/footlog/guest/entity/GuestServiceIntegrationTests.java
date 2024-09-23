@@ -1,7 +1,7 @@
 package com.yfmf.footlog.guest.entity;
 
-import com.yfmf.footlog.enums.MainFoot;
-import com.yfmf.footlog.enums.Position;
+import com.yfmf.footlog.domain.user.enums.MainFoot;
+import com.yfmf.footlog.domain.user.enums.Position;
 import com.yfmf.footlog.guest.repository.GuestRepository;
 import com.yfmf.footlog.guest.service.GuestService;
 import org.junit.jupiter.api.BeforeEach;

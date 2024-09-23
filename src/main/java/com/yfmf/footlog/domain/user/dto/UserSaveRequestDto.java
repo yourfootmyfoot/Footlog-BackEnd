@@ -1,12 +1,15 @@
-package com.yfmf.footlog.users.dto;
+package com.yfmf.footlog.domain.user.dto;
 
-import com.yfmf.footlog.enums.Area;
-import com.yfmf.footlog.enums.MainFoot;
-import com.yfmf.footlog.enums.Position;
-import com.yfmf.footlog.users.UserRole;
-import com.yfmf.footlog.users.entity.Record;
-import com.yfmf.footlog.users.entity.Stat;
-import com.yfmf.footlog.users.entity.User;
+import com.yfmf.footlog.domain.user.entity.Record;
+import com.yfmf.footlog.domain.user.entity.Stat;
+import com.yfmf.footlog.domain.user.enums.Position;
+import com.yfmf.footlog.domain.user.enums.UserRole;
+import com.yfmf.footlog.domain.user.enums.Area;
+import com.yfmf.footlog.domain.user.enums.MainFoot;
+import com.yfmf.footlog.domain.user.entity.User;
+import com.yfmf.footlog.domain.member.enums.Gender;
+import com.yfmf.footlog.domain.member.enums.SocialType;
+import com.yfmf.footlog.domain.member.enums.Authority;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -17,8 +20,9 @@ import java.time.LocalDate;
 @NoArgsConstructor
 public class UserSaveRequestDto {
 
-    private Long kakaoId;
-    private String userName;
+    private String email;  // email 필드로 변경
+    private String name;
+    private String password;
     private LocalDate birth;
     private MainFoot mainFoot;
     private Area area;
@@ -32,11 +36,15 @@ public class UserSaveRequestDto {
     private UserRole role;
     private Stat stat;
     private Record record;
+    private Gender gender;
+    private SocialType socialType;
+    private Authority authority;
 
     @Builder
-    public UserSaveRequestDto(Long kakaoId, String userName, LocalDate birth, MainFoot mainFoot, Area area, Position position, String introduction, Boolean isPro, Double height, Double weight, String profileImageUrl, String phoneNumber, UserRole role, Stat stat, Record record) {
-        this.kakaoId = kakaoId;
-        this.userName = userName;
+    public UserSaveRequestDto(String email, String name, String password, LocalDate birth, MainFoot mainFoot, Area area, Position position, String introduction, Boolean isPro, Double height, Double weight, String profileImageUrl, String phoneNumber, UserRole role, Stat stat, Record record, Gender gender, SocialType socialType, Authority authority) {
+        this.email = email;
+        this.name = name;
+        this.password = password;
         this.birth = birth;
         this.mainFoot = mainFoot;
         this.area = area;
@@ -50,12 +58,16 @@ public class UserSaveRequestDto {
         this.role = role;
         this.stat = stat;
         this.record = record;
+        this.gender = gender;
+        this.socialType = socialType;
+        this.authority = authority;
     }
 
     public User toEntity() {
         return User.builder()
-                .kakaoId(kakaoId)
-                .userName(userName)
+                .email(email)
+                .name(name)
+                .password(password)
                 .birth(birth)
                 .mainFoot(mainFoot)
                 .area(area)
@@ -69,6 +81,9 @@ public class UserSaveRequestDto {
                 .role(role)
                 .stat(stat)
                 .record(record)
+                .gender(gender)
+                .socialType(socialType)
+                .authority(authority)
                 .build();
     }
 }

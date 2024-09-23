@@ -1,12 +1,12 @@
-package com.yfmf.footlog.users.entity;
+package com.yfmf.footlog.domain.user.entity;
 
-import com.yfmf.footlog.enums.Area;
-import com.yfmf.footlog.enums.MainFoot;
-import com.yfmf.footlog.enums.Position;
-import com.yfmf.footlog.users.UserRole;
-import com.yfmf.footlog.users.dto.UserUpdateRequestDto;
+import com.nimbusds.openid.connect.sdk.claims.Gender;
+import com.yfmf.footlog.BaseTimeEntity;
+import com.yfmf.footlog.domain.user.dto.UserUpdateRequestDto;
+import com.yfmf.footlog.domain.user.enums.*;
 import jakarta.persistence.*;
 import lombok.*;
+import org.hibernate.annotations.ColumnDefault;
 
 import java.time.LocalDate;
 
@@ -16,18 +16,21 @@ import static lombok.AccessLevel.*;
 @Getter
 @NoArgsConstructor(access = PROTECTED)
 @ToString
-@Table(name = "users")
-public class User {
+@Table(name = "tbl_user") // 테이블 이름은 필요에 따라 설정
+public class User extends BaseTimeEntity {
 
     @Id
-    @GeneratedValue
-    private Long userId;
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
 
-    @Column(nullable = false)
-    private Long kakaoId;
+    @Column(nullable = false, unique = true)
+    private String email;
 
-    @Column(nullable = false)
-    private String userName;
+    @Column(nullable = false, length = 20)
+    private String name;
+
+    @Column(nullable = false, length = 100)
+    private String password;
 
     private LocalDate birth;
 
@@ -52,6 +55,7 @@ public class User {
 
     private String phoneNumber;
 
+    @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private UserRole role;
 
@@ -61,11 +65,24 @@ public class User {
     @Embedded
     private Record record;
 
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    private Gender gender;
+
+    @Enumerated(EnumType.STRING)
+    @ColumnDefault("'NONE'")
+    private SocialType socialType;
+
+    @Enumerated(EnumType.STRING)
+    @ColumnDefault("'USER'")
+    private Authority authority;
+
     @Builder
-    public User(Long userId, Long kakaoId, String userName, LocalDate birth, MainFoot mainFoot, Area area, Position position, String introduction, Boolean isPro, Double height, Double weight, String profileImageUrl, String phoneNumber, UserRole role, Stat stat, Record record) {
-        this.userId = userId;
-        this.kakaoId = kakaoId;
-        this.userName = userName;
+    public User(Long id, String email, String name, String password, LocalDate birth, MainFoot mainFoot, Area area, Position position, String introduction, Boolean isPro, Double height, Double weight, String profileImageUrl, String phoneNumber, UserRole role, Stat stat, Record record, Gender gender, SocialType socialType, Authority authority) {
+        this.id = id;
+        this.email = email;
+        this.name = name;
+        this.password = password;
         this.birth = birth;
         this.mainFoot = mainFoot;
         this.area = area;
@@ -79,10 +96,13 @@ public class User {
         this.role = role;
         this.stat = stat;
         this.record = record;
+        this.gender = gender;
+        this.socialType = socialType;
+        this.authority = authority;
     }
 
     public void update(UserUpdateRequestDto requestDto) {
-        this.userName = requestDto.getUserName();
+        this.name = requestDto.getName();
         this.birth = requestDto.getBirth();
         this.mainFoot = requestDto.getMainFoot();
         this.area = requestDto.getArea();

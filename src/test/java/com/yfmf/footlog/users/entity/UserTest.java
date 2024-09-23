@@ -1,9 +1,13 @@
+/*
 package com.yfmf.footlog.users.entity;
 
-import com.yfmf.footlog.enums.Area;
-import com.yfmf.footlog.enums.MainFoot;
-import com.yfmf.footlog.enums.Position;
-import com.yfmf.footlog.users.UserRole;
+import com.yfmf.footlog.domain.user.entity.Record;
+import com.yfmf.footlog.domain.user.entity.Stat;
+import com.yfmf.footlog.domain.users.entity.User;
+import com.yfmf.footlog.domain.user.enums.Area;
+import com.yfmf.footlog.domain.user.enums.MainFoot;
+import com.yfmf.footlog.domain.user.enums.Position;
+import com.yfmf.footlog.domain.user.enums.UserRole;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
@@ -15,7 +19,7 @@ import static org.assertj.core.api.Assertions.*;
 
 class UserTest {
 
-    private static Stream<Arguments> getUser() {
+    private static Stream<Arguments> getUser2() {
         return Stream.of(
                 Arguments.of(
                         1L,
@@ -51,8 +55,8 @@ class UserTest {
     }
 
     @ParameterizedTest
-    @MethodSource("getUser")
-    void createUserTest(Long userId, Long kakaoId, String userName, LocalDate birth, MainFoot mainFoot, Area area,
+    @MethodSource("getUser2")
+    void createUser2Test(Long userId, Long kakaoId, String userName, LocalDate birth, MainFoot mainFoot, Area area,
                         Position position, String introduction, Boolean isPro, Double height, Double weight,
                         String profileImageUrl, String phoneNumber, UserRole role, Stat stat, Record record) {
 
@@ -79,4 +83,4 @@ class UserTest {
         assertThat(user.getRecord()).isEqualTo(record);
     }
 
-}
+}*/

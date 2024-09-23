@@ -1,4 +1,4 @@
-package com.yfmf.footlog.enums;
+package com.yfmf.footlog.domain.user.enums;
 
 public enum Area {
     서울, 경기, 인천, 대전, 세종,

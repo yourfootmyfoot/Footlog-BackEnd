@@ -1,5 +1,6 @@
 package com.yfmf.footlog.users.entity;
 
+import com.yfmf.footlog.domain.user.entity.Record;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;

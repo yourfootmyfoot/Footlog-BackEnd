@@ -1,6 +1,6 @@
 package com.yfmf.footlog.domain.auth.refreshToken.domain;
 
-import com.yfmf.footlog.domain.member.domain.Authority;
+import com.yfmf.footlog.domain.member.enums.Authority;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Builder;

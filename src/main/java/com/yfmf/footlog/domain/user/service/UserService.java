@@ -1,9 +1,9 @@
-package com.yfmf.footlog.users.service;
+package com.yfmf.footlog.domain.user.service;
 
-import com.yfmf.footlog.users.dto.UserSaveRequestDto;
-import com.yfmf.footlog.users.dto.UserUpdateRequestDto;
-import com.yfmf.footlog.users.entity.User;
-import com.yfmf.footlog.users.repository.UserRepository;
+import com.yfmf.footlog.domain.user.dto.UserSaveRequestDto;
+import com.yfmf.footlog.domain.user.dto.UserUpdateRequestDto;
+import com.yfmf.footlog.domain.user.entity.User;
+import com.yfmf.footlog.domain.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -18,8 +18,7 @@ public class UserService {
     private final UserRepository userRepository;
 
     public Long save(UserSaveRequestDto requestDto) {
-
-        return userRepository.save(requestDto.toEntity()).getUserId();
+        return userRepository.save(requestDto.toEntity()).getId();  // getUserId() -> getId()
     }
 
     public Long update(Long id, UserUpdateRequestDto requestDto) {
@@ -47,5 +46,4 @@ public class UserService {
         return userRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("해당 유저가 없습니다. id=" + id));
     }
-
 }

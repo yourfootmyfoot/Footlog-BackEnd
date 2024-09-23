@@ -1,11 +1,12 @@
-package com.yfmf.footlog.users.dto;
+package com.yfmf.footlog.domain.user.dto;
 
-import com.yfmf.footlog.enums.Area;
-import com.yfmf.footlog.enums.MainFoot;
-import com.yfmf.footlog.enums.Position;
-import com.yfmf.footlog.users.UserRole;
-import com.yfmf.footlog.users.entity.Record;
-import com.yfmf.footlog.users.entity.Stat;
+import com.yfmf.footlog.domain.user.entity.Record;
+import com.yfmf.footlog.domain.user.entity.Stat;
+import com.yfmf.footlog.domain.user.enums.MainFoot;
+import com.yfmf.footlog.domain.user.enums.Position;
+import com.yfmf.footlog.domain.user.enums.UserRole;
+import com.yfmf.footlog.domain.user.enums.Area;
+import com.yfmf.footlog.domain.member.enums.Gender;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -17,7 +18,7 @@ import java.time.LocalDate;
 @AllArgsConstructor
 public class UserUpdateRequestDto {
 
-    private String userName;
+    private String name;
     private LocalDate birth;
     private MainFoot mainFoot;
     private Area area;
@@ -31,4 +32,5 @@ public class UserUpdateRequestDto {
     private UserRole role;
     private Stat stat;
     private Record record;
+    private Gender gender;  // 추가
 }

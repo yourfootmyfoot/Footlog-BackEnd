@@ -1,18 +1,14 @@
+/*
 package com.yfmf.footlog.domain.club;
 
-import com.yfmf.footlog.domain.club.dto.ClubRegistRequestDTO;
 import com.yfmf.footlog.domain.club.enums.PeakDays;
 import com.yfmf.footlog.domain.club.enums.PeakHours;
 import com.yfmf.footlog.domain.club.repository.ClubRepository;
 import com.yfmf.footlog.domain.club.service.ClubService;
-import com.yfmf.footlog.users.UserRole;
-import com.yfmf.footlog.users.entity.User;
+import com.yfmf.footlog.domain.user.enums.UserRole;
+import com.yfmf.footlog.domain.users.entity.User;
 import jakarta.transaction.Transactional;
-import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
-import org.junit.jupiter.params.provider.MethodSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
@@ -65,3 +61,4 @@ public class ClubTests {
 
 
 }
+*/

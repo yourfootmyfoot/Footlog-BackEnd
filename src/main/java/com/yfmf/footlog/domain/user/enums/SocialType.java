@@ -1,4 +1,4 @@
-package com.yfmf.footlog.domain.member.domain;
+package com.yfmf.footlog.domain.user.enums;
 
 public enum SocialType {
     KAKAO,

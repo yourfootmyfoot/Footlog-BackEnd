@@ -1,8 +1,8 @@
 package com.yfmf.footlog.guest.entity;
 
 
-import com.yfmf.footlog.enums.MainFoot;
-import com.yfmf.footlog.enums.Position;
+import com.yfmf.footlog.domain.user.enums.MainFoot;
+import com.yfmf.footlog.domain.user.enums.Position;
 
 import com.yfmf.footlog.guest.dto.CreateGuestDto;
 import com.yfmf.footlog.guest.dto.UpdateGuestDto;
@@ -17,9 +17,7 @@ import org.mockito.MockitoAnnotations;
 import java.time.LocalDateTime;
 import java.util.Optional;
 
-import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.*;
 
 
 /*
