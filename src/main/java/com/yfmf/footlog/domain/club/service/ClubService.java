@@ -38,8 +38,8 @@ public class ClubService {
                 clubInfo.getClubIntroduction(),
                 clubInfo.getClubCode(),
                 clubInfo.getErollDate(),
-                clubInfo.getPeakHours(),
-                clubInfo.getPeakDays()
+                clubInfo.getDays(),   // days 저장 (Enum)
+                clubInfo.getTimes()   // times 저장 (Enum)
         );
         clubRepository.save(newClub);
 
@@ -50,8 +50,8 @@ public class ClubService {
                 newClub.getClubIntroduction(),
                 newClub.getClubCode(),
                 newClub.getErollDate(),
-                newClub.getPeakHours(),
-                newClub.getPeakDays()
+                newClub.getDays(),  // days 반환
+                newClub.getTimes()  // times 반환
         );
     }
 
@@ -61,13 +61,22 @@ public class ClubService {
         return clubRepository.findAll();
     }
 
-    // 특정 클럽 조회
+    // 구단주 아이디로 특정 클럽 조회
     public List<Club> getClubsByUserId(Long userId) {
         List<Club> clubs = clubRepository.findByUserId(userId);
         if (clubs.isEmpty()) {
             throw new ClubNotFoundException("해당 구단주로 등록된 클럽이 존재하지 않습니다.", "[ClubService] getClubsByUserId");
         }
         return clubs;
+    }
+
+    // 클럽 아이디로 특정 클럽 조회
+    public Club getClubByClubId(Long clubId) {
+        Club club = clubRepository.findByClubId(clubId);
+        if (club == null) {
+            throw new ClubNotFoundException("해당 구단주로 등록된 클럽이 존재하지 않습니다.", "[ClubService] getClubsByClubId");
+        }
+        return club;
     }
 
 
@@ -85,8 +94,8 @@ public class ClubService {
         club.setClubIntroduction(clubInfo.getClubIntroduction());
         club.setClubCode(clubInfo.getClubCode());
         club.setErollDate(clubInfo.getErollDate());
-        club.setPeakHours(clubInfo.getPeakHours());
-        club.setPeakDays(clubInfo.getPeakDays());
+        club.setTimes(clubInfo.getTimes());
+        club.setDays(clubInfo.getDays());
         clubRepository.save(club);
     }
 

@@ -28,24 +28,24 @@ public class ClubRegistResponseDTO {
     @Schema(description = "등록 날짜")
     private LocalDateTime erollDate;
 
-    @Schema(description = "자주 운동하는 시간대", example = "아침, 낮, 저녁, 심야 중 선택")
-    private PeakHours peakHours;
+    @Schema(description = "자주 운동하는 요일", example = "[\"월\", \"화\"]")
+    private List<PeakDays> days;
 
-    @Schema(description = "자주 운동하는 요일", example = "일")
-    private List<PeakDays> peakDays;
+    @Schema(description = "자주 운동하는 시간대", example = "[\"아침\", \"저녁\"]")
+    private List<PeakHours> times;
 
     // 기본 생성자
     public ClubRegistResponseDTO() {}
 
     // 모든 필드를 받는 생성자
     public ClubRegistResponseDTO(Long userId, String clubName, String clubIntroduction, String clubCode,
-                                 LocalDateTime erollDate, PeakHours peakHours, List<PeakDays> peakDays) {
+                                 LocalDateTime erollDate, List<PeakDays> days, List<PeakHours> times) {
         this.userId = userId;
         this.clubName = clubName;
         this.clubIntroduction = clubIntroduction;
         this.clubCode = clubCode;
         this.erollDate = erollDate;
-        this.peakHours = peakHours;
-        this.peakDays = peakDays;
+        this.days = days;
+        this.times = times;
     }
 }

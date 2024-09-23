@@ -123,6 +123,35 @@ public class ClubController {
     }
 
     /**
+     * 구단 ID로 구단 상세 조회
+     */
+    @Operation(summary = "구단 ID로 구단 조회", description = "구단 ID를 사용하여 구단의 상세 정보를 조회합니다.")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "구단이 성공적으로 조회되었습니다."),
+            @ApiResponse(responseCode = "404", description = "구단이 존재하지 않습니다.", content = @Content(
+                    mediaType = "application/json",
+                    schema = @Schema(implementation = ErrorResponse.class),
+                    examples = @ExampleObject(
+                            value = "{\"status\": 404, \"errorType\": \"Not Found\", \"message\": \"구단이 존재하지 않습니다.\"}"
+                    )
+            ))
+    })
+    @GetMapping("/{clubId}")
+    public ResponseEntity<Club> getClubById(@PathVariable Long clubId) {
+        try {
+            Club club = clubService.getClubByClubId(clubId);
+            if (club != null) {
+                return ResponseEntity.ok(club);
+            } else {
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+            }
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
+    }
+
+
+    /**
      * 구단 업데이트
      */
     @Operation(summary = "구단 업데이트", description = "구단 정보를 업데이트합니다.")

@@ -36,84 +36,25 @@ public class ClubRegistRequestDTO {
     @NotNull(message = "구단 등록 날짜를 입력해주세요.")
     private LocalDateTime erollDate;
 
-    @Schema(description = "자주 운동하는 시간대", example = "아침, 낮, 저녁, 심야 중 선택")
-    @NotNull(message = "자주 운동하는 시간대를 선택해주세요.")
-    private PeakHours peakHours;
+    @Schema(description = "자주 운동하는 요일", example = "[\"월\", \"화\"]")
+    @NotNull(message = "자주 운동하는 요일을 입력해주세요.")
+    private List<PeakDays> days;  // Enum 사용
 
-    @Schema(description = "자주 운동하는 요일", example = "일")
-    @NotNull(message = "자주 운동하는 요일을를 입력해주세요.")
-    private List<PeakDays> peakDays;
+    @Schema(description = "자주 운동하는 시간대", example = "[\"아침\", \"저녁\"]")
+    @NotNull(message = "자주 운동하는 시간대를 입력해주세요.")
+    private List<PeakHours> times;  // Enum 사용
 
     public ClubRegistRequestDTO() {
     }
 
-    public ClubRegistRequestDTO(Long userId,
-                                String clubName, String clubIntroduction,
-                                String clubCode, LocalDateTime erollDate,
-                                List<PeakDays> peakDays, PeakHours peakHours) {
+    public ClubRegistRequestDTO(Long userId, String clubName, String clubIntroduction, String clubCode, LocalDateTime erollDate, List<PeakDays> days, List<PeakHours> times) {
         this.userId = userId;
         this.clubName = clubName;
         this.clubIntroduction = clubIntroduction;
         this.clubCode = clubCode;
         this.erollDate = erollDate;
-        this.peakHours = peakHours;
-        this.peakDays = peakDays;
-    }
-
-    public Long getUserId() {
-        return userId;
-    }
-
-    public void setUserId(Long userId) {
-        this.userId = userId;
-    }
-
-    public String getClubName() {
-        return clubName;
-    }
-
-    public void setClubName(String clubName) {
-        this.clubName = clubName;
-    }
-
-    public String getClubIntroduction() {
-        return clubIntroduction;
-    }
-
-    public void setClubIntroduction(String clubIntroduction) {
-        this.clubIntroduction = clubIntroduction;
-    }
-
-    public String getClubCode() {
-        return clubCode;
-    }
-
-    public void setClubCode(String clubCode) {
-        this.clubCode = clubCode;
-    }
-
-    public LocalDateTime getErollDate() {
-        return erollDate;
-    }
-
-    public void setErollDate(LocalDateTime erollDate) {
-        this.erollDate = erollDate;
-    }
-
-    public PeakHours getPeakHours() {
-        return peakHours;
-    }
-
-    public void setPeakHours(PeakHours peakHours) {
-        this.peakHours = peakHours;
-    }
-
-    public List<PeakDays> getPeakDays() {
-        return peakDays;
-    }
-
-    public void setPeakDays(List<PeakDays> peakDays) {
-        this.peakDays = peakDays;
+        this.days = days;
+        this.times = times;
     }
 
     @Override
@@ -124,8 +65,8 @@ public class ClubRegistRequestDTO {
                 ", clubIntroduction='" + clubIntroduction + '\'' +
                 ", clubCode='" + clubCode + '\'' +
                 ", erollDate=" + erollDate +
-                ", peakHours=" + peakHours +
-                ", peakDays=" + peakDays +
+                ", peakHours=" + times +
+                ", peakDays=" + days +
                 '}';
     }
 }

@@ -36,31 +36,29 @@ public class Club {
     @Column(name = "EROLL_DATE")
     private LocalDateTime erollDate;  //구단등록일
 
-    @Column(name = "PEAK_HOURS")
+    @ElementCollection
+    @CollectionTable(name = "tbl_club_days", joinColumns = @JoinColumn(name = "CLUB_ID"))
+    @Column(name = "DAYS")
     @Enumerated(EnumType.STRING)
-    private PeakHours peakHours;  //구단활동시간대 아침,낮,저녁,심야
+    private List<PeakDays> days;  // 자주 운동하는 요일 (Enum)
 
-
-    @ElementCollection  // 이는 자주 운동하는 날을 별도의 테이블에 저장하고, 해당 테이블이 Club 엔티티와 연관되도록 합니다.
-    @CollectionTable(name = "tbl_club_peak_days", joinColumns = @JoinColumn(name = "CLUB_ID"))
-    @Column(name = "PEAK_DAYS") // 자주 운동하는 날
+    @ElementCollection
+    @CollectionTable(name = "tbl_club_times", joinColumns = @JoinColumn(name = "CLUB_ID"))
+    @Column(name = "TIMES")
     @Enumerated(EnumType.STRING)
-    private List<PeakDays> peakDays;  // 월~일
+    private List<PeakHours> times;  // 자주 운동하는 시간대 (Enum)
 
     public Club() {
     }
 
-    public Club(Long userId,
-                String clubName, String clubIntroduction,
-                String clubCode, LocalDateTime erollDate,
-                PeakHours peakHours, List<PeakDays> peakDays) {
+    public Club(Long userId, String clubName, String clubIntroduction, String clubCode, LocalDateTime erollDate, List<PeakDays> days, List<PeakHours> times) {
         this.userId = userId;
         this.clubName = clubName;
         this.clubIntroduction = clubIntroduction;
         this.clubCode = clubCode;
         this.erollDate = erollDate;
-        this.peakHours = peakHours;
-        this.peakDays = peakDays;
+        this.days = days;
+        this.times = times;
     }
 
     @Override
@@ -72,8 +70,8 @@ public class Club {
                 ", clubIntroduction='" + clubIntroduction + '\'' +
                 ", clubCode='" + clubCode + '\'' +
                 ", erollDate=" + erollDate +
-                ", peakHours=" + peakHours +
-                ", peakDays=" + peakDays +
+                ", peakHours=" + times +
+                ", peakDays=" + days +
                 '}';
     }
 }
