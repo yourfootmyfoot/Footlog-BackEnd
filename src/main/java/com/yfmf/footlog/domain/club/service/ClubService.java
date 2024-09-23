@@ -1,8 +1,10 @@
 package com.yfmf.footlog.domain.club.service;
 
 import com.yfmf.footlog.domain.club.dto.ClubRegistResponseDTO;
+import com.yfmf.footlog.domain.club.entity.ClubMember;
 import com.yfmf.footlog.domain.club.exception.ClubDuplicatedException;
 import com.yfmf.footlog.domain.club.exception.ClubNotFoundException;
+import com.yfmf.footlog.domain.club.repository.ClubMemberRepository;
 import com.yfmf.footlog.domain.club.repository.ClubRepository;
 import com.yfmf.footlog.domain.club.dto.ClubRegistRequestDTO;
 import com.yfmf.footlog.domain.club.entity.Club;
@@ -17,10 +19,12 @@ import java.util.Optional;
 public class ClubService {
 
     private final ClubRepository clubRepository;
+    private final ClubMemberRepository clubMemberRepository;
 
     @Autowired
-    public ClubService(ClubRepository clubRepository) {
+    public ClubService(ClubRepository clubRepository, ClubMemberRepository clubMemberRepository) {
         this.clubRepository = clubRepository;
+        this.clubMemberRepository = clubMemberRepository;
     }
 
     // 클럽 등록
@@ -38,6 +42,7 @@ public class ClubService {
                 clubInfo.getClubIntroduction(),
                 clubInfo.getClubCode(),
                 clubInfo.getErollDate(),
+                clubInfo.getMemberCount(),
                 clubInfo.getDays(),
                 clubInfo.getTimes(),
                 clubInfo.getSkillLevel(),
@@ -57,6 +62,7 @@ public class ClubService {
                 newClub.getClubIntroduction(),
                 newClub.getClubCode(),
                 newClub.getErollDate(),
+                newClub.getMemberCount(),
                 newClub.getDays(),
                 newClub.getTimes(),
                 newClub.getSkillLevel(),
@@ -122,5 +128,47 @@ public class ClubService {
             throw new ClubNotFoundException("삭제할 클럽이 존재하지 않습니다.", "[ClubService] deleteClub");
         }
         clubRepository.deleteById(clubId);
+    }
+
+    /**
+     * 구단원 가입
+     */
+    @Transactional
+    public void joinClub(Long userId, Long clubId) {
+        Club club = clubRepository.findById(clubId)
+                .orElseThrow(() -> new ClubNotFoundException("구단을 찾을 수 없습니다.", "[ClubService] joinClub"));
+
+        // 이미 가입된 구단원인지 확인
+        if (clubMemberRepository.existsByUserIdAndClub_ClubId(userId, clubId)) {
+            throw new IllegalArgumentException("이미 구단에 가입된 회원입니다.");
+        }
+
+        // 구단원 추가
+        ClubMember clubMember = new ClubMember(userId, club);
+        clubMemberRepository.save(clubMember);
+
+        // 구단원의 수를 증가시킴
+        club.setMemberCount(club.getMemberCount() + 1);
+        clubRepository.save(club);
+    }
+
+    /**
+     * 구단원 탈퇴
+     */
+    @Transactional
+    public void leaveClub(Long userId, Long clubId) {
+        Club club = clubRepository.findById(clubId)
+                .orElseThrow(() -> new ClubNotFoundException("구단을 찾을 수 없습니다.", "[ClubService] leaveClub"));
+
+        // 구단원 탈퇴
+        if (!clubMemberRepository.existsByUserIdAndClub_ClubId(userId, clubId)) {
+            throw new IllegalArgumentException("구단에 가입되어 있지 않은 회원입니다.");
+        }
+
+        clubMemberRepository.deleteByUserIdAndClub_ClubId(userId, clubId);
+
+        // 구단원의 수를 감소시킴
+        club.setMemberCount(club.getMemberCount() - 1);
+        clubRepository.save(club);
     }
 }

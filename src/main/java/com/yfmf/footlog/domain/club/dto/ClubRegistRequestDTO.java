@@ -37,6 +37,10 @@ public class ClubRegistRequestDTO {
     @NotNull(message = "구단 등록 날짜를 입력해주세요.")
     private LocalDateTime erollDate;
 
+    @Schema(description = "구단원 수")
+    @NotNull(message = "구단원 수를 입력해주세요.")
+    private int memberCount;
+
     @Schema(description = "자주 운동하는 요일", example = "[\"월\", \"화\"]")
     @NotNull(message = "자주 운동하는 요일을 입력해주세요.")
     private List<PeakDays> days;  // Enum 사용
@@ -73,13 +77,14 @@ public class ClubRegistRequestDTO {
     }
 
     public ClubRegistRequestDTO(Long userId, String clubName, String clubIntroduction, String clubCode,
-                                LocalDateTime erollDate, List<PeakDays> days, List<PeakHours> times, String skillLevel,
+                                LocalDateTime erollDate, int memberCount, List<PeakDays> days, List<PeakHours> times, String skillLevel,
                                 String stadiumName, String city, String region, String ageGroup, String gender) {
         this.userId = userId;
         this.clubName = clubName;
         this.clubIntroduction = clubIntroduction;
         this.clubCode = clubCode;
         this.erollDate = erollDate;
+        this.memberCount = memberCount;
         this.days = days;
         this.times = times;
         this.skillLevel = skillLevel;
@@ -98,6 +103,7 @@ public class ClubRegistRequestDTO {
                 ", clubIntroduction='" + clubIntroduction + '\'' +
                 ", clubCode='" + clubCode + '\'' +
                 ", erollDate=" + erollDate +
+                ", memberCount=" + memberCount +
                 ", peakHours=" + times +
                 ", peakDays=" + days +
                 ", skillLevel='" + skillLevel + '\'' +

@@ -29,6 +29,9 @@ public class ClubRegistResponseDTO {
     @Schema(description = "등록 날짜")
     private LocalDateTime erollDate;
 
+    @Schema(description = "구단원 수")
+    private int memberCount;
+
     @Schema(description = "자주 운동하는 요일", example = "[\"월\", \"화\"]")
     private List<PeakDays> days;
 
@@ -57,7 +60,7 @@ public class ClubRegistResponseDTO {
 
     // 모든 필드를 받는 생성자
     public ClubRegistResponseDTO(Long userId, String clubName, String clubIntroduction, String clubCode,
-                                 LocalDateTime erollDate, List<PeakDays> days, List<PeakHours> times,
+                                 LocalDateTime erollDate, int memberCount, List<PeakDays> days, List<PeakHours> times,
                                  String skillLevel, String stadiumName, String city, String region,
                                  String ageGroup, String gender) {
         this.userId = userId;
@@ -65,6 +68,7 @@ public class ClubRegistResponseDTO {
         this.clubIntroduction = clubIntroduction;
         this.clubCode = clubCode;
         this.erollDate = erollDate;
+        this.memberCount = memberCount;
         this.days = days;
         this.times = times;
         this.skillLevel = skillLevel;
@@ -83,6 +87,7 @@ public class ClubRegistResponseDTO {
                 ", clubIntroduction='" + clubIntroduction + '\'' +
                 ", clubCode='" + clubCode + '\'' +
                 ", erollDate=" + erollDate +
+                ", memberCount=" + memberCount +
                 ", days=" + days +
                 ", times=" + times +
                 ", skillLevel='" + skillLevel + '\'' +
