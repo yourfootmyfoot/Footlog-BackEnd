@@ -1,7 +1,5 @@
-package com.yfmf.footlog.guest.dto;
+package com.yfmf.footlog.domain.guest.dto;
 
-import com.yfmf.footlog.enums.MainFoot;
-import com.yfmf.footlog.enums.Position;
 import jakarta.validation.constraints.NotBlank;
  import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
