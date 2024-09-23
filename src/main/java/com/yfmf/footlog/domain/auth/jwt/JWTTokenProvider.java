@@ -1,9 +1,12 @@
 package com.yfmf.footlog.domain.auth.jwt;
 
+import com.yfmf.footlog.domain.auth.dto.LoginedInfo;
+import com.yfmf.footlog.domain.member.domain.Authority;
 import com.yfmf.footlog.domain.member.dto.MemberResponseDTO;
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
+import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -133,12 +136,24 @@ public class JWTTokenProvider {
                         .map(SimpleGrantedAuthority::new)
                         .collect(Collectors.toList());
 
-        // UserDetails 객체를 Principal, Crendential, Authorities와 함께 생성
-        // 이후 Authentication 객체를 반환
-        // 이때 유저는 Spring boot 자체 User class
-        UserDetails principal = new User(claims.getSubject(), "", authorities);
+        // subject가 email인 경우 처리
+        String subject = claims.getSubject();
+        Long userId = null;
+        try {
+            // subject가 Long 타입일 때 처리
+            userId = Long.parseLong(subject);
+        } catch (NumberFormatException e) {
+            // subject가 이메일인 경우 처리
+            log.warn("Subject is not a userId, treating as email: {}", subject);
+        }
 
-        return new UsernamePasswordAuthenticationToken(principal, "", authorities);
+        // LoginedInfo 객체 생성
+        LoginedInfo loginedInfo = new LoginedInfo();
+        loginedInfo.setUserId(userId);  // userId가 null일 수 있음
+        loginedInfo.setEmail(subject);  // 이메일이 subject로 저장됨
+        loginedInfo.setAuthority(Authority.valueOf(claims.get(AUTHORITIES_KEY).toString()));
+
+        return new UsernamePasswordAuthenticationToken(loginedInfo, "", authorities);
     }
 
     public boolean isRefreshToken(String token) {
@@ -151,6 +166,16 @@ public class JWTTokenProvider {
 
         if(StringUtils.hasText(bearerToken) && bearerToken.startsWith(BEARER_TYPE)) {
             return bearerToken.substring(7);
+        }
+
+        // 쿠키에서 토큰 추출
+        Cookie[] cookies = request.getCookies();
+        if (cookies != null) {
+            for (Cookie cookie : cookies) {
+                if (cookie.getName().equals("accessToken")) {
+                    return cookie.getValue();
+                }
+            }
         }
 
         return null;

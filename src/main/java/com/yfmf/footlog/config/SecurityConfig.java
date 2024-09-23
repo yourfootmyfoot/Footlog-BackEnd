@@ -1,6 +1,7 @@
 package com.yfmf.footlog.config;
 
-
+import com.yfmf.footlog.domain.auth.jwt.JWTTokenProvider;
+import com.yfmf.footlog.domain.auth.jwt.JWTTokenFilter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -14,6 +15,7 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.security.web.servlet.util.matcher.MvcRequestMatcher;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
@@ -36,20 +38,21 @@ public class SecurityConfig {
 
     };
 
-
+    private final JWTTokenProvider jwtTokenProvider;
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity httpSecurity, MvcRequestMatcher.Builder mvc) throws Exception {
 
         httpSecurity
                 .cors(cors -> cors.configurationSource(corsConfigurationSource()))  // CORS 설정 추가
-                .csrf(AbstractHttpConfigurer::disable)
+                .csrf(AbstractHttpConfigurer::disable) // CSRF 비활성화
                 .sessionManagement((sessionManagement) ->
                         sessionManagement.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests((request) -> request
-                        .requestMatchers(mvc.pattern("/api/clubs/**")).authenticated()  // "/api/clubs" 엔드포인트는 인증 없이도 접근 가능하게 설정
-                        .requestMatchers(this.createMvcRequestMatcherForWhiteList(mvc)).permitAll()
-                        .anyRequest().authenticated());
+                        .requestMatchers(mvc.pattern("/api/clubs/**")).authenticated()  // 클럽 관련 엔드포인트는 인증 필요
+                        .requestMatchers(this.createMvcRequestMatcherForWhiteList(mvc)).permitAll() // 화이트리스트 엔드포인트는 인증 없이 접근 가능
+                        .anyRequest().authenticated()) // 그 외 모든 요청은 인증 필요
+                .addFilterBefore(new JWTTokenFilter(jwtTokenProvider), UsernamePasswordAuthenticationFilter.class);  // JWT 필터 추가
         // Spring Security Custom Filter 적용 - Form '인증'에 대해서 적용
 
         return httpSecurity.build();
