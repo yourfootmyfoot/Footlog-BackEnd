@@ -1,4 +1,4 @@
-package com.yfmf.footlog.guest.dto;
+package com.yfmf.footlog.domain.guest.dto;
 
 import jakarta.validation.constraints.NotBlank;
  import jakarta.validation.constraints.NotNull;

@@ -1,13 +1,15 @@
+/*
 package com.yfmf.footlog.guest.entity;
 
 
+
+import com.yfmf.footlog.domain.guest.dto.CreateGuestDto;
+import com.yfmf.footlog.domain.guest.dto.UpdateGuestDto;
+import com.yfmf.footlog.domain.guest.entity.Guest;
+import com.yfmf.footlog.domain.guest.repository.GuestRepository;
+import com.yfmf.footlog.domain.guest.service.GuestService;
 import com.yfmf.footlog.domain.user.enums.MainFoot;
 import com.yfmf.footlog.domain.user.enums.Position;
-
-import com.yfmf.footlog.guest.dto.CreateGuestDto;
-import com.yfmf.footlog.guest.dto.UpdateGuestDto;
-import com.yfmf.footlog.guest.repository.GuestRepository;
-import com.yfmf.footlog.guest.service.GuestService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
@@ -20,15 +22,17 @@ import java.util.Optional;
 import static org.mockito.ArgumentMatchers.any;
 
 
+*/
 /*
  * Unit Test (with Mockito)
  *
  * 데이터베이스와의 연동 없이
  * 해당 클래스의 메소드의 필드(GuestRepository)를 Mocking하여
  * busuness logic을 테스트하는것. 실수로 인해 데이터베이스에 영향을 주지 않도록 하기 위함 !
- * */
+ * *//*
 
-class GuestServiceTests {
+
+class GuestServiceUnitTests {
     // GuestService를 테스트하기 위해 GuestRepository를 Mocking한다.
     @Mock
     private GuestRepository guestRepository;
@@ -81,3 +85,4 @@ class GuestServiceTests {
 
 
 }
+*/

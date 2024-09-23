@@ -4,7 +4,7 @@ import com.yfmf.footlog.domain.user.dto.UserSaveRequestDto;
 import com.yfmf.footlog.domain.user.dto.UserUpdateRequestDto;
 import com.yfmf.footlog.domain.user.entity.User;
 import com.yfmf.footlog.domain.user.repository.UserRepository;
-import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -12,10 +12,14 @@ import java.util.List;
 
 @Service
 @Transactional
-@RequiredArgsConstructor
 public class UserService {
 
     private final UserRepository userRepository;
+
+    @Autowired
+    public UserService(UserRepository userRepository) {
+        this.userRepository = userRepository;
+    }
 
     public Long save(UserSaveRequestDto requestDto) {
         return userRepository.save(requestDto.toEntity()).getId();  // getUserId() -> getId()

@@ -1,4 +1,4 @@
-package com.yfmf.footlog.guest.dto;
+package com.yfmf.footlog.domain.guest.dto;
 
 import com.yfmf.footlog.domain.user.enums.MainFoot;
 import com.yfmf.footlog.domain.user.enums.Position;
