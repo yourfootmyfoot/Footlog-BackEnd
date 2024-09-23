@@ -1,5 +1,6 @@
 package com.yfmf.footlog.domain.club.entity;
 
+import com.yfmf.footlog.BaseTimeEntity;
 import com.yfmf.footlog.domain.club.enums.PeakDays;
 import com.yfmf.footlog.domain.club.enums.PeakHours;
 import jakarta.persistence.*;
@@ -13,15 +14,14 @@ import java.util.List;
 @Table(name = "tbl_club")
 @Getter
 @Setter
-public class Club {
-
+public class Club extends BaseTimeEntity {
 
     @Id
     @Column(name = "CLUB_ID")
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long clubId;
 
-    @Column(name = "CLUB_OWNER")
+    @Column(name = "CLUB_OWNER_ID")
     private Long userId; //구단주
 
     @Column(name = "CLUB_NAME")
@@ -30,7 +30,7 @@ public class Club {
     @Column(name = "CLUB_INTRODUCTION")
     private String clubIntroduction;  //구단소개
 
-    @Column(name = "CLUB_CODE")
+    @Column(name = "CLUB_CODE", unique = true)
     private String clubCode;  //구단코드
 
     @Column(name = "EROLL_DATE")

@@ -1,7 +1,8 @@
-package com.yfmf.footlog.domain.match.entity;
+package com.yfmf.footlog.domain.match.service;
 
 import com.yfmf.footlog.domain.match.dto.LoadMatchResponseDTO;
 import com.yfmf.footlog.domain.match.dto.MatchRegistRequestDTO;
+import com.yfmf.footlog.domain.match.entity.Match;
 import com.yfmf.footlog.domain.match.repository.MatchRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -33,7 +34,6 @@ public class MatchService {
     public void registMatch(MatchRegistRequestDTO matchInfo) {
 
         Match newMatch = new Match(
-                matchInfo.getMatchEnrollTime(),
                 matchInfo.getMatchEnrollUserId(),
                 matchInfo.getMatchApplyUserId(),
                 matchInfo.getMyClub(),

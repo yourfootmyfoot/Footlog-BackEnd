@@ -1,6 +1,5 @@
 package com.yfmf.footlog.domain.club.controller;
 
-import com.yfmf.footlog.domain.auth.dto.LoginedInfo;
 import com.yfmf.footlog.domain.auth.exception.LoginRequiredException;
 import com.yfmf.footlog.domain.club.dto.ClubRegistRequestDTO;
 import com.yfmf.footlog.domain.club.dto.ClubRegistResponseDTO;
@@ -19,7 +18,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
+//import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -58,16 +57,18 @@ public class ClubController {
             ))
     })
     @PostMapping
+
     public ResponseEntity<ClubRegistResponseDTO> createClub(@RequestBody ClubRegistRequestDTO clubInfo,
                                                             @AuthenticationPrincipal LoginedInfo logined) {
 
+
         // 로그인된 사용자인지 확인
-        if (logined == null) {
-            throw new LoginRequiredException("로그인 후 이용이 가능합니다.", "[ClubController] createClub");
-        }
+//        if (logined == null) {
+//            throw new LoginRequiredException("로그인 후 이용이 가능합니다.", "[CourseWish] addCourseWish");
+//        }
 
         // 로그인된 사용자의 ID를 설정
-        clubInfo.setUserId(logined.getUserId());
+//        clubInfo.setUserId(logined.getUserId());
         System.out.println(clubInfo);
         try {
             ClubRegistResponseDTO responseDto = clubService.registClub(clubInfo);
