@@ -38,7 +38,7 @@ public class Club extends BaseTimeEntity {
 
     // 구단원 수를 자동으로 관리하는 필드
     @Column(name = "MEMBER_COUNT", nullable = false)
-    private int memberCount = 0;  // 기본값을 0으로 설정
+    private int memberCount = 1;  // 기본값을 1로 설정
 
     @ElementCollection
     @CollectionTable(name = "tbl_club_days", joinColumns = @JoinColumn(name = "CLUB_ID"))
