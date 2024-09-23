@@ -57,8 +57,10 @@ public class ClubController {
             ))
     })
     @PostMapping
-    public ResponseEntity<ClubRegistResponseDTO> createClub(@RequestBody ClubRegistRequestDTO clubInfo
-                                                            /*@AuthenticationPrincipal LoginedInfo logined */) {
+
+    public ResponseEntity<ClubRegistResponseDTO> createClub(@RequestBody ClubRegistRequestDTO clubInfo,
+                                                            @AuthenticationPrincipal LoginedInfo logined) {
+
 
         // 로그인된 사용자인지 확인
 //        if (logined == null) {
@@ -136,7 +138,13 @@ public class ClubController {
             ))
     })
     @GetMapping("/{clubId}")
-    public ResponseEntity<Club> getClubById(@PathVariable Long clubId) {
+    public ResponseEntity<Club> getClubById(@PathVariable Long clubId, @AuthenticationPrincipal LoginedInfo logined) {
+
+        // 로그인된 사용자인지 확인
+        if (logined == null) {
+            throw new LoginRequiredException("로그인 후 이용이 가능합니다.", "[ClubController] createClub");
+        }
+
         try {
             Club club = clubService.getClubByClubId(clubId);
             if (club != null) {
@@ -165,7 +173,13 @@ public class ClubController {
             ))
     })
     @PutMapping("/{id}")
-    public ResponseEntity<String> updateClub(@PathVariable Long id, @RequestBody ClubRegistRequestDTO clubInfo) {
+    public ResponseEntity<String> updateClub(@PathVariable Long id, @RequestBody ClubRegistRequestDTO clubInfo, @AuthenticationPrincipal LoginedInfo logined) {
+
+        // 로그인된 사용자인지 확인
+        if (logined == null) {
+            throw new LoginRequiredException("로그인 후 이용이 가능합니다.", "[ClubController] createClub");
+        }
+
         try {
             clubService.updateClub(id, clubInfo);
             return ResponseEntity.ok("구단이 성공적으로 업데이트되었습니다.");

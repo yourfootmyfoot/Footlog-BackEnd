@@ -15,7 +15,6 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.stereotype.Component;
-import org.springframework.util.StringUtils;
 
 import java.security.Key;
 import java.util.Arrays;
@@ -137,6 +136,8 @@ public class JWTTokenProvider {
         // subject가 email인 경우 처리
         String subject = claims.getSubject();
         Long userId = null;
+        String userName = claims.get("name", String.class); // JWT 토큰에 저장된 이름 정보 가져오기
+
         try {
             // subject가 Long 타입일 때 처리
             userId = Long.parseLong(subject);
@@ -149,6 +150,7 @@ public class JWTTokenProvider {
         LoginedInfo loginedInfo = new LoginedInfo();
         loginedInfo.setUserId(userId);  // userId가 null일 수 있음
         loginedInfo.setEmail(subject);  // 이메일이 subject로 저장됨
+        loginedInfo.setName(userName);  // 이름 정보 저장
         loginedInfo.setAuthority(Authority.valueOf(claims.get(AUTHORITIES_KEY).toString()));
 
         return new UsernamePasswordAuthenticationToken(loginedInfo, "", authorities);
