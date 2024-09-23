@@ -4,7 +4,6 @@ import com.yfmf.footlog.domain.auth.dto.LoginedInfo;
 import com.yfmf.footlog.domain.auth.jwt.JWTTokenProvider;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -37,6 +36,7 @@ public class AuthController {
             LoginedInfo loginedInfo = (LoginedInfo) authentication.getPrincipal();
 
             response.put("isLoggedIn", true);
+            response.put("name", loginedInfo.getName());
             response.put("email", loginedInfo.getEmail());  // 이메일을 반환
             response.put("authority", loginedInfo.getAuthority());  // 사용자 권한 반환
         } else {
