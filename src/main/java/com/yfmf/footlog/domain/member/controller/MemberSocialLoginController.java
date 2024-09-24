@@ -23,7 +23,7 @@ public class MemberSocialLoginController {
 
     private final MemberSocialLoginService memberSocialLoginService;
 
-    // https://kauth.kakao.com/oauth/authorize?response_type=code&client_id=262c56061ee06d4004d2f9b94db133a4&redirect_uri=http://localhost:8080/api/auth/kakao/login
+    // https://kauth.kakao.com/oauth/authorize?response_type=code&client_id=262c56061ee06d4004d2f9b94db133a4&redirect_uri=http://192.168.0.32:8080/api/auth/kakao/login
     // https://kauth.kakao.com/oauth/authorize?response_type=code&client_id=262c56061ee06d4004d2f9b94db133a4&redirect_uri=http://172.16.17.66:8181//api/auth/kakao/login
     /*
         카카오 로그인
@@ -56,7 +56,7 @@ public class MemberSocialLoginController {
         // 토큰을 받아오면 클라이언트 측에서 사용하도록 응답을 보내고
         // 여기서 적절하게 프론트엔드의 `/match`로 리다이렉트할 수 있게 설정
         HttpHeaders headers = new HttpHeaders();
-        headers.add("Location", "http://localhost:3000/match");  // React 클라이언트에서 처리할 수 있도록 리다이렉트
+        headers.add("Location", "http://192.168.0.32:3000/match");  // React 클라이언트에서 처리할 수 있도록 리다이렉트
         return new ResponseEntity<>(headers, HttpStatus.FOUND);
     }
 
