@@ -42,7 +42,7 @@ public class ClubService {
                 clubInfo.getClubIntroduction(),
                 clubInfo.getClubCode(),
                 clubInfo.getErollDate(),
-                clubInfo.getMemberCount(),
+                1,
                 clubInfo.getDays(),
                 clubInfo.getTimes(),
                 clubInfo.getSkillLevel(),
