@@ -1,5 +1,6 @@
 package com.yfmf.footlog.domain.club.controller;
 
+import com.yfmf.footlog.domain.auth.dto.LoginedInfo;
 import com.yfmf.footlog.domain.auth.exception.LoginRequiredException;
 import com.yfmf.footlog.domain.club.dto.ClubRegistRequestDTO;
 import com.yfmf.footlog.domain.club.dto.ClubRegistResponseDTO;
@@ -18,7 +19,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-//import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -63,12 +64,12 @@ public class ClubController {
 
 
         // 로그인된 사용자인지 확인
-//        if (logined == null) {
-//            throw new LoginRequiredException("로그인 후 이용이 가능합니다.", "[CourseWish] addCourseWish");
-//        }
+        if (logined == null) {
+            throw new LoginRequiredException("로그인 후 이용이 가능합니다.", "[CourseWish] addCourseWish");
+        }
 
         // 로그인된 사용자의 ID를 설정
-//        clubInfo.setUserId(logined.getUserId());
+        clubInfo.setUserId(logined.getUserId());
         System.out.println(clubInfo);
         try {
             ClubRegistResponseDTO responseDto = clubService.registClub(clubInfo);
@@ -209,6 +210,52 @@ public class ClubController {
             return ResponseEntity.ok("구단이 성공적으로 삭제되었습니다.");
         } catch (ClubNotFoundException e) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
+        }
+    }
+
+    /**
+     * 구단원 가입
+     */
+    @Operation(summary = "구단원 가입", description = "사용자가 구단에 가입합니다.")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "구단 가입 성공"),
+            @ApiResponse(responseCode = "400", description = "이미 가입된 구단원이거나 잘못된 요청입니다."),
+            @ApiResponse(responseCode = "404", description = "구단을 찾을 수 없습니다.")
+    })
+    @PostMapping("/{clubId}/join")
+    public ResponseEntity<String> joinClub(@PathVariable Long clubId, @AuthenticationPrincipal LoginedInfo logined) {
+        if (logined == null) {
+            throw new LoginRequiredException("로그인 후 이용이 가능합니다.", "[ClubController] createClub");
+        }
+
+        try {
+            clubService.joinClub(logined.getUserId(), clubId);
+            return ResponseEntity.ok("구단 가입 성공");
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
+        }
+    }
+
+    /**
+     * 구단원 탈퇴
+     */
+    @Operation(summary = "구단원 탈퇴", description = "사용자가 구단에서 탈퇴합니다.")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "구단 탈퇴 성공"),
+            @ApiResponse(responseCode = "400", description = "구단에 가입되어 있지 않거나 잘못된 요청입니다."),
+            @ApiResponse(responseCode = "404", description = "구단을 찾을 수 없습니다.")
+    })
+    @DeleteMapping("/{clubId}/leave")
+    public ResponseEntity<String> leaveClub(@PathVariable Long clubId, @AuthenticationPrincipal LoginedInfo logined) {
+        if (logined == null) {
+            throw new LoginRequiredException("로그인 후 이용이 가능합니다.", " [ClubController] createClub");
+        }
+
+        try {
+            clubService.leaveClub(logined.getUserId(), clubId);
+            return ResponseEntity.ok("구단 탈퇴 성공");
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
         }
     }
 }
