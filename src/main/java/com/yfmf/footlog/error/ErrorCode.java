@@ -8,7 +8,7 @@ import org.springframework.http.HttpStatus;
 @AllArgsConstructor
 public enum ErrorCode {
 
-    INTERNAL_SERVER_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "METARO-000", "Internal server error"),
+    INTERNAL_SERVER_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "FOOTLOG-000", "Internal server error"),
     EMPTY_EMAIL_MEMBER(HttpStatus.NOT_FOUND, "USER-001", "해당 이메일은 회원 가입 되지 않은 이메일입니다."),
     SAME_EMAIL(HttpStatus.CONFLICT, "USER-002", "이미 가입된 이메일입니다."),
     EMAIL_STRUCTURE(HttpStatus.FORBIDDEN,"USER-003","이메일 형식으로 작성해주세요"),
