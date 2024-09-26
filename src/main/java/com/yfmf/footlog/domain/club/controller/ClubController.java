@@ -61,31 +61,20 @@ public class ClubController {
             ))
     })
     @PostMapping
-
     public ResponseEntity<ClubRegistResponseDTO> createClub(@RequestBody @Valid ClubRegistRequestDTO clubInfo,
                                                             @AuthenticationPrincipal LoginedInfo logined) {
+        log.info("[ClubController] 클럽 등록 요청 시작: 클럽 이름={}, 클럽 코드={}", clubInfo.getClubName(), clubInfo.getClubCode());
 
-
-        // 로그인된 사용자인지 확인
         if (logined == null) {
-            log.error("[ClubController] 로그인되지 않은 사용자가 구단 등록을 시도했습니다.");
-            throw new LoginRequiredException("로그인 후 이용이 가능합니다.", "[CourseWish] addCourseWish");
+            log.error("[ClubController] 로그인되지 않은 사용자가 클럽 등록 시도.");
+            throw new LoginRequiredException("로그인 후 이용이 가능합니다.", "[ClubController] createClub");
         }
 
-        // 로그: 클럽 등록 요청
-        log.info("[ClubController] 클럽 등록 요청: 클럽 이름={}, 클럽 코드={}", clubInfo.getClubName(), clubInfo.getClubCode());
-
-        // 로그인된 사용자의 ID를 설정
         clubInfo.setUserId(logined.getUserId());
-        System.out.println(clubInfo);
-        try {
-            ClubRegistResponseDTO responseDto = clubService.registClub(clubInfo);
-            log.info("[ClubController] 클럽 등록 성공: 클럽 이름={}, 클럽 ID={}", responseDto.getClubName(), responseDto.getClubCode());
-            return ResponseEntity.ok(responseDto);
-        } catch (ClubDuplicatedException e) {
-            log.error("[ClubController] 클럽 등록 실패 - 중복된 클럽 코드: 클럽 코드={}", clubInfo.getClubCode());
-            return ResponseEntity.status(HttpStatus.CONFLICT).body(null);
-        }
+        ClubRegistResponseDTO responseDto = clubService.registClub(clubInfo);
+
+        log.info("[ClubController] 클럽 등록 완료: 클럽 이름={}, 클럽 ID={}", responseDto.getClubName(), responseDto.getClubCode());
+        return ResponseEntity.status(HttpStatus.CREATED).body(responseDto);  // 응답 상태 코드 201 추가
     }
 
 
@@ -226,15 +215,11 @@ public class ClubController {
     })
     @DeleteMapping("/{id}")
     public ResponseEntity<String> deleteClub(@PathVariable Long id) {
-        log.info("[ClubController] 클럽 ID={}에 대한 삭제 요청", id);
+        log.info("[ClubController] 클럽 삭제 요청 시작: 클럽 ID={}", id);
 
-        try {
-            clubService.deleteClub(id);
-            log.info("[ClubController] 클럽 삭제 성공: 클럽 ID={}", id);
-            return ResponseEntity.ok("구단이 성공적으로 삭제되었습니다.");
-        } catch (ClubNotFoundException e) {
-            log.error("[ClubController] 클럽 삭제 실패 - 클럽이 존재하지 않음: 클럽 ID={}", id);
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
-        }
+        clubService.deleteClub(id);
+
+        log.info("[ClubController] 클럽 삭제 완료: 클럽 ID={}", id);
+        return ResponseEntity.ok("구단이 성공적으로 삭제되었습니다.");  // 성공 메시지 포함
     }
 }

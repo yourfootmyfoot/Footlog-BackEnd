@@ -39,44 +39,20 @@ public class ClubService {
             throw new ClubDuplicatedException("이미 존재하는 클럽 코드입니다.", "[ClubService] registClub");
         }
 
-        // 클럽 등록 로직
-        Club newClub = new Club(
-                clubInfo.getUserId(),
-                clubInfo.getClubName(),
-                clubInfo.getClubIntroduction(),
-                clubInfo.getClubCode(),
-                clubInfo.getErollDate(),
-                1,
-                clubInfo.getDays(),
-                clubInfo.getTimes(),
-                clubInfo.getSkillLevel(),
-                clubInfo.getStadiumName(),
-                clubInfo.getCity(),
-                clubInfo.getRegion(),
-                clubInfo.getAgeGroup(),  // 연령대 추가
-                clubInfo.getGender()     // 성별 추가
-        );
-        log.debug("등록할 클럽 정보: {}", newClub);
+        Club newClub = new Club(clubInfo.getUserId(), clubInfo.getClubName(), clubInfo.getClubIntroduction(),
+                clubInfo.getClubCode(), clubInfo.getErollDate(), 1, clubInfo.getDays(),
+                clubInfo.getTimes(), clubInfo.getSkillLevel(), clubInfo.getStadiumName(),
+                clubInfo.getCity(), clubInfo.getRegion(), clubInfo.getAgeGroup(), clubInfo.getGender());
+
         clubRepository.save(newClub);
-        log.info("클럽 등록 완료: 클럽 ID={}", newClub.getClubId());
+        log.info("[ClubService] 클럽 등록 성공: 클럽 ID={}", newClub.getClubId());
 
         // 클럽 등록 결과 반환
-        return new ClubRegistResponseDTO(
-                newClub.getUserId(),
-                newClub.getClubName(),
-                newClub.getClubIntroduction(),
-                newClub.getClubCode(),
-                newClub.getErollDate(),
-                newClub.getMemberCount(),
-                newClub.getDays(),
-                newClub.getTimes(),
-                newClub.getSkillLevel(),
-                newClub.getStadiumName(),
-                newClub.getCity(),
-                newClub.getRegion(),
-                newClub.getAgeGroup(),  // 연령대 반환
-                newClub.getGender()     // 성별 반환
-        );
+        return new ClubRegistResponseDTO(newClub.getUserId(), newClub.getClubName(), newClub.getClubIntroduction(),
+                newClub.getClubCode(), newClub.getErollDate(), newClub.getMemberCount(),
+                newClub.getDays(), newClub.getTimes(), newClub.getSkillLevel(),
+                newClub.getStadiumName(), newClub.getCity(), newClub.getRegion(),
+                newClub.getAgeGroup(), newClub.getGender());
     }
 
 
@@ -142,13 +118,15 @@ public class ClubService {
     // 클럽 삭제
     @Transactional
     public void deleteClub(Long clubId) {
-        log.info("클럽 삭제 시도: 클럽 ID={}", clubId);
+        log.info("[ClubService] 클럽 삭제 시도: 클럽 ID={}", clubId);
+
         if (!clubRepository.existsById(clubId)) {
-            log.error("삭제할 클럽이 존재하지 않음: 클럽 ID={}", clubId);
-            throw new ClubNotFoundException("삭제할 클럽이 존재하지 않습니다.", "[ClubService] deleteClub");
+            log.error("[ClubService] 클럽을 찾을 수 없음: 클럽 ID={}", clubId);
+            throw new ClubNotFoundException("해당 클럽을 찾을 수 없습니다.", "[ClubService] deleteClub");
         }
+
         clubRepository.deleteById(clubId);
-        log.info("클럽 삭제 완료: 클럽 ID={}", clubId);
+        log.info("[ClubService] 클럽 삭제 성공: 클럽 ID={}", clubId);
     }
 
 }

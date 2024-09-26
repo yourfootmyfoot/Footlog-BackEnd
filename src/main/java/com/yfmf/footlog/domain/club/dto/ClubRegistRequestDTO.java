@@ -6,7 +6,9 @@ import com.yfmf.footlog.domain.club.enums.PeakDays;
 import com.yfmf.footlog.domain.club.enums.PeakHours;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.persistence.Column;
+import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
 import lombok.Getter;
 import lombok.Setter;
@@ -34,6 +36,7 @@ public class ClubRegistRequestDTO {
 
     @Schema(description = "구단 코드", example = "FCSeoul")
     @NotNull(message = "구단 코드를 입력해주세요.")
+    @Pattern(regexp = "^[a-zA-Z0-9]+$", message = "구단 코드는 영문과 숫자로만 구성되어야 합니다.")
     private String clubCode;
 
     @Schema(description = "등록 날짜")
@@ -42,6 +45,7 @@ public class ClubRegistRequestDTO {
 
     @Schema(description = "구단원 수")
     @NotNull(message = "구단원 수를 입력해주세요.")
+    @Min(value = 1, message = "구단원 수는 최소 1명 이상이어야 합니다.")
     private int memberCount;
 
     @Schema(description = "자주 운동하는 요일", example = "[\"월\", \"화\"]")
