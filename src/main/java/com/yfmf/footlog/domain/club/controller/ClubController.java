@@ -16,6 +16,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -24,6 +25,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
+@Slf4j
 @RestController
 @RequestMapping("/api/clubs")
 @Tag(name = "Club", description = "구단 API")
@@ -65,16 +67,22 @@ public class ClubController {
 
         // 로그인된 사용자인지 확인
         if (logined == null) {
+            log.error("[ClubController] 로그인되지 않은 사용자가 구단 등록을 시도했습니다.");
             throw new LoginRequiredException("로그인 후 이용이 가능합니다.", "[CourseWish] addCourseWish");
         }
+
+        // 로그: 클럽 등록 요청
+        log.info("[ClubController] 클럽 등록 요청: 클럽 이름={}, 클럽 코드={}", clubInfo.getClubName(), clubInfo.getClubCode());
 
         // 로그인된 사용자의 ID를 설정
         clubInfo.setUserId(logined.getUserId());
         System.out.println(clubInfo);
         try {
             ClubRegistResponseDTO responseDto = clubService.registClub(clubInfo);
+            log.info("[ClubController] 클럽 등록 성공: 클럽 이름={}, 클럽 ID={}", responseDto.getClubName(), responseDto.getClubCode());
             return ResponseEntity.ok(responseDto);
         } catch (ClubDuplicatedException e) {
+            log.error("[ClubController] 클럽 등록 실패 - 중복된 클럽 코드: 클럽 코드={}", clubInfo.getClubCode());
             return ResponseEntity.status(HttpStatus.CONFLICT).body(null);
         }
     }
@@ -96,7 +104,10 @@ public class ClubController {
     })
     @GetMapping
     public List<Club> getAllClubs() {
-        return clubService.getAllClubs();
+        log.info("[ClubController] 모든 클럽 조회 요청");
+        List<Club> clubs = clubService.getAllClubs();
+        log.info("[ClubController] 조회된 클럽 수: {}", clubs.size());
+        return clubs;
     }
 
 
@@ -116,10 +127,13 @@ public class ClubController {
     })
     @GetMapping("/owner/{userId}")
     public ResponseEntity<List<Club>> getClubsByUserId(@PathVariable Long userId) {
+        log.info("[ClubController] 구단주 ID={}에 대한 클럽 조회 요청", userId);
         try {
             List<Club> clubs = clubService.getClubsByUserId(userId);
+            log.info("[ClubController] 조회된 클럽 수: {}", clubs.size());
             return ResponseEntity.ok(clubs);
         } catch (ClubNotFoundException e) {
+            log.warn("[ClubController] 구단주 ID={}에 대한 클럽이 존재하지 않음", userId);
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
         }
     }
@@ -141,20 +155,21 @@ public class ClubController {
     @GetMapping("/{clubId}")
     public ResponseEntity<Club> getClubById(@PathVariable Long clubId, @AuthenticationPrincipal LoginedInfo logined) {
 
+        log.info("[ClubController] 클럽 ID={}에 대한 조회 요청", clubId);
+
         // 로그인된 사용자인지 확인
         if (logined == null) {
-            throw new LoginRequiredException("로그인 후 이용이 가능합니다.", "[ClubController] createClub");
+            log.error("[ClubController] 로그인되지 않은 사용자가 클럽 조회를 시도했습니다.");
+            throw new LoginRequiredException("로그인 후 이용이 가능합니다.", "[ClubController] getClubById");
         }
 
         try {
             Club club = clubService.getClubByClubId(clubId);
-            if (club != null) {
-                return ResponseEntity.ok(club);
-            } else {
-                return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
-            }
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+            log.info("[ClubController] 클럽 조회 성공: 클럽 ID={}", clubId);
+            return ResponseEntity.ok(club);
+        } catch (ClubNotFoundException e) {
+            log.error("[ClubController] 클럽 조회 실패 - 클럽이 존재하지 않음: 클럽 ID={}", clubId);
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
         }
     }
 
@@ -176,15 +191,20 @@ public class ClubController {
     @PutMapping("/{id}")
     public ResponseEntity<String> updateClub(@PathVariable Long id, @RequestBody ClubRegistRequestDTO clubInfo, @AuthenticationPrincipal LoginedInfo logined) {
 
+        log.info("[ClubController] 클럽 ID={}에 대한 업데이트 요청", id);
+
         // 로그인된 사용자인지 확인
         if (logined == null) {
-            throw new LoginRequiredException("로그인 후 이용이 가능합니다.", "[ClubController] createClub");
+            log.error("[ClubController] 로그인되지 않은 사용자가 클럽 업데이트를 시도했습니다.");
+            throw new LoginRequiredException("로그인 후 이용이 가능합니다.", "[ClubController] updateClub");
         }
 
         try {
             clubService.updateClub(id, clubInfo);
+            log.info("[ClubController] 클럽 업데이트 성공: 클럽 ID={}", id);
             return ResponseEntity.ok("구단이 성공적으로 업데이트되었습니다.");
         } catch (ClubNotFoundException e) {
+            log.error("[ClubController] 클럽 업데이트 실패 - 클럽이 존재하지 않음: 클럽 ID={}", id);
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
         }
     }
@@ -205,10 +225,14 @@ public class ClubController {
     })
     @DeleteMapping("/{id}")
     public ResponseEntity<String> deleteClub(@PathVariable Long id) {
+        log.info("[ClubController] 클럽 ID={}에 대한 삭제 요청", id);
+
         try {
             clubService.deleteClub(id);
+            log.info("[ClubController] 클럽 삭제 성공: 클럽 ID={}", id);
             return ResponseEntity.ok("구단이 성공적으로 삭제되었습니다.");
         } catch (ClubNotFoundException e) {
+            log.error("[ClubController] 클럽 삭제 실패 - 클럽이 존재하지 않음: 클럽 ID={}", id);
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
         }
     }
