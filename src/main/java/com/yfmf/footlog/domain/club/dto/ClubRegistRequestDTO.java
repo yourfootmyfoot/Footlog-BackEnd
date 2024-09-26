@@ -7,6 +7,7 @@ import com.yfmf.footlog.domain.club.enums.PeakHours;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.persistence.Column;
 import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Size;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -23,10 +24,12 @@ public class ClubRegistRequestDTO {
 
     @Schema(description = "구단 이름", example = "FC서울")
     @NotNull(message = "등록할 구단 이름를 입력해주세요.")
+    @Size(min = 2, max = 20, message = "구단 이름은 2자 이상 20자 이하로 입력해야 합니다.")
     private String clubName;
 
     @Schema(description = "구단 소개글", example = "안녕하세요. FC서울입니다")
     @NotNull(message = "구단 소개글을 입력해주세요.")
+    @Size(min = 2, max = 255, message = "구단 소개글은 2자 이상 255자 이하로 입력해야 합니다.")
     private String clubIntroduction;
 
     @Schema(description = "구단 코드", example = "FCSeoul")
