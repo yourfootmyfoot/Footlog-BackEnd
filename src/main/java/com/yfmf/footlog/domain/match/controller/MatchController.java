@@ -10,9 +10,6 @@ public class MatchController {
 
     private MatchService matchService;
 
-    public MatchController() {
-    }
-
     public MatchController(MatchService matchService) {
         this.matchService = matchService;
     }
@@ -23,6 +20,5 @@ public class MatchController {
         
         return matchService.findMatchByMatchId(matchId);
     }
-
 
 }
