@@ -35,13 +35,10 @@ public class JWTTokenProvider {
     private static final String TYPE_REFRESH = "refresh";
     private static final String CLAIM_TYPE = "type";
 
-    // jwt 토큰 암호화를 위한 키
-    private final Key secretKey;
-    // Access token의 시간 : 15분
-    private static final long ACCESS_TOKEN_LIFETIME = 15 * 60 * 1000L;
-    // Refresh token의 시간 : 3일
-    private static final long REFRESH_TOKEN_LIFETIME = 3 * 24 * 60 * 60 * 1000L;
+    private static final long ACCESS_TOKEN_LIFETIME = 15 * 60 * 1000L; // 15 minutes
+    private static final long REFRESH_TOKEN_LIFETIME = 3 * 24 * 60 * 60 * 1000L; // 3 days
 
+    private final Key secretKey;
     private final MemberRepository memberRepository;
 
     public JWTTokenProvider(@Value("${jwt.secret}") String secretKey, MemberRepository memberRepository) {
@@ -50,51 +47,49 @@ public class JWTTokenProvider {
         this.memberRepository = memberRepository;
     }
 
-    public MemberResponseDTO.authTokenDTO generateToken(Authentication authentication) {
+    // 권한 정보를 추출하는 공통 메서드
+    private String extractAuthorities(Collection<? extends GrantedAuthority> grantedAuthorities) {
+        return grantedAuthorities.stream()
+                .map(GrantedAuthority::getAuthority)
+                .collect(Collectors.joining(","));
+    }
+
+    // Principal에서 LoginedInfo 객체를 생성하는 메서드
+    private LoginedInfo createLoginedInfo(Authentication authentication) {
         if (authentication.getPrincipal() instanceof org.springframework.security.core.userdetails.User) {
             org.springframework.security.core.userdetails.User springUser =
                     (org.springframework.security.core.userdetails.User) authentication.getPrincipal();
 
             String email = springUser.getUsername();
-            String authorities = authentication.getAuthorities().stream()
-                    .map(GrantedAuthority::getAuthority)
-                    .collect(Collectors.joining(","));
-
             Member member = memberRepository.findByEmail(email)
                     .orElseThrow(() -> new RuntimeException("회원이 존재하지 않습니다."));
 
-            return generateToken(email, member.getId(), member.getName(), authentication.getAuthorities());
+            return new LoginedInfo(member.getId(), member.getName(), member.getEmail(), member.getAuthority());
         }
 
         throw new RuntimeException("알 수 없는 principal 타입입니다.");
     }
 
+    public MemberResponseDTO.authTokenDTO generateToken(Authentication authentication) {
+        LoginedInfo loginedInfo = createLoginedInfo(authentication);
+        return generateToken(loginedInfo.getEmail(), loginedInfo.getUserId(), loginedInfo.getName(), authentication.getAuthorities());
+    }
 
     public MemberResponseDTO.authTokenDTO generateToken(String email, Long userId, String name, Collection<? extends GrantedAuthority> grantedAuthorities) {
-        // 권한 확인
-        String authorities = grantedAuthorities.stream()
-                .map(GrantedAuthority::getAuthority)
-                .collect(Collectors.joining(","));
-
-        // 현재 시간
+        String authorities = extractAuthorities(grantedAuthorities);
         Date now = new Date();
 
-        // Access 토큰 제작
         String accessToken = Jwts.builder()
-                .setSubject(email)  // email을 subject로 설정
-                .claim("userId", userId)  // userId 추가
-                .claim("name", name)  // name 추가
+                .setSubject(email)
+                .claim("userId", userId)
+                .claim("name", name)
                 .claim(AUTHORITIES_KEY, authorities)
                 .claim(CLAIM_TYPE, TYPE_ACCESS)
-                // 토큰 발행 시간 정보
                 .setIssuedAt(now)
-                // 만료시간 주입
                 .setExpiration(new Date(now.getTime() + ACCESS_TOKEN_LIFETIME))
-                // 암호화
                 .signWith(secretKey, SignatureAlgorithm.HS256)
                 .compact();
 
-        // Refresh 토큰 제작
         String refreshToken = Jwts.builder()
                 .claim(CLAIM_TYPE, TYPE_REFRESH)
                 .setIssuedAt(now)
@@ -109,14 +104,8 @@ public class JWTTokenProvider {
         try {
             Jwts.parserBuilder().setSigningKey(secretKey).build().parseClaimsJws(token);
             return true;
-        } catch (SecurityException | MalformedJwtException | SignatureException e) {
-            log.info("올바르지 않은 서명의 JWT Token 입니다.", e);
-        } catch (ExpiredJwtException e) {
-            log.info("만료된 JWT Token 입니다.", e);
-        } catch (UnsupportedJwtException e) {
-            log.info("지원되지 않는 형식의 JWT Token 입니다.", e);
-        } catch (IllegalArgumentException e) {
-            log.info("JWT Claims가 비어있습니다.", e);
+        } catch (JwtException | IllegalArgumentException e) {
+            log.info("JWT Token 검증 실패: {}", e.getMessage());
         }
         return false;
     }
@@ -130,60 +119,38 @@ public class JWTTokenProvider {
         }
     }
 
-    // JWT 토큰 복호화 -> 토큰 정보 확인
     public Authentication getAuthentication(String token) {
-
         Claims claims = parseClaims(token);
-
-        // 권한 정보가 없으면 예외 발생
-        String authoritiesClaim = claims.get(AUTHORITIES_KEY) != null ? claims.get(AUTHORITIES_KEY).toString() : "";
-        if (authoritiesClaim.isEmpty()) {
+        String authoritiesClaim = claims.get(AUTHORITIES_KEY, String.class);
+        if (authoritiesClaim == null || authoritiesClaim.isEmpty()) {
             throw new RuntimeException("권한 정보가 없는 Token 입니다.");
         }
 
-        // 권한 정보가 단일한 경우 처리 (USER 또는 NONE만 허용)
-        Authority authorityEnum;
-        try {
-            authorityEnum = Authority.valueOf(authoritiesClaim);
-        } catch (IllegalArgumentException e) {
-            log.error("권한 값이 Authority enum과 일치하지 않습니다: {}", authoritiesClaim);
-            throw new RuntimeException("유효하지 않은 권한 값입니다.");
-        }
+        Authority authorityEnum = Authority.valueOf(authoritiesClaim);
 
-        // JWT의 subject에서 email, claims에서 userId, name을 가져옴
-        String email = claims.getSubject();  // email은 subject에 저장됨
-        Long userId = claims.get("userId", Long.class);  // userId는 claim에서 가져옴
-        String name = claims.get("name", String.class);  // name도 claim에서 가져옴
+        String email = claims.getSubject();
+        Long userId = claims.get("userId", Long.class);
+        String name = claims.get("name", String.class);
 
-
-        // LoginedInfo 객체 생성
         LoginedInfo loginedInfo = new LoginedInfo(userId, name, email, authorityEnum);
 
-        // authorities에 SimpleGrantedAuthority를 생성하여 UsernamePasswordAuthenticationToken 반환
-        Collection<? extends GrantedAuthority> authorities =
-                Arrays.asList(new SimpleGrantedAuthority(authoritiesClaim));
-
-
+        Collection<? extends GrantedAuthority> authorities = Arrays.asList(new SimpleGrantedAuthority(authoritiesClaim));
         return new UsernamePasswordAuthenticationToken(loginedInfo, "", authorities);
     }
 
     public boolean isRefreshToken(String token) {
-        String type = (String) Jwts.parserBuilder().setSigningKey(secretKey).build().parseClaimsJws(token).getBody().get(CLAIM_TYPE);
-        return type.equals(TYPE_REFRESH);
+        return TYPE_REFRESH.equals(Jwts.parserBuilder().setSigningKey(secretKey).build().parseClaimsJws(token).getBody().get(CLAIM_TYPE));
     }
 
     public String resolveToken(HttpServletRequest request, String tokenType) {
         Cookie[] cookies = request.getCookies();
         if (cookies != null) {
             for (Cookie cookie : cookies) {
-                if (tokenType.equals("accessToken") && cookie.getName().equals("accessToken")) {
-                    return cookie.getValue();
-                } else if (tokenType.equals("refreshToken") && cookie.getName().equals("refreshToken")) {
+                if (tokenType.equals(cookie.getName())) {
                     return cookie.getValue();
                 }
             }
         }
         return null;
     }
-
 }
