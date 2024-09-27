@@ -12,9 +12,8 @@ import java.util.List;
 @Service
 public class MatchService {
 
-    private MatchRepository matchRepository;
+    private final MatchRepository matchRepository;
 
-    // 의존성 주입
     @Autowired
     public MatchService(MatchRepository matchRepository) {
         this.matchRepository = matchRepository;
@@ -22,59 +21,33 @@ public class MatchService {
 
     // 경기 조회
     public List<LoadMatchResponseDTO> loadAllMatches() {
-
-        return matchRepository.findAll()
-                .stream()
+        return matchRepository.findAll().stream()
                 .map(LoadMatchResponseDTO::new)
                 .toList();
     }
 
-
     // 경기 등록
     public void registMatch(MatchRegistRequestDTO matchInfo) {
-
-        Match newMatch = new Match(
-                matchInfo.getMatchEnrollUserId(),
-                matchInfo.getMatchApplyUserId(),
-                matchInfo.getMyClub(),
-                matchInfo.getEnemyClub(),
-                matchInfo.getMatchPhoto(),
-                matchInfo.getMatchIntroduce(),
-                matchInfo.getMatchSchedule(),
-                matchInfo.getMatchPlayerQuantity(),
-                matchInfo.getQuarterQuantity(),
-                matchInfo.getFieldLocation(),
-                matchInfo.getMatchCost(),
-                matchInfo.getPro(),
-                matchInfo.getClubLevel(),
-                matchInfo.getMatchGender(),
-                matchInfo.getMatchStatus()
-        );
-
-        matchRepository.save(newMatch);
+        matchRepository.save(matchInfo.toEntity());
     }
 
     // 경기 수정
-    public void modifyMatch(Long matchId, String MatchIntroduce) {
-        Match foundMatch = matchRepository.findById(matchId).orElseThrow(IllegalAccessError::new);
-        foundMatch.setMatchIntroduce(MatchIntroduce);
-
+    public void modifyMatch(Long matchId, String matchIntroduce) {
+        Match foundMatch = matchRepository.findById(matchId)
+                .orElseThrow(IllegalArgumentException::new);
+        foundMatch.setMatchIntroduce(matchIntroduce);
+        matchRepository.save(foundMatch);  // 변경된 엔티티를 저장
     }
 
     // 경기 삭제
     public void removeMatch(Long matchId) {
-
         matchRepository.deleteById(matchId);
-
-
     }
 
-
-    // matchId로 찾기
+    // matchId로 경기 찾기
     public LoadMatchResponseDTO findMatchByMatchId(Long matchId) {
-
-        return new LoadMatchResponseDTO(
-                matchRepository.findById(matchId)
-                        .orElseThrow(IllegalAccessError::new));
+        Match match = matchRepository.findById(matchId)
+                .orElseThrow(IllegalArgumentException::new);
+        return new LoadMatchResponseDTO(match);
     }
 }

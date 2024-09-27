@@ -1,11 +1,11 @@
-package com.yfmf.footlog.users.dto;
+package com.yfmf.footlog.domain.member.dto;
 
-import com.yfmf.footlog.enums.Area;
-import com.yfmf.footlog.enums.MainFoot;
-import com.yfmf.footlog.enums.Position;
-import com.yfmf.footlog.users.UserRole;
-import com.yfmf.footlog.users.entity.Record;
-import com.yfmf.footlog.users.entity.Stat;
+import com.yfmf.footlog.domain.member.domain.Record;
+import com.yfmf.footlog.domain.member.domain.Stat;
+import com.yfmf.footlog.domain.member.domain.UserRole;
+import com.yfmf.footlog.domain.member.enums.Area;
+import com.yfmf.footlog.domain.member.enums.MainFoot;
+import com.yfmf.footlog.domain.member.enums.Position;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -15,7 +15,7 @@ import java.time.LocalDate;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class UserUpdateRequestDto {
+public class MemberUpdateRequestDto {
 
     private String userName;
     private LocalDate birth;
