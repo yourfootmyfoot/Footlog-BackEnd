@@ -105,7 +105,7 @@ public class ClubMemberController {
             throw new LoginRequiredException("로그인 후 이용이 가능합니다.", "[ClubMemberController] leaveClub");
         }
 
-        log.info("[ClubMemberController] 사용자 {}가 클럽 {}에서 탈퇴를 시도합니다.", logined.getUserId(), clubId);
+        log.info("[ClubMemberController] 사용자 {}가 구단 {}에서 탈퇴를 시도합니다.", logined.getUserId(), clubId);
         clubMemberService.leaveClub(logined.getUserId(), clubId);
 
         ClubMemberResponseDTO responseDTO = new ClubMemberResponseDTO(
@@ -115,14 +115,14 @@ public class ClubMemberController {
                 "탈퇴 성공"
         );
 
-        log.info("[ClubMemberController] 사용자 {}가 클럽 {}에서 성공적으로 탈퇴했습니다.", logined.getUserId(), clubId);
+        log.info("[ClubMemberController] 사용자 {}가 구단 {}에서 성공적으로 탈퇴했습니다.", logined.getUserId(), clubId);
         return ResponseEntity.ok(responseDTO);
     }
 
     /**
      * 구단원 목록 조회
      */
-    @Operation(summary = "구단원 목록 조회", description = "클럽에 소속된 구단원들의 목록을 조회합니다.")
+    @Operation(summary = "구단원 목록 조회", description = "구단에 소속된 구단원들의 목록을 조회합니다.")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "구단원 목록이 성공적으로 조회되었습니다."),
             @ApiResponse(responseCode = "401", description = "로그인이 필요합니다.", content = @Content(
@@ -132,11 +132,11 @@ public class ClubMemberController {
                             value = "{\"status\": 401, \"errorType\": \"Unauthorized\", \"message\": \"로그인이 필요합니다.\"}"
                     )
             )),
-            @ApiResponse(responseCode = "404", description = "클럽이 존재하지 않습니다.", content = @Content(
+            @ApiResponse(responseCode = "404", description = "구단이 존재하지 않습니다.", content = @Content(
                     mediaType = "application/json",
                     schema = @Schema(implementation = ErrorResponse.class),
                     examples = @ExampleObject(
-                            value = "{\"status\": 404, \"errorType\": \"Not Found\", \"message\": \"클럽이 존재하지 않습니다.\"}"
+                            value = "{\"status\": 404, \"errorType\": \"Not Found\", \"message\": \"구단이 존재하지 않습니다.\"}"
                     )
             ))
     })
@@ -147,7 +147,7 @@ public class ClubMemberController {
             throw new LoginRequiredException("로그인 후 이용이 가능합니다.", "[ClubMemberController] getClubMembers");
         }
 
-        log.info("[ClubMemberController] 클럽 ID={}의 구단원 목록을 조회합니다.", clubId);
+        log.info("[ClubMemberController] 구단 ID={}의 구단원 목록을 조회합니다.", clubId);
         List<ClubMemberResponseDTO> members = clubMemberService.getClubMembers(clubId).stream()
                 .map(member -> new ClubMemberResponseDTO(
                         member.getId(),
@@ -157,7 +157,7 @@ public class ClubMemberController {
                 ))
                 .collect(Collectors.toList());
 
-        log.info("[ClubMemberController] 클럽 ID={}의 구단원 목록 조회에 성공했습니다.", clubId);
+        log.info("[ClubMemberController] 구단 ID={}의 구단원 목록 조회에 성공했습니다.", clubId);
         return ResponseEntity.ok(members);
     }
 

@@ -36,24 +36,24 @@ public class ClubMemberService {
      */
     @Transactional
     public void joinClub(Long userId, Long clubId) {
-        log.info("[ClubMemberService] 클럽 ID={}에 사용자 ID={}를 추가하려고 합니다.", clubId, userId);
+        log.info("[ClubMemberService] 구단 ID={}에 사용자 ID={}를 추가하려고 합니다.", clubId, userId);
 
         // 구단이 존재하는지 확인
         if (!clubRepository.existsById(clubId)) {
-            log.error("[ClubMemberService] 클럽 ID={}가 존재하지 않습니다.", clubId);
+            log.error("[ClubMemberService] 구단 ID={}가 존재하지 않습니다.", clubId);
             throw new ClubNotFoundException("구단을 찾을 수 없습니다.", "[ClubMemberService] joinClub");
         }
 
         // 이미 구단에 가입된 회원인지 확인
         if (clubMemberRepository.existsByMemberIdAndClubId(userId, clubId)) {
-            log.error("[ClubMemberService] 사용자 ID={}는 이미 클럽 ID={}에 가입되어 있습니다.", userId, clubId);
+            log.error("[ClubMemberService] 사용자 ID={}는 이미 구단 ID={}에 가입되어 있습니다.", userId, clubId);
             throw new IllegalArgumentException("이미 구단에 가입된 회원입니다.");
         }
 
         // 구단원 추가
         ClubMember clubMember = new ClubMember(clubId, userId, ClubMemberRole.MEMBER);
         clubMemberRepository.save(clubMember);
-        log.info("[ClubMemberService] 사용자 ID={}가 클럽 ID={}에 성공적으로 가입되었습니다.", userId, clubId);
+        log.info("[ClubMemberService] 사용자 ID={}가 구단 ID={}에 성공적으로 가입되었습니다.", userId, clubId);
     }
 
     /**
@@ -61,23 +61,23 @@ public class ClubMemberService {
      */
     @Transactional
     public void leaveClub(Long userId, Long clubId) {
-        log.info("[ClubMemberService] 클럽 ID={}에서 사용자 ID={}를 탈퇴시키려고 합니다.", clubId, userId);
+        log.info("[ClubMemberService] 구단 ID={}에서 사용자 ID={}를 탈퇴시키려고 합니다.", clubId, userId);
 
 
         // 구단이 존재하는지 확인
         if (!clubRepository.existsById(clubId)) {
-            log.error("[ClubMemberService] 클럽 ID={}가 존재하지 않습니다.", clubId);
+            log.error("[ClubMemberService] 구단 ID={}가 존재하지 않습니다.", clubId);
             throw new ClubNotFoundException("구단을 찾을 수 없습니다.", "[ClubMemberService] leaveClub");
         }
 
         // 구단원 탈퇴
         if (!clubMemberRepository.existsByMemberIdAndClubId(userId, clubId)) {
-            log.error("[ClubMemberService] 사용자 ID={}는 클럽 ID={}에 가입되어 있지 않습니다.", userId, clubId);
+            log.error("[ClubMemberService] 사용자 ID={}는 구단 ID={}에 가입되어 있지 않습니다.", userId, clubId);
             throw new IllegalArgumentException("해당 회원은 구단에 가입되어 있지 않습니다.");
         }
 
         clubMemberRepository.deleteByMemberIdAndClubId(userId, clubId);
-        log.info("[ClubMemberService] 사용자 ID={}가 클럽 ID={}에서 성공적으로 탈퇴되었습니다.", userId, clubId);
+        log.info("[ClubMemberService] 사용자 ID={}가 구단 ID={}에서 성공적으로 탈퇴되었습니다.", userId, clubId);
     }
 
     public String getClubNameById(Long clubId) {
@@ -87,19 +87,19 @@ public class ClubMemberService {
     }
 
     /**
-     * 클럽에 소속된 구단원 목록 조회
+     * 구단에 소속된 구단원 목록 조회
      */
     @Transactional(readOnly = true)
     public List<Member> getClubMembers(Long clubId) {
-        log.info("[ClubMemberService] 클럽 ID={}의 구단원을 조회합니다.", clubId);
+        log.info("[ClubMemberService] 구단 ID={}의 구단원을 조회합니다.", clubId);
 
-        // 클럽이 존재하는지 확인
+        // 구단이 존재하는지 확인
         if (!clubRepository.existsById(clubId)) {
-            log.error("[ClubMemberService] 클럽 ID={}가 존재하지 않습니다.", clubId);
+            log.error("[ClubMemberService] 구단 ID={}가 존재하지 않습니다.", clubId);
             throw new ClubNotFoundException("구단을 찾을 수 없습니다.", "[ClubMemberService] getClubMembers");
         }
 
-        // 클럽에 속한 구단원 조회
+        // 구단에 속한 구단원 조회
         List<ClubMember> clubMembers = clubMemberRepository.findByClubId(clubId);
 
         // 구단원 ID로 회원 정보 조회
@@ -109,7 +109,7 @@ public class ClubMemberService {
                 )
                 .collect(Collectors.toList());
 
-        log.info("[ClubMemberService] 클럽 ID={}에 소속된 구단원을 성공적으로 조회했습니다.", clubId);
+        log.info("[ClubMemberService] 구단 ID={}에 소속된 구단원을 성공적으로 조회했습니다.", clubId);
         return members;
     }
 
@@ -118,11 +118,11 @@ public class ClubMemberService {
      */
     @Transactional
     public void updateMemberRole(Long clubId, Long userId, ClubMemberRole newRole, Long requestingUserId) {
-        log.info("[ClubMemberService] 클럽 ID={}의 사용자 ID={}의 역할을 {}로 수정하려고 합니다.", clubId, userId, newRole);
+        log.info("[ClubMemberService] 구단 ID={}의 사용자 ID={}의 역할을 {}로 수정하려고 합니다.", clubId, userId, newRole);
 
-        // 클럽이 존재하는지 확인
+        // 구단이 존재하는지 확인
         if (!clubRepository.existsById(clubId)) {
-            log.error("[ClubMemberService] 클럽 ID={}가 존재하지 않습니다.", clubId);
+            log.error("[ClubMemberService] 구단 ID={}가 존재하지 않습니다.", clubId);
             throw new ClubNotFoundException("구단을 찾을 수 없습니다.", "[ClubMemberService] updateMemberRole");
         }
 
