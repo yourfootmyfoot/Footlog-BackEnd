@@ -28,6 +28,7 @@ public enum ErrorCode {
     DIFFERENT_IP_ADDRESS(HttpStatus.BAD_REQUEST, "AUTH-003", "기존 IP 주소와 다른 IP 주소에서의 요청입니다."),
     ANONYMOUS_USER(HttpStatus.UNAUTHORIZED, "AUTH-004", "익명의 유저가 접근하였습니다.");
 
+
     private HttpStatus status;
     private String errorCode;
     private String message;
