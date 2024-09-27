@@ -3,6 +3,7 @@ package com.yfmf.footlog.domain.club.controller;
 import com.yfmf.footlog.domain.auth.dto.LoginedInfo;
 import com.yfmf.footlog.domain.auth.exception.LoginRequiredException;
 import com.yfmf.footlog.domain.club.dto.ClubMemberResponseDTO;
+import com.yfmf.footlog.domain.club.entity.ClubMemberRole;
 import com.yfmf.footlog.domain.club.service.ClubMemberService;
 import com.yfmf.footlog.exception.ErrorResponse;
 import io.swagger.v3.oas.annotations.Operation;
@@ -158,5 +159,33 @@ public class ClubMemberController {
 
         log.info("[ClubMemberController] 클럽 ID={}의 구단원 목록 조회에 성공했습니다.", clubId);
         return ResponseEntity.ok(members);
+    }
+
+    /**
+     * 구단원 역할 수정
+     */
+    @Operation(summary = "구단원 역할 수정", description = "구단원의 등급을 수정합니다.")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "구단원의 역할이 성공적으로 수정되었습니다."),
+            @ApiResponse(responseCode = "401", description = "로그인이 필요합니다."),
+            @ApiResponse(responseCode = "404", description = "구단원이 존재하지 않습니다.")
+    })
+    @PutMapping("/{clubId}/{userId}/role")
+    public ResponseEntity<String> updateMemberRole(
+            @PathVariable Long clubId,
+            @PathVariable Long userId,
+            @RequestParam ClubMemberRole role,
+            @AuthenticationPrincipal LoginedInfo logined) {
+
+        if (logined == null) {
+            log.error("[ClubMemberController] 로그인되지 않은 사용자가 구단원 역할 수정을 시도했습니다.");
+            return ResponseEntity.status(401).body("로그인이 필요합니다.");
+        }
+
+        log.info("[ClubMemberController] 구단 ID={}의 사용자 ID={}의 역할을 {}로 수정 시도", clubId, userId, role);
+
+        clubMemberService.updateMemberRole(clubId, userId, role, logined.getUserId());
+
+        return ResponseEntity.ok("구단원의 역할이 성공적으로 수정되었습니다.");
     }
 }
