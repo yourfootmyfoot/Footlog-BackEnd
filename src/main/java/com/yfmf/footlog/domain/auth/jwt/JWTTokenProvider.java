@@ -2,7 +2,9 @@ package com.yfmf.footlog.domain.auth.jwt;
 
 import com.yfmf.footlog.domain.auth.dto.LoginedInfo;
 import com.yfmf.footlog.domain.member.domain.Authority;
+import com.yfmf.footlog.domain.member.domain.Member;
 import com.yfmf.footlog.domain.member.dto.MemberResponseDTO;
+import com.yfmf.footlog.domain.member.repository.MemberRepository;
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
@@ -40,24 +42,35 @@ public class JWTTokenProvider {
     // Refresh token의 시간 : 3일
     private static final long REFRESH_TOKEN_LIFETIME = 3 * 24 * 60 * 60 * 1000L;
 
-    public JWTTokenProvider(@Value("${jwt.secret}") String secretKey) {
+    private final MemberRepository memberRepository;
+
+    public JWTTokenProvider(@Value("${jwt.secret}") String secretKey, MemberRepository memberRepository) {
         byte[] keyBytes = Decoders.BASE64.decode(secretKey);
         this.secretKey = Keys.hmacShaKeyFor(keyBytes);
+        this.memberRepository = memberRepository;
     }
 
     public MemberResponseDTO.authTokenDTO generateToken(Authentication authentication) {
-        String authorities = authentication.getAuthorities().stream()
-                .map(GrantedAuthority::getAuthority)
-                .collect(Collectors.joining(","));
+        if (authentication.getPrincipal() instanceof org.springframework.security.core.userdetails.User) {
+            org.springframework.security.core.userdetails.User springUser =
+                    (org.springframework.security.core.userdetails.User) authentication.getPrincipal();
 
-        if (authorities.isEmpty()) {
-            throw new RuntimeException("권한 정보가 없는 토큰을 생성할 수 없습니다.");
+            String email = springUser.getUsername();
+            String authorities = authentication.getAuthorities().stream()
+                    .map(GrantedAuthority::getAuthority)
+                    .collect(Collectors.joining(","));
+
+            Member member = memberRepository.findByEmail(email)
+                    .orElseThrow(() -> new RuntimeException("회원이 존재하지 않습니다."));
+
+            return generateToken(email, member.getId(), member.getName(), authentication.getAuthorities());
         }
 
-        return generateToken(authentication.getName(), authentication.getAuthorities());
+        throw new RuntimeException("알 수 없는 principal 타입입니다.");
     }
 
-    public MemberResponseDTO.authTokenDTO generateToken(String name, Collection<? extends GrantedAuthority> grantedAuthorities) {
+
+    public MemberResponseDTO.authTokenDTO generateToken(String email, Long userId, String name, Collection<? extends GrantedAuthority> grantedAuthorities) {
         // 권한 확인
         String authorities = grantedAuthorities.stream()
                 .map(GrantedAuthority::getAuthority)
@@ -68,9 +81,9 @@ public class JWTTokenProvider {
 
         // Access 토큰 제작
         String accessToken = Jwts.builder()
-                // 아이디 주입
-                .setSubject(name)
-                // 권한 주입
+                .setSubject(email)  // email을 subject로 설정
+                .claim("userId", userId)  // userId 추가
+                .claim("name", name)  // name 추가
                 .claim(AUTHORITIES_KEY, authorities)
                 .claim(CLAIM_TYPE, TYPE_ACCESS)
                 // 토큰 발행 시간 정보
@@ -122,36 +135,34 @@ public class JWTTokenProvider {
 
         Claims claims = parseClaims(token);
 
-        // 권한 정보가 없으면 기본 권한을 할당하거나 예외 처리
+        // 권한 정보가 없으면 예외 발생
         String authoritiesClaim = claims.get(AUTHORITIES_KEY) != null ? claims.get(AUTHORITIES_KEY).toString() : "";
         if (authoritiesClaim.isEmpty()) {
             throw new RuntimeException("권한 정보가 없는 Token 입니다.");
         }
-        // 권한 정보 가져오기
-        Collection<? extends GrantedAuthority> authorities =
-                Arrays.stream(claims.get(AUTHORITIES_KEY).toString().split(","))
-                        .map(SimpleGrantedAuthority::new)
-                        .collect(Collectors.toList());
 
-        // subject가 email인 경우 처리
-        String subject = claims.getSubject();
-        Long userId = null;
-        String userName = claims.get("name", String.class); // JWT 토큰에 저장된 이름 정보 가져오기
-
+        // 권한 정보가 단일한 경우 처리 (USER 또는 NONE만 허용)
+        Authority authorityEnum;
         try {
-            // subject가 Long 타입일 때 처리
-            userId = Long.parseLong(subject);
-        } catch (NumberFormatException e) {
-            // subject가 이메일인 경우 처리
-            log.warn("Subject is not a userId, treating as email: {}", subject);
+            authorityEnum = Authority.valueOf(authoritiesClaim);
+        } catch (IllegalArgumentException e) {
+            log.error("권한 값이 Authority enum과 일치하지 않습니다: {}", authoritiesClaim);
+            throw new RuntimeException("유효하지 않은 권한 값입니다.");
         }
 
+        // JWT의 subject에서 email, claims에서 userId, name을 가져옴
+        String email = claims.getSubject();  // email은 subject에 저장됨
+        Long userId = claims.get("userId", Long.class);  // userId는 claim에서 가져옴
+        String name = claims.get("name", String.class);  // name도 claim에서 가져옴
+
+
         // LoginedInfo 객체 생성
-        LoginedInfo loginedInfo = new LoginedInfo();
-        loginedInfo.setUserId(userId);  // userId가 null일 수 있음
-        loginedInfo.setEmail(subject);  // 이메일이 subject로 저장됨
-        loginedInfo.setName(userName);  // 이름 정보 저장
-        loginedInfo.setAuthority(Authority.valueOf(claims.get(AUTHORITIES_KEY).toString()));
+        LoginedInfo loginedInfo = new LoginedInfo(userId, name, email, authorityEnum);
+
+        // authorities에 SimpleGrantedAuthority를 생성하여 UsernamePasswordAuthenticationToken 반환
+        Collection<? extends GrantedAuthority> authorities =
+                Arrays.asList(new SimpleGrantedAuthority(authoritiesClaim));
+
 
         return new UsernamePasswordAuthenticationToken(loginedInfo, "", authorities);
     }
