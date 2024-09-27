@@ -2,6 +2,7 @@ package com.yfmf.footlog.domain.club.service;
 
 import com.yfmf.footlog.domain.club.dto.ClubRegistResponseDTO;
 import com.yfmf.footlog.domain.club.entity.ClubMember;
+import com.yfmf.footlog.domain.club.entity.ClubMemberRole;
 import com.yfmf.footlog.domain.club.exception.ClubDuplicatedException;
 import com.yfmf.footlog.domain.club.exception.ClubNotFoundException;
 import com.yfmf.footlog.domain.club.repository.ClubMemberRepository;
@@ -33,19 +34,26 @@ public class ClubService {
     @Transactional
     public ClubRegistResponseDTO registClub(ClubRegistRequestDTO clubInfo) {
         log.info("클럽 등록 시도: 클럽 이름={}, 클럽 코드={}", clubInfo.getClubName(), clubInfo.getClubCode());
+
         // 중복된 클럽 코드 확인
         if (clubRepository.existsByClubCode(clubInfo.getClubCode())) {
             log.error("클럽 코드 중복: 클럽 코드={}", clubInfo.getClubCode());
             throw new ClubDuplicatedException("이미 존재하는 클럽 코드입니다.", "[ClubService] registClub");
         }
 
+        // 새로운 클럽 생성 및 저장
         Club newClub = new Club(clubInfo.getUserId(), clubInfo.getClubName(), clubInfo.getClubIntroduction(),
                 clubInfo.getClubCode(), clubInfo.getErollDate(), 1, clubInfo.getDays(),
                 clubInfo.getTimes(), clubInfo.getSkillLevel(), clubInfo.getStadiumName(),
                 clubInfo.getCity(), clubInfo.getRegion(), clubInfo.getAgeGroup(), clubInfo.getGender());
-
         clubRepository.save(newClub);
         log.info("[ClubService] 클럽 등록 성공: 클럽 ID={}", newClub.getClubId());
+
+        // 클럽 생성자를 구단주(OWNER)로 클럽에 추가
+        ClubMember clubOwner = new ClubMember(newClub.getClubId(), newClub.getUserId(), ClubMemberRole.OWNER);
+        clubMemberRepository.save(clubOwner);
+
+        log.info("[ClubService] 클럽 등록 및 구단주 추가 완료: 클럽 ID={}, 구단주 ID={}", newClub.getClubId(), newClub.getUserId());
 
         // 클럽 등록 결과 반환
         return new ClubRegistResponseDTO(newClub.getUserId(), newClub.getClubName(), newClub.getClubIntroduction(),

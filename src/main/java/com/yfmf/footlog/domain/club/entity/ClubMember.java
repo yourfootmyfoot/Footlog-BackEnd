@@ -23,11 +23,17 @@ public class ClubMember {
     @Column(name = "MEMBER_ID")
     private Long memberId;
 
+    // 추가: 구단원의 역할(등급)을 저장하는 필드
+    @Enumerated(EnumType.STRING)
+    @Column(name = "ROLE", nullable = false)
+    private ClubMemberRole role;  // 구단원 역할 (구단주, 매니저, 일반 구단원)
+
     public ClubMember() {
     }
 
-    public ClubMember(Long clubId, Long memberId) {
+    public ClubMember(Long clubId, Long memberId, ClubMemberRole role) {
         this.clubId = clubId;
         this.memberId = memberId;
+        this.role = role;
     }
 }
