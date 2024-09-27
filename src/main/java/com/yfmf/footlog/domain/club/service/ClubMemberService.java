@@ -1,5 +1,6 @@
 package com.yfmf.footlog.domain.club.service;
 
+import com.yfmf.footlog.domain.club.entity.Club;
 import com.yfmf.footlog.domain.club.entity.ClubMember;
 import com.yfmf.footlog.domain.club.exception.ClubNotFoundException;
 import com.yfmf.footlog.domain.club.repository.ClubMemberRepository;
@@ -70,4 +71,11 @@ public class ClubMemberService {
         clubMemberRepository.deleteByMemberIdAndClubId(userId, clubId);
         log.info("[ClubMemberService] 사용자 ID={}가 클럽 ID={}에서 성공적으로 탈퇴되었습니다.", userId, clubId);
     }
+
+    public String getClubNameById(Long clubId) {
+        return clubRepository.findById(clubId)
+                .map(Club::getClubName)
+                .orElseThrow(() -> new ClubNotFoundException("구단을 찾을 수 없습니다.", "[ClubMemberService] getClubNameById"));
+    }
+
 }
