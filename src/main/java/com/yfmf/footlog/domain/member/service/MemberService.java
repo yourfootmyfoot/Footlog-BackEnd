@@ -14,7 +14,9 @@ import com.yfmf.footlog.domain.member.dto.MemberResponseDTO;
 import com.yfmf.footlog.domain.member.repository.MemberRepository;
 import com.yfmf.footlog.error.ApplicationException;
 import com.yfmf.footlog.error.ErrorCode;
+import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -61,10 +63,10 @@ public class MemberService {
 
     }
 
-    /*
-        기본 로그인
-     */
-    public MemberResponseDTO.authTokenDTO login(HttpServletRequest httpServletRequest, MemberRequestDTO.loginDTO requestDTO) {
+    /**
+       기본 로그인 - 쿠키에 토큰 저장
+    */
+    public MemberResponseDTO.authTokenDTO login(HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse, MemberRequestDTO.loginDTO requestDTO) {
 
         // 1. 이메일 확인
         Member member = findMemberByEmail(requestDTO.email())
@@ -73,7 +75,23 @@ public class MemberService {
         // 2. 비밀번호 확인
         checkValidPassword(requestDTO.password(), member.getPassword());
 
-        return getAuthTokenDTO(requestDTO.email(), requestDTO.password(), httpServletRequest);
+        // 3. 토큰 발급 및 쿠키에 저장
+        MemberResponseDTO.authTokenDTO authTokenDTO = getAuthTokenDTO(requestDTO.email(), requestDTO.password(), httpServletRequest);
+        addTokenToCookie(httpServletResponse, "accessToken", authTokenDTO.accessToken());
+        addTokenToCookie(httpServletResponse, "refreshToken", authTokenDTO.refreshToken());
+
+        return authTokenDTO;
+    }
+
+    // 쿠키에 토큰 추가
+    private void addTokenToCookie(HttpServletResponse response, String tokenName, String tokenValue) {
+        Cookie cookie = new Cookie(tokenName, tokenValue);
+        cookie.setHttpOnly(true);  // JavaScript에서 쿠키 접근을 차단
+        cookie.setSecure(false);   // HTTPS에서만 전송되도록 설정 (필요 시 true로 설정)
+        cookie.setPath("/");       // 애플리케이션의 모든 경로에서 쿠키가 유효하도록 설정
+        cookie.setMaxAge(7 * 24 * 60 * 60); // 쿠키 만료 시간 설정 (1주일)
+
+        response.addCookie(cookie);
     }
 
     // 비밀번호 확인
@@ -205,4 +223,6 @@ public class MemberService {
         refreshTokenRepository.delete(refreshToken);
         log.info("로그아웃 성공");
     }
+
+
 }

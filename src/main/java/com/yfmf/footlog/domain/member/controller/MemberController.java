@@ -48,11 +48,9 @@ public class MemberController {
       */
     @Operation(summary = "로그인", description = "회원 로그인을 처리하고 인증 토큰을 발급합니다.")
     @PostMapping("/login")
-    public ResponseEntity<?> login(HttpServletRequest httpServletRequest, @Valid @RequestBody MemberRequestDTO.loginDTO requestDTO) {
-
-        MemberResponseDTO.authTokenDTO responseDTO = memberService.login(httpServletRequest, requestDTO);
-
-        return ResponseEntity.ok().body(ApiUtils.success(responseDTO));
+    public ResponseEntity<?> login(@Valid @RequestBody MemberRequestDTO.loginDTO loginDTO, HttpServletRequest request, HttpServletResponse response) {
+        MemberResponseDTO.authTokenDTO authTokenDTO = memberService.login(request, response, loginDTO);
+        return ResponseEntity.ok(authTokenDTO);  // 쿠키는 이미 설정된 상태이므로 body에 추가 정보가 필요 없다면 간단히 처리
     }
 
     /*
