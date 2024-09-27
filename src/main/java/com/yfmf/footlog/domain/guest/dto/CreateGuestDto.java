@@ -21,10 +21,6 @@ public class CreateGuestDto {
     @NotNull(message = "Creation date cannot be null")
     private LocalDateTime createdAt;
 
-    private MainFoot mainFoot;
-
-    private Position position;
-
     private Boolean isAvailable;
 
 }
