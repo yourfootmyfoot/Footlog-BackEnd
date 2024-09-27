@@ -1,5 +1,6 @@
 package com.yfmf.footlog.domain.member.service;
 
+import com.yfmf.footlog.domain.auth.dto.LoginedInfo;
 import com.yfmf.footlog.domain.auth.jwt.JWTTokenProvider;
 import com.yfmf.footlog.domain.auth.refreshToken.domain.RefreshToken;
 import com.yfmf.footlog.domain.auth.refreshToken.repository.RefreshTokenRepository;
@@ -21,6 +22,7 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -110,24 +112,17 @@ public class MemberService {
         AuthenticationManager manager = authenticationManagerBuilder.getObject();
         Authentication authentication = manager.authenticate(usernamePasswordAuthenticationToken);
 
-        MemberResponseDTO.authTokenDTO authTokenDTO = jwtTokenProvider.generateToken(authentication);
+        // 회원 정보 조회 후 LoginedInfo 생성
+        Member member = findMemberByEmail(email).orElseThrow(() -> new ApplicationException(ErrorCode.EMPTY_EMAIL_MEMBER));
+        LoginedInfo loginedInfo = new LoginedInfo(member.getId(), member.getName(), member.getEmail(), member.getAuthority());
 
-        // 단일 권한 추출 (가정: 단일 권한만 부여됨)
-        Authority authority = Authority.NONE; // 기본값
-        if (!authentication.getAuthorities().isEmpty()) {
-            authority = Authority.valueOf(authentication.getAuthorities().iterator().next().getAuthority());
-        }
+        // 인증 객체에서 LoginedInfo로 교체
+        Authentication newAuth = new UsernamePasswordAuthenticationToken(loginedInfo, authentication.getCredentials(), authentication.getAuthorities());
+        SecurityContextHolder.getContext().setAuthentication(newAuth);
 
-        refreshTokenRepository.save(RefreshToken.builder()
-                .userName(authentication.getName())
-                .ip(ClientUtils.getClientIp(httpServletRequest))
-                .authorities(authority)
-                .refreshToken(authTokenDTO.refreshToken())
-                .build()
-        );
-
-        return authTokenDTO;
+        return jwtTokenProvider.generateToken(loginedInfo.getEmail(), loginedInfo.getUserId(), loginedInfo.getName(), authentication.getAuthorities());
     }
+
 
     // 토큰 재발급
     public MemberResponseDTO.authTokenDTO reissueToken(HttpServletRequest httpServletRequest) {
@@ -159,8 +154,16 @@ public class MemberService {
         }
 
         // 저장된 RefreshToken 정보를 기반으로 JWT Token 생성
+        RefreshToken refreshTokenEntity = refreshToken.get();
+        String email = refreshTokenEntity.getUserName();
+        Long userId = refreshTokenEntity.getId();  // 적절한 userId 추출 방식
+        String name = ""; // name 정보를 refresh token에서 찾을 수 없다면 적절히 처리
+        Authority authority = refreshTokenEntity.getAuthorities();
+
+
+        // JWT 토큰 발급
         MemberResponseDTO.authTokenDTO authTokenDTO = jwtTokenProvider.generateToken(
-                String.valueOf(refreshToken.get().getId()), Collections.singletonList(new SimpleGrantedAuthority(refreshToken.get().getAuthorities().name()))
+                email, userId, name, Collections.singletonList(new SimpleGrantedAuthority(authority.name()))
         );
 
         // RefreshToken Update
