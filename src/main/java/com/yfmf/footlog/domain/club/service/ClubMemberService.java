@@ -5,10 +5,15 @@ import com.yfmf.footlog.domain.club.entity.ClubMember;
 import com.yfmf.footlog.domain.club.exception.ClubNotFoundException;
 import com.yfmf.footlog.domain.club.repository.ClubMemberRepository;
 import com.yfmf.footlog.domain.club.repository.ClubRepository;
+import com.yfmf.footlog.domain.member.domain.Member;
+import com.yfmf.footlog.domain.member.repository.MemberRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Slf4j
 @Service
@@ -16,11 +21,13 @@ public class ClubMemberService {
 
     private final ClubRepository clubRepository;
     private final ClubMemberRepository clubMemberRepository;
+    private final MemberRepository memberRepository;
 
     @Autowired
-    public ClubMemberService(ClubRepository clubRepository, ClubMemberRepository clubMemberRepository) {
+    public ClubMemberService(ClubRepository clubRepository, ClubMemberRepository clubMemberRepository, MemberRepository memberRepository) {
         this.clubRepository = clubRepository;
         this.clubMemberRepository = clubMemberRepository;
+        this.memberRepository = memberRepository;
     }
 
     /**
@@ -76,6 +83,33 @@ public class ClubMemberService {
         return clubRepository.findById(clubId)
                 .map(Club::getClubName)
                 .orElseThrow(() -> new ClubNotFoundException("구단을 찾을 수 없습니다.", "[ClubMemberService] getClubNameById"));
+    }
+
+    /**
+     * 클럽에 소속된 구단원 목록 조회
+     */
+    @Transactional(readOnly = true)
+    public List<Member> getClubMembers(Long clubId) {
+        log.info("[ClubMemberService] 클럽 ID={}의 구단원을 조회합니다.", clubId);
+
+        // 클럽이 존재하는지 확인
+        if (!clubRepository.existsById(clubId)) {
+            log.error("[ClubMemberService] 클럽 ID={}가 존재하지 않습니다.", clubId);
+            throw new ClubNotFoundException("구단을 찾을 수 없습니다.", "[ClubMemberService] getClubMembers");
+        }
+
+        // 클럽에 속한 구단원 조회
+        List<ClubMember> clubMembers = clubMemberRepository.findByClubId(clubId);
+
+        // 구단원 ID로 회원 정보 조회
+        List<Member> members = clubMembers.stream()
+                .map(clubMember -> memberRepository.findById(clubMember.getMemberId())
+                        .orElseThrow(() -> new IllegalArgumentException("구단원의 회원 정보를 찾을 수 없습니다."))
+                )
+                .collect(Collectors.toList());
+
+        log.info("[ClubMemberService] 클럽 ID={}에 소속된 구단원을 성공적으로 조회했습니다.", clubId);
+        return members;
     }
 
 }

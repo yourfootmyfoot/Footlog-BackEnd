@@ -12,6 +12,9 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+import java.util.stream.Collectors;
+
 @Slf4j
 @RestController
 @RequestMapping("/api/club-members")
@@ -73,5 +76,30 @@ public class ClubMemberController {
 
         log.info("[ClubMemberController] 사용자 {}가 클럽 {}에서 성공적으로 탈퇴했습니다.", logined.getUserId(), clubId);
         return ResponseEntity.ok(responseDTO);
+    }
+
+    /**
+     * 구단원 목록 조회
+     */
+    @Operation(summary = "구단원 목록 조회", description = "클럽에 소속된 구단원들의 목록을 조회합니다.")
+    @GetMapping("/{clubId}/members")
+    public ResponseEntity<List<ClubMemberResponseDTO>> getClubMembers(@PathVariable Long clubId, @AuthenticationPrincipal LoginedInfo logined) {
+        if (logined == null) {
+            log.error("[ClubMemberController] 로그인되지 않은 사용자가 구단원을 조회하려고 시도했습니다.");
+            throw new LoginRequiredException("로그인 후 이용이 가능합니다.", "[ClubMemberController] getClubMembers");
+        }
+
+        log.info("[ClubMemberController] 클럽 ID={}의 구단원 목록을 조회합니다.", clubId);
+        List<ClubMemberResponseDTO> members = clubMemberService.getClubMembers(clubId).stream()
+                .map(member -> new ClubMemberResponseDTO(
+                        member.getId(),
+                        clubId,
+                        clubMemberService.getClubNameById(clubId),
+                        "조회 성공"
+                ))
+                .collect(Collectors.toList());
+
+        log.info("[ClubMemberController] 클럽 ID={}의 구단원 목록 조회에 성공했습니다.", clubId);
+        return ResponseEntity.ok(members);
     }
 }
