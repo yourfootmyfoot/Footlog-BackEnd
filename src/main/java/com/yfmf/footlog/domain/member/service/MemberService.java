@@ -10,6 +10,8 @@ import com.yfmf.footlog.domain.member.domain.Member;
 import com.yfmf.footlog.domain.member.domain.SocialType;
 import com.yfmf.footlog.domain.member.dto.MemberRequestDTO;
 import com.yfmf.footlog.domain.member.dto.MemberResponseDTO;
+import com.yfmf.footlog.domain.member.dto.MemberSaveRequestDto;
+import com.yfmf.footlog.domain.member.dto.MemberUpdateRequestDto;
 import com.yfmf.footlog.domain.member.repository.MemberRepository;
 import com.yfmf.footlog.error.ApplicationException;
 import com.yfmf.footlog.error.ErrorCode;
@@ -26,6 +28,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Collections;
+import java.util.List;
 import java.util.Optional;
 
 @Slf4j
@@ -33,7 +36,7 @@ import java.util.Optional;
 @RequiredArgsConstructor
 @Service
 public class MemberService {
-    
+
     private final MemberRepository memberRepository;
     private final RefreshTokenRepository refreshTokenRepository;
 
@@ -41,8 +44,8 @@ public class MemberService {
     private final AuthenticationManagerBuilder authenticationManagerBuilder;
     private final JWTTokenProvider jwtTokenProvider;
 
-    /*
-        기본 회원 가입
+    /**
+     * 기본 회원 가입
      */
     @Transactional
     public void signUp(MemberRequestDTO.signUpDTO requestDTO) {
@@ -59,8 +62,8 @@ public class MemberService {
 
     }
 
-    /*
-        기본 로그인
+    /**
+     * 기본 로그인
      */
     public MemberResponseDTO.authTokenDTO login(HttpServletRequest httpServletRequest, MemberRequestDTO.loginDTO requestDTO) {
 
@@ -79,7 +82,7 @@ public class MemberService {
 
         log.info("{} {}", rawPassword, encodedPassword);
 
-        if(!passwordEncoder.matches(rawPassword, encodedPassword)) {
+        if (!passwordEncoder.matches(rawPassword, encodedPassword)) {
             throw new ApplicationException(ErrorCode.INVALID_PASSWORD);
         }
     }
@@ -136,25 +139,25 @@ public class MemberService {
         String token = jwtTokenProvider.resolveToken(httpServletRequest, "accessToken");
 
         // 토큰 유효성 검사
-        if(token == null || !jwtTokenProvider.validateToken(token)) {
+        if (token == null || !jwtTokenProvider.validateToken(token)) {
             throw new ApplicationException(ErrorCode.FAILED_VALIDATE_ACCESS_TOKEN);
         }
 
         // type 확인
-        if(!jwtTokenProvider.isRefreshToken(token)) {
+        if (!jwtTokenProvider.isRefreshToken(token)) {
             throw new ApplicationException(ErrorCode.IS_NOT_REFRESH_TOKEN);
         }
 
         // RefreshToken
         Optional<RefreshToken> refreshToken = refreshTokenRepository.findByRefreshToken(token);
 
-        if(refreshToken.isEmpty()) {
+        if (refreshToken.isEmpty()) {
             throw new ApplicationException(ErrorCode.FAILED_GET_RERFRESH_TOKEN);
         }
 
         // 최초 로그인한 ip와 같은지 확인
         String currentIp = ClientUtils.getClientIp(httpServletRequest);
-        if(!currentIp.equals(refreshToken.get().getIp())) {
+        if (!currentIp.equals(refreshToken.get().getIp())) {
             throw new ApplicationException(ErrorCode.DIFFERENT_IP_ADDRESS);
         }
 
@@ -165,24 +168,24 @@ public class MemberService {
 
         // RefreshToken Update
         refreshTokenRepository.save(RefreshToken.builder()
-                        .ip(currentIp) // IP 주소를 업데이트
-                        .authorities(refreshToken.get().getAuthorities())
-                        .refreshToken(authTokenDTO.refreshToken())
+                .ip(currentIp) // IP 주소를 업데이트
+                .authorities(refreshToken.get().getAuthorities())
+                .refreshToken(authTokenDTO.refreshToken())
                 .build());
 
         return authTokenDTO;
     }
 
-    /*
-        로그아웃
+    /**
+     * 로그아웃
      */
     public void logout(HttpServletRequest httpServletRequest) {
-        
+
         log.info("로그아웃 - Refresh Token 확인");
 
         String token = jwtTokenProvider.resolveToken(httpServletRequest, "refreshToken");
 
-        if(token == null || !jwtTokenProvider.validateToken(token)) {
+        if (token == null || !jwtTokenProvider.validateToken(token)) {
             throw new ApplicationException(ErrorCode.FAILED_VALIDATE__REFRESH_TOKEN);
         }
 
@@ -202,4 +205,5 @@ public class MemberService {
         refreshTokenRepository.delete(refreshToken);
         log.info("로그아웃 성공");
     }
+
 }

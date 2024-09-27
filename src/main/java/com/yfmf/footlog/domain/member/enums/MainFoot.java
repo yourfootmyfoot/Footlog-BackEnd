@@ -1,4 +1,4 @@
-package com.yfmf.footlog.enums;
+package com.yfmf.footlog.domain.member.enums;
 
 public enum MainFoot {
 
