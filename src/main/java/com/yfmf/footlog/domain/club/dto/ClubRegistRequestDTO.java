@@ -21,7 +21,6 @@ import java.util.List;
 public class ClubRegistRequestDTO {
 
     @Schema(hidden = true)
-    @NotNull(message = "구단주의 userId를 입력해주세요.")
     private Long userId;
 
     @Schema(description = "구단 이름", example = "FC서울")
@@ -30,8 +29,7 @@ public class ClubRegistRequestDTO {
     private String clubName;
 
     @Schema(description = "구단 소개글", example = "안녕하세요. FC서울입니다")
-    @NotNull(message = "구단 소개글을 입력해주세요.")
-    @Size(min = 2, max = 255, message = "구단 소개글은 2자 이상 255자 이하로 입력해야 합니다.")
+    @Size(min = 0, max = 255, message = "구단 소개글은 2자 이상 255자 이하로 입력해야 합니다.")
     private String clubIntroduction;
 
     @Schema(description = "구단 코드", example = "FCSeoul")
@@ -45,7 +43,6 @@ public class ClubRegistRequestDTO {
 
     @Schema(description = "구단원 수")
     @NotNull(message = "구단원 수를 입력해주세요.")
-    @Min(value = 1, message = "구단원 수는 최소 1명 이상이어야 합니다.")
     private int memberCount;
 
     @Schema(description = "자주 운동하는 요일", example = "[\"월\", \"화\"]")

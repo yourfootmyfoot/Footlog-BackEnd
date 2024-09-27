@@ -35,7 +35,7 @@ public class JWTTokenProvider {
     private static final String TYPE_REFRESH = "refresh";
     private static final String CLAIM_TYPE = "type";
 
-    private static final long ACCESS_TOKEN_LIFETIME = 15 * 60 * 1000L; // 15 minutes
+    private static final long ACCESS_TOKEN_LIFETIME = 60 * 60 * 1000L; // 60 분
     private static final long REFRESH_TOKEN_LIFETIME = 3 * 24 * 60 * 60 * 1000L; // 3 days
 
     private final Key secretKey;
