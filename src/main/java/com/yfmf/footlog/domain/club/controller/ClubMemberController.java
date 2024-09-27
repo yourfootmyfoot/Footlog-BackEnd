@@ -4,7 +4,13 @@ import com.yfmf.footlog.domain.auth.dto.LoginedInfo;
 import com.yfmf.footlog.domain.auth.exception.LoginRequiredException;
 import com.yfmf.footlog.domain.club.dto.ClubMemberResponseDTO;
 import com.yfmf.footlog.domain.club.service.ClubMemberService;
+import com.yfmf.footlog.exception.ErrorResponse;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.ExampleObject;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -32,6 +38,23 @@ public class ClubMemberController {
      * 구단원 가입
      */
     @Operation(summary = "구단원 가입", description = "사용자가 구단에 가입합니다.")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "사용자가 성공적으로 구단에 가입되었습니다."),
+            @ApiResponse(responseCode = "401", description = "로그인이 필요합니다.", content = @Content(
+                    mediaType = "application/json",
+                    schema = @Schema(implementation = ErrorResponse.class),
+                    examples = @ExampleObject(
+                            value = "{\"status\": 401, \"errorType\": \"Unauthorized\", \"message\": \"로그인이 필요합니다.\"}"
+                    )
+            )),
+            @ApiResponse(responseCode = "409", description = "사용자가 이미 구단에 가입되어 있습니다.", content = @Content(
+                    mediaType = "application/json",
+                    schema = @Schema(implementation = ErrorResponse.class),
+                    examples = @ExampleObject(
+                            value = "{\"status\": 409, \"errorType\": \"Conflict\", \"message\": \"사용자가 이미 구단에 가입되어 있습니다.\"}"
+                    )
+            ))
+    })
     @PostMapping("/{clubId}/join")
     public ResponseEntity<ClubMemberResponseDTO> joinClub(@PathVariable Long clubId, @AuthenticationPrincipal LoginedInfo logined) {
         if (logined == null) {
@@ -57,6 +80,23 @@ public class ClubMemberController {
      * 구단원 탈퇴
      */
     @Operation(summary = "구단원 탈퇴", description = "사용자가 구단에서 탈퇴합니다.")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "사용자가 성공적으로 구단에서 탈퇴되었습니다."),
+            @ApiResponse(responseCode = "401", description = "로그인이 필요합니다.", content = @Content(
+                    mediaType = "application/json",
+                    schema = @Schema(implementation = ErrorResponse.class),
+                    examples = @ExampleObject(
+                            value = "{\"status\": 401, \"errorType\": \"Unauthorized\", \"message\": \"로그인이 필요합니다.\"}"
+                    )
+            )),
+            @ApiResponse(responseCode = "404", description = "사용자가 구단에 가입되어 있지 않습니다.", content = @Content(
+                    mediaType = "application/json",
+                    schema = @Schema(implementation = ErrorResponse.class),
+                    examples = @ExampleObject(
+                            value = "{\"status\": 404, \"errorType\": \"Not Found\", \"message\": \"해당 사용자는 구단에 가입되어 있지 않습니다.\"}"
+                    )
+            ))
+    })
     @DeleteMapping("/{clubId}/leave")
     public ResponseEntity<ClubMemberResponseDTO> leaveClub(@PathVariable Long clubId, @AuthenticationPrincipal LoginedInfo logined) {
         if (logined == null) {
@@ -82,6 +122,23 @@ public class ClubMemberController {
      * 구단원 목록 조회
      */
     @Operation(summary = "구단원 목록 조회", description = "클럽에 소속된 구단원들의 목록을 조회합니다.")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "구단원 목록이 성공적으로 조회되었습니다."),
+            @ApiResponse(responseCode = "401", description = "로그인이 필요합니다.", content = @Content(
+                    mediaType = "application/json",
+                    schema = @Schema(implementation = ErrorResponse.class),
+                    examples = @ExampleObject(
+                            value = "{\"status\": 401, \"errorType\": \"Unauthorized\", \"message\": \"로그인이 필요합니다.\"}"
+                    )
+            )),
+            @ApiResponse(responseCode = "404", description = "클럽이 존재하지 않습니다.", content = @Content(
+                    mediaType = "application/json",
+                    schema = @Schema(implementation = ErrorResponse.class),
+                    examples = @ExampleObject(
+                            value = "{\"status\": 404, \"errorType\": \"Not Found\", \"message\": \"클럽이 존재하지 않습니다.\"}"
+                    )
+            ))
+    })
     @GetMapping("/{clubId}/members")
     public ResponseEntity<List<ClubMemberResponseDTO>> getClubMembers(@PathVariable Long clubId, @AuthenticationPrincipal LoginedInfo logined) {
         if (logined == null) {
