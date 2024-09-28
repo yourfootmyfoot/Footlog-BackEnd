@@ -8,9 +8,6 @@ import com.yfmf.footlog.domain.match.entity.Match;
 import com.yfmf.footlog.domain.match.entity.MatchSchedule;
 import lombok.*;
 
-import java.time.LocalDateTime;
-
-
 @Setter
 @Getter
 @ToString

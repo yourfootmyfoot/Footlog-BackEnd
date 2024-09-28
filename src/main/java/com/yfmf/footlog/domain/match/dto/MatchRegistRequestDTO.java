@@ -33,24 +33,24 @@ public class MatchRegistRequestDTO {
     private MatchGender matchGender;
     private MatchStatus matchStatus;
 
-    // Id 없이 추가
-    public MatchRegistRequestDTO(Match match) {
-        this(
-                match.getMatchEnrollUserId(),
-                match.getMatchApplyUserId(),
-                match.getMyClub(),
-                match.getEnemyClub(),
-                match.getMatchPhoto(),
-                match.getMatchIntroduce(),
-                match.getMatchSchedule(),
-                match.getMatchPlayerQuantity(),
-                match.getQuarterQuantity(),
-                match.getFieldLocation(),
-                match.getMatchCost(),
-                match.getPro(),
-                match.getClubLevel(),
-                match.getMatchGender(),
-                match.getMatchStatus()
+    // Match 엔티티로 변환하는 메소드
+    public Match toEntity() {
+        return new Match(
+                this.matchEnrollUserId,
+                this.matchApplyUserId,
+                this.myClub,
+                this.enemyClub,
+                this.matchPhoto,
+                this.matchIntroduce,
+                this.matchSchedule,
+                this.matchPlayerQuantity,
+                this.quarterQuantity,
+                this.fieldLocation,
+                this.matchCost,
+                this.pro,
+                this.clubLevel,
+                this.matchGender,
+                this.matchStatus
         );
     }
 }
