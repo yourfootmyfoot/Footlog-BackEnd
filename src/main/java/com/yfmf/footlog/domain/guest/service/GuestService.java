@@ -1,13 +1,18 @@
 package com.yfmf.footlog.domain.guest.service;
 
-import com.yfmf.footlog.domain.guest.dto.CreateGuestDto;
-import com.yfmf.footlog.domain.guest.dto.UpdateGuestDto;
 import com.yfmf.footlog.domain.guest.entity.Guest;
 import com.yfmf.footlog.domain.guest.repository.GuestRepository;
+import com.yfmf.footlog.domain.guest.dto.GuestSaveRequestDto;
+import com.yfmf.footlog.domain.guest.dto.GuestUpdateRequestDto;
+import com.yfmf.footlog.error.ApplicationException;
+import com.yfmf.footlog.exception.ErrorCode;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
-import java.util.Optional;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -15,42 +20,79 @@ public class GuestService {
 
     private final GuestRepository guestRepository;
 
-    public Guest registerGuest(CreateGuestDto createGuestDto) {
-
-        validateCreateGuestDto(createGuestDto);
-
+    @Transactional
+    public Guest registerGuest(Long memberId, GuestSaveRequestDto requestDto) {
         Guest guest = Guest.builder()
-                .name(createGuestDto.getName())
-                .isAvailable(createGuestDto.getIsAvailable())
+                .memberId(memberId)
+                .location(requestDto.getLocation())
+                .age(requestDto.getAge())
+                .scheduleDate(requestDto.getScheduleDate())
+                .scheduleDay(requestDto.getScheduleDate() != null ? requestDto.getScheduleDate().getDayOfWeek() : null)
+                .scheduleStartTime(requestDto.getScheduleStartTime())
+                .scheduleEndTime(requestDto.getScheduleEndTime())
+                .specialRequests(requestDto.getSpecialRequests())
                 .build();
 
         return guestRepository.save(guest);
     }
 
-    public Guest updateGuest(UpdateGuestDto updateGuestDto) {
-        Guest existingGuest = guestRepository.findById(updateGuestDto.getId())
-                .orElseThrow(() -> new IllegalArgumentException("Guest not found"));
-
-        Guest updatedGuest = Guest.builder()
-                .id(existingGuest.getId())
-                .name(updateGuestDto.getName() != null ? updateGuestDto.getName() : existingGuest.getName())
-                .isAvailable(updateGuestDto.getIsAvailable() != null ? updateGuestDto.getIsAvailable() : existingGuest.getIsAvailable())
-                .build();
-
-        return guestRepository.save(updatedGuest);
+    @Transactional(readOnly = true)
+    public List<Guest> findAllGuests() {
+        return guestRepository.findAll();
     }
 
-    public void deleteGuest(Long id) {
-        if (guestRepository.existsById(id)) {
-            guestRepository.deleteById(id);
-        } else {
-            throw new IllegalArgumentException("Guest not found");
-        }
+    @Transactional(readOnly = true)
+    public List<Guest> findAvailableGuests(LocalDateTime date) {
+        return guestRepository.findByScheduleDateGreaterThanEqual(date);
     }
 
-    private void validateCreateGuestDto(CreateGuestDto createGuestDto) {
-        if (createGuestDto.getCreatedAt() == null) {
-            throw new IllegalArgumentException("createdAt cannot be null");
+    @Transactional(readOnly = true)
+    public Guest findGuestById(Long guestId) {
+        return guestRepository.findById(guestId)
+                .orElseThrow(() -> new ApplicationException(ErrorCode.INVALID_CLUB, "Guest not found with id: " + guestId));
+        //        return guestRepository.findById(guestId)
+//                .orElseThrow(() -> new ApplicationException(ErrorCode.INVALID_CLUB, "Guest not found with id: " + guestId));
+    }
+
+    @Transactional
+    public Guest updateGuest(Long guestId, GuestUpdateRequestDto requestDto) {
+        Guest guest = findGuestById(guestId);
+
+        guest.update(
+                requestDto.getLocation(),
+                requestDto.getAge(),
+                requestDto.getScheduleDate(),
+                requestDto.getScheduleDate() != null ? requestDto.getScheduleDate().getDayOfWeek() : null,
+                requestDto.getScheduleStartTime(),
+                requestDto.getScheduleEndTime(),
+                requestDto.getSpecialRequests()
+        );
+
+        return guestRepository.save(guest);
+    }
+
+    @Transactional
+    public Guest updateGuestAvailability(Long guestId, boolean available) {
+        Guest guest = findGuestById(guestId);
+        guest.updateAvailability(available);
+        return guestRepository.save(guest);
+    }
+
+    @Transactional
+    public void deleteGuest(Long guestId) {
+        if (!guestRepository.existsById(guestId)) {
+            throw new ApplicationException(ErrorCode.INVALID_CLUB, "Guest not found with id: " + guestId);
         }
+        guestRepository.deleteById(guestId);
+    }
+
+    @Transactional(readOnly = true)
+    public List<Guest> findGuestsByLocation(String location) {
+        return guestRepository.findByLocation(location);
+    }
+
+    @Transactional(readOnly = true)
+    public List<Guest> findGuestsByAgeRange(int minAge, int maxAge) {
+        return guestRepository.findByAgeBetween(minAge, maxAge);
     }
 }

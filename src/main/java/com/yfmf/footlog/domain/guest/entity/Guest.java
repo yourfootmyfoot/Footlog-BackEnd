@@ -2,15 +2,18 @@ package com.yfmf.footlog.domain.guest.entity;
 
 import com.yfmf.footlog.BaseTimeEntity;
 import jakarta.persistence.*;
-import lombok.*;
+import lombok.AccessLevel;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
 
+import java.time.DayOfWeek;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 
 @Entity
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-@AllArgsConstructor
-@Builder
 @Table(name = "tbl_guest")
 public class Guest extends BaseTimeEntity {
 
@@ -19,12 +22,54 @@ public class Guest extends BaseTimeEntity {
     private Long id;
 
     @Column(nullable = false)
-    private Long memberId;  // 회원 ID를 참조하지만 연관관계는 맺지 않습니다.
+    private Long memberId;
 
     @Column(nullable = false)
-    private String name;  // 게스트 이름 (회원 이름과 다를 수 있음)
+    private String location;
 
     @Column(nullable = false)
-    private Boolean Available;
+    private Integer age;
 
+    @Column(nullable = false)
+    private LocalDateTime scheduleDate;
+
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    private DayOfWeek scheduleDay;
+
+    @Column(nullable = false)
+    private LocalTime scheduleStartTime;
+
+    @Column(nullable = false)
+    private LocalTime scheduleEndTime;
+
+    private String specialRequests;
+
+    @Builder
+    public Guest(Long memberId, String location, Integer age, LocalDateTime scheduleDate, DayOfWeek scheduleDay,
+                 LocalTime scheduleStartTime, LocalTime scheduleEndTime, String specialRequests) {
+        this.memberId = memberId;
+        this.location = location;
+        this.age = age;
+        this.scheduleDate = scheduleDate;
+        this.scheduleDay = scheduleDay;
+        this.scheduleStartTime = scheduleStartTime;
+        this.scheduleEndTime = scheduleEndTime;
+        this.specialRequests = specialRequests;
+    }
+
+    public void update(String location, Integer age, LocalDateTime scheduleDate, DayOfWeek scheduleDay,
+                       LocalTime scheduleStartTime, LocalTime scheduleEndTime, String specialRequests) {
+        this.location = location;
+        this.age = age;
+        this.scheduleDate = scheduleDate;
+        this.scheduleDay = scheduleDay;
+        this.scheduleStartTime = scheduleStartTime;
+        this.scheduleEndTime = scheduleEndTime;
+        this.specialRequests = specialRequests;
+    }
+
+    public boolean updateAvailability(boolean available) {
+        return available;
+    }
 }
