@@ -19,7 +19,7 @@ public class LoggingAspect {
     /**
      * @Pointcut: AOP가 적용될 메서드나 클래스의 범위를 설정한다.
      */
-    @Pointcut("execution(* hello.springmvc.basic..*.*(..))*")
+    @Pointcut("execution(* com.yfmf.footlog.*.*(..))*")
     // 여기서 hello.springmvc.basic 패키지와 그 하위 패키지에 있는 모든 메서드에 AOP를 적용한다
     private void cut() {
         // pointcut()에 정의된 범위에서 cut()에 정의된 코드가 실행된다.
