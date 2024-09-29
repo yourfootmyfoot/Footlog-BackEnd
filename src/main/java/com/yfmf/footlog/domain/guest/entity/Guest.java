@@ -1,5 +1,6 @@
 package com.yfmf.footlog.domain.guest.entity;
 
+import com.yfmf.footlog.BaseTimeEntity;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -7,7 +8,6 @@ import java.time.LocalDateTime;
 
 @Entity
 @Getter
-@Builder
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
 @Builder
@@ -25,8 +25,6 @@ public class Guest extends BaseTimeEntity {
     private String name;  // 게스트 이름 (회원 이름과 다를 수 있음)
 
     @Column(nullable = false)
-    private Boolean isAvailable;
-
-    private LocalDateTime createdAt;
+    private Boolean Available;
 
 }
