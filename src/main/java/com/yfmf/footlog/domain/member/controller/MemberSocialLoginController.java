@@ -34,23 +34,6 @@ public class MemberSocialLoginController {
         // 로그인 후 토큰 발급
         MemberResponseDTO.authTokenDTO tokenDTO = memberSocialLoginService.kakaoLogin(code, request);
 
-//        // JWT Access Token을 HttpOnly 쿠키에 저장
-//        Cookie accessTokenCookie = new Cookie("accessToken", tokenDTO.accessToken());
-//        accessTokenCookie.setHttpOnly(true); // HttpOnly로 설정하여 클라이언트에서 접근하지 못하도록 설정
-//        accessTokenCookie.setMaxAge((int) (tokenDTO.accessTokenValidTime() / 1000));  // Access 토큰 유효 기간 설정 (초 단위)
-//        accessTokenCookie.setPath("/"); // 루트 경로에서 모든 페이지에서 접근 가능
-//        accessTokenCookie.setSecure(false); // HTTPS 환경에서는 true로 설정
-//
-//        // JWT Refresh Token을 HttpOnly 쿠키에 저장
-//        Cookie refreshTokenCookie = new Cookie("refreshToken", tokenDTO.refreshToken());
-//        refreshTokenCookie.setHttpOnly(true); // HttpOnly로 설정하여 클라이언트에서 접근하지 못하도록 설정
-//        refreshTokenCookie.setMaxAge((int) (tokenDTO.refreshTokenValidTime() / 1000)); // Refresh 토큰 유효 기간 설정 (초 단위)
-//        refreshTokenCookie.setPath("/"); // 모든 경로에서 접근 가능
-//        refreshTokenCookie.setSecure(false); // HTTPS 환경에서는 true로 설정
-//        // 응답에 쿠키 추가
-//        response.addCookie(accessTokenCookie);
-//        response.addCookie(refreshTokenCookie);
-
         // JWT Access Token을 HttpOnly ResponseCookie에 저장
         ResponseCookie accessTokenCookie = ResponseCookie.from("accessToken", tokenDTO.accessToken())
                 .httpOnly(true)  // HttpOnly로 설정하여 클라이언트에서 접근하지 못하도록 설정
