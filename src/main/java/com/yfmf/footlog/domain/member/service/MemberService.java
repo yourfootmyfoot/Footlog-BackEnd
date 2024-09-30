@@ -11,12 +11,12 @@ import com.yfmf.footlog.domain.member.domain.Member;
 import com.yfmf.footlog.domain.member.domain.SocialType;
 import com.yfmf.footlog.domain.member.dto.MemberRequestDTO;
 import com.yfmf.footlog.domain.member.dto.MemberResponseDTO;
-import com.yfmf.footlog.domain.member.dto.MemberSaveRequestDto;
-import com.yfmf.footlog.domain.member.dto.MemberUpdateRequestDto;
 import com.yfmf.footlog.domain.member.repository.MemberRepository;
 import com.yfmf.footlog.error.ApplicationException;
 import com.yfmf.footlog.error.ErrorCode;
+import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -30,7 +30,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Collections;
-import java.util.List;
 import java.util.Optional;
 
 @Slf4j
@@ -38,7 +37,7 @@ import java.util.Optional;
 @RequiredArgsConstructor
 @Service
 public class MemberService {
-
+    
     private final MemberRepository memberRepository;
     private final RefreshTokenRepository refreshTokenRepository;
 
@@ -46,8 +45,8 @@ public class MemberService {
     private final AuthenticationManagerBuilder authenticationManagerBuilder;
     private final JWTTokenProvider jwtTokenProvider;
 
-    /**
-     * 기본 회원 가입
+    /*
+        기본 회원 가입
      */
     @Transactional
     public void signUp(MemberRequestDTO.signUpDTO requestDTO) {
@@ -65,9 +64,9 @@ public class MemberService {
     }
 
     /**
-     * 기본 로그인
-     */
-    public MemberResponseDTO.authTokenDTO login(HttpServletRequest httpServletRequest, MemberRequestDTO.loginDTO requestDTO) {
+       기본 로그인 - 쿠키에 토큰 저장
+    */
+    public MemberResponseDTO.authTokenDTO login(HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse, MemberRequestDTO.loginDTO requestDTO) {
 
         // 1. 이메일 확인
         Member member = findMemberByEmail(requestDTO.email())
@@ -76,7 +75,23 @@ public class MemberService {
         // 2. 비밀번호 확인
         checkValidPassword(requestDTO.password(), member.getPassword());
 
-        return getAuthTokenDTO(requestDTO.email(), requestDTO.password(), httpServletRequest);
+        // 3. 토큰 발급 및 쿠키에 저장
+        MemberResponseDTO.authTokenDTO authTokenDTO = getAuthTokenDTO(requestDTO.email(), requestDTO.password(), httpServletRequest);
+        addTokenToCookie(httpServletResponse, "accessToken", authTokenDTO.accessToken());
+        addTokenToCookie(httpServletResponse, "refreshToken", authTokenDTO.refreshToken());
+
+        return authTokenDTO;
+    }
+
+    // 쿠키에 토큰 추가
+    private void addTokenToCookie(HttpServletResponse response, String tokenName, String tokenValue) {
+        Cookie cookie = new Cookie(tokenName, tokenValue);
+        cookie.setHttpOnly(true);  // JavaScript에서 쿠키 접근을 차단
+        cookie.setSecure(false);   // HTTPS에서만 전송되도록 설정 (필요 시 true로 설정)
+        cookie.setPath("/");       // 애플리케이션의 모든 경로에서 쿠키가 유효하도록 설정
+        cookie.setMaxAge(7 * 24 * 60 * 60); // 쿠키 만료 시간 설정 (1주일)
+
+        response.addCookie(cookie);
     }
 
     // 비밀번호 확인
@@ -84,7 +99,7 @@ public class MemberService {
 
         log.info("{} {}", rawPassword, encodedPassword);
 
-        if (!passwordEncoder.matches(rawPassword, encodedPassword)) {
+        if(!passwordEncoder.matches(rawPassword, encodedPassword)) {
             throw new ApplicationException(ErrorCode.INVALID_PASSWORD);
         }
     }
@@ -134,25 +149,25 @@ public class MemberService {
         String token = jwtTokenProvider.resolveToken(httpServletRequest, "accessToken");
 
         // 토큰 유효성 검사
-        if (token == null || !jwtTokenProvider.validateToken(token)) {
+        if(token == null || !jwtTokenProvider.validateToken(token)) {
             throw new ApplicationException(ErrorCode.FAILED_VALIDATE_ACCESS_TOKEN);
         }
 
         // type 확인
-        if (!jwtTokenProvider.isRefreshToken(token)) {
+        if(!jwtTokenProvider.isRefreshToken(token)) {
             throw new ApplicationException(ErrorCode.IS_NOT_REFRESH_TOKEN);
         }
 
         // RefreshToken
         Optional<RefreshToken> refreshToken = refreshTokenRepository.findByRefreshToken(token);
 
-        if (refreshToken.isEmpty()) {
+        if(refreshToken.isEmpty()) {
             throw new ApplicationException(ErrorCode.FAILED_GET_RERFRESH_TOKEN);
         }
 
         // 최초 로그인한 ip와 같은지 확인
         String currentIp = ClientUtils.getClientIp(httpServletRequest);
-        if (!currentIp.equals(refreshToken.get().getIp())) {
+        if(!currentIp.equals(refreshToken.get().getIp())) {
             throw new ApplicationException(ErrorCode.DIFFERENT_IP_ADDRESS);
         }
 
@@ -171,24 +186,24 @@ public class MemberService {
 
         // RefreshToken Update
         refreshTokenRepository.save(RefreshToken.builder()
-                .ip(currentIp) // IP 주소를 업데이트
-                .authorities(refreshToken.get().getAuthorities())
-                .refreshToken(authTokenDTO.refreshToken())
+                        .ip(currentIp) // IP 주소를 업데이트
+                        .authorities(refreshToken.get().getAuthorities())
+                        .refreshToken(authTokenDTO.refreshToken())
                 .build());
 
         return authTokenDTO;
     }
 
-    /**
-     * 로그아웃
+    /*
+        로그아웃
      */
     public void logout(HttpServletRequest httpServletRequest) {
-
+        
         log.info("로그아웃 - Refresh Token 확인");
 
         String token = jwtTokenProvider.resolveToken(httpServletRequest, "refreshToken");
 
-        if (token == null || !jwtTokenProvider.validateToken(token)) {
+        if(token == null || !jwtTokenProvider.validateToken(token)) {
             throw new ApplicationException(ErrorCode.FAILED_VALIDATE__REFRESH_TOKEN);
         }
 
@@ -208,5 +223,6 @@ public class MemberService {
         refreshTokenRepository.delete(refreshToken);
         log.info("로그아웃 성공");
     }
+
 
 }
