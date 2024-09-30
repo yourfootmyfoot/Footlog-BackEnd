@@ -18,31 +18,55 @@ public class LoggingAspect {
 
     /**
      * @Pointcut: AOP가 적용될 메서드나 클래스의 범위를 설정한다.
+     * <p>
+     * execution : 메서드 실행 시점
+     * * : 리턴 타입
+     * com.yfmf.footlog.* : 해당 패키지의 모든 파일
+     * *(..))* : 모든 메서드
      */
+
     @Pointcut("execution(* com.yfmf.footlog.*.*(..))*")
     // 여기서 hello.springmvc.basic 패키지와 그 하위 패키지에 있는 모든 메서드에 AOP를 적용한다
     private void cut() {
-        // pointcut()에 정의된 범위에서 cut()에 정의된 코드가 실행된다.
+        // 로직 필요없음. 다른 곳에 재사용하기 편하도록 선언한 것 뿐이다.
     }
+
+    @Around("cut()")
+    public Object AdviceMethodName(ProceedingJoinPoint joinPoint) throws Throwable { // AOP가 적용된 실제 메서드
+        MethodSignature methodSignature = (MethodSignature) joinPoint.getSignature();
+        return methodSignature.getMethod();
+    }
+
+    /**
+     * ProceedingJoinPoint : Spring AOP에서 @Around 어드바이스에 사용되는 인터페이스. AOP가 적용된 실제 메서드에 대한 정보를 제공
+     *                       그 메서드를 실행하거나 실행을 제어할 수 있다.
+     * MethodSignature : AOP에서 사용되는 메서드 시그니처를 나타내는 객체, 메서드의 리턴타입, 파라미터 타입, 이름등을 제공
+     * Method : Java Reflection API의 일부로, 실제 클래스에서 선언된 메서드에 대한 정보를 나타낸다.
+     *          Method 객체를 통해 메서드의 이름, 리턴타입, 파라미터 ,어노테이션 등 메서드에 대한 다양한 정보를 조회하고,
+     *          동적으로 실행 가능
+     * Java Reflection API : 클래스, 메서드, 필드 등의 구조를 런타임 시점에 동적으로 탐색하고 조작할 수 있게 해준다. 이 API를 통해
+     *                       클래스의 메타데이터에 접근하고, 객체의 상태를 확인하거나 변경하며, 메서드를 호출하는 등의 작업을 한다.
+     */
 
 
     /**
      * @Around(): 메서드 실행 전후에 특정 로직을 실행할 수 있게 해준다.
      */
-    @Around("cut()")
+
+    /*@Around("cut()") // pointcut으로 정의한 메서드를 참조
     public Object aroundLog(ProceedingJoinPoint proceedingJoinPoint) throws Throwable {
         // ProceedingJoinPoint : AOP가 적용된 실제 메서드에 대한 정보를 제공하고, 그 메서드를 실행할 수 있는 객체
         // 이 객체를 통해 메서드 이름, 파라미터, 리턴 값 등 다양한 정보를 얻을 수 있고, 메서드 실행 자체도 proceed()를 통해 제어할 수 있다
 
 
-        /** 메서드 정보 받아오기*/
         // Method : Java Reflection API의 일부로, 클래스의 메서드에 대한 정보를 나타내는 객체를 제공한다.
-
         Method method = getMethod(proceedingJoinPoint);
+
+        *//** 메서드 이름 받아오기*//*
         log.info("====== method name = {}", method.getName());
 
 
-        /** 파라미터 받아오기 */
+        *//** 파라미터 받아오기 *//*
         // proceedingJoinPoint.getArgs(): AOP가 적용도니 메서드에 전달된 파라미터(메서드 정보)들을 배열로 가져온다.
         Object[] args = proceedingJoinPoint.getArgs();
         if (args.length == 0) log.info("no parameter"); // 파라미터가 없을 때 0일때 로그
@@ -60,7 +84,7 @@ public class LoggingAspect {
         log.info("return value = {}", returnObj);
 
         return returnObj;
-    }
+    }*/
 
     /**
      * getMethod() : ProceedingJoinPoint 객체로부터 실행된 메서드의 정보를 가져온다.
