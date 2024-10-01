@@ -24,9 +24,7 @@ public class MemberSocialLoginController {
 
     private final MemberSocialLoginService memberSocialLoginService;
 
-    // https://kauth.kakao.com/oauth/authorize?response_type=code&client_id=262c56061ee06d4004d2f9b94db133a4&redirect_uri=http://localhost:8080/api/auth/kakao/login
-    // https://kauth.kakao.com/oauth/authorize?response_type=code&client_id=262c56061ee06d4004d2f9b94db133a4&redirect_uri=http://172.16.17.66:8181//api/auth/kakao/login
-    /*
+    /**
         카카오 로그인
      */
     @GetMapping("/kakao/login")
