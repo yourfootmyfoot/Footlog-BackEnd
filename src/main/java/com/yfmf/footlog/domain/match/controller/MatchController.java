@@ -22,10 +22,4 @@ public class MatchController {
         return matchService.findMatchByMatchId(matchId);
     }
 
-    @Operation(summary = "테스트테스트", description = "새로운 구단을 등록합니다.")
-    @GetMapping("/matches/test")
-    public String testMethod() {
-        return "test success";
-    }
-
 }
