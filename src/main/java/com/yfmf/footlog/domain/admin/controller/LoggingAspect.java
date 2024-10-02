@@ -25,16 +25,19 @@ public class LoggingAspect {
      * *(..))* : 모든 메서드
      */
 
-    @Pointcut("execution(* com.yfmf.footlog.*.*(..))*")
+    @Pointcut("execution(* com.yfmf.footlog.domain.match.controller.*(..))*")
     // 여기서 hello.springmvc.basic 패키지와 그 하위 패키지에 있는 모든 메서드에 AOP를 적용한다
     private void cut() {
         // 로직 필요없음. 다른 곳에 재사용하기 편하도록 선언한 것 뿐이다.
     }
 
-    @Around("cut()")
+    @Around("execution(* com.yfmf.footlog.domain.match.controller.*.*(..))")
     public Object AdviceMethodName(ProceedingJoinPoint joinPoint) throws Throwable { // AOP가 적용된 실제 메서드
         MethodSignature methodSignature = (MethodSignature) joinPoint.getSignature();
-        return methodSignature.getMethod();
+        Method method = methodSignature.getMethod();
+        System.out.println(method);
+        // 메서드 이름 로깅
+        return method;
     }
 
     /**
