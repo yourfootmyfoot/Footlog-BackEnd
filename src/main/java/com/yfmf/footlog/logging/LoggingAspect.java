@@ -1,4 +1,4 @@
-package com.yfmf.footlog.domain.admin.controller;
+package com.yfmf.footlog.logging;
 
 import lombok.extern.slf4j.Slf4j;
 import org.aspectj.lang.ProceedingJoinPoint;
@@ -25,19 +25,28 @@ public class LoggingAspect {
      * *(..))* : 모든 메서드
      */
 
-    @Pointcut("execution(* com.yfmf.footlog.domain.match.controller.*(..))*")
+    @Pointcut("execution(* com.yfmf.footlog.domain..*(..))")
     // 여기서 hello.springmvc.basic 패키지와 그 하위 패키지에 있는 모든 메서드에 AOP를 적용한다
     private void cut() {
         // 로직 필요없음. 다른 곳에 재사용하기 편하도록 선언한 것 뿐이다.
     }
 
-    @Around("execution(* com.yfmf.footlog.domain.match.controller.*.*(..))")
+    @Around("cut()")
     public Object AdviceMethodName(ProceedingJoinPoint joinPoint) throws Throwable { // AOP가 적용된 실제 메서드
         MethodSignature methodSignature = (MethodSignature) joinPoint.getSignature();
         Method method = methodSignature.getMethod();
-        System.out.println(method);
+
         // 메서드 이름 로깅
-        return method;
+        log.info("메서드 실행: {}", method.getName());
+
+        // 실제 메서드 실행
+        Object result = joinPoint.proceed(); // proceed() : 메서드를 실행하는 역할
+
+        // 리턴값 로깅
+        log.info("메서드 리턴값: {}", result);
+
+        // 원래 메서드의 리턴값 반환
+        return result;
     }
 
     /**
