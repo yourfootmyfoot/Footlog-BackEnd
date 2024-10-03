@@ -44,6 +44,7 @@ public class LoggingAspect {
 
         // 리턴값 로깅
         log.info("메서드 리턴값: {}", result);
+        log.info("return type = {}", result.getClass().getSimpleName());
 
         // 원래 메서드의 리턴값 반환
         return result;
