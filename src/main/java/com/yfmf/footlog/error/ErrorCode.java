@@ -26,6 +26,7 @@ public enum ErrorCode {
     FAILED_AUTHENTICATION(HttpStatus.UNAUTHORIZED, "AUTH-001", "인증에 실패하였습니다."),
     ACCESS_DENIED(HttpStatus.FORBIDDEN, "AUTH-002", "접근이 거부되었습니다."),
     DIFFERENT_IP_ADDRESS(HttpStatus.BAD_REQUEST, "AUTH-003", "기존 IP 주소와 다른 IP 주소에서의 요청입니다."),
+    GUEST_NOT_FOUND(HttpStatus.NOT_FOUND, "GUEST-001", "해당하는 게스트가 없습니다."),
     ANONYMOUS_USER(HttpStatus.UNAUTHORIZED, "AUTH-004", "익명의 유저가 접근하였습니다.");
 
 
