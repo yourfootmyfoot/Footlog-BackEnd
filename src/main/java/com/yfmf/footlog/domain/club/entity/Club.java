@@ -34,7 +34,7 @@ public class Club extends BaseTimeEntity {
     private String clubCode;  //구단코드
 
     @Column(name = "EROLL_DATE")
-    private LocalDateTime erollDate;  //구단등록일
+    private LocalDateTime enrollDate;  //구단등록일
 
     // 구단원 수를 자동으로 관리하는 필드
     @Column(name = "MEMBER_COUNT", nullable = false)
@@ -74,14 +74,14 @@ public class Club extends BaseTimeEntity {
     public Club() {
     }
 
-    public Club(Long userId, String clubName, String clubIntroduction, String clubCode, LocalDateTime erollDate,
+    public Club(Long userId, String clubName, String clubIntroduction, String clubCode, LocalDateTime enrollDate,
                 int memberCount, List<PeakDays> days, List<PeakHours> times, String skillLevel, String stadiumName,
                 String city, String region, String ageGroup, String gender) {
         this.userId = userId;
         this.clubName = clubName;
         this.clubIntroduction = clubIntroduction;
         this.clubCode = clubCode;
-        this.erollDate = erollDate;
+        this.enrollDate = enrollDate;
         this.memberCount = memberCount;
         this.days = days;
         this.times = times;
@@ -101,7 +101,7 @@ public class Club extends BaseTimeEntity {
                 ", clubName='" + clubName + '\'' +
                 ", clubIntroduction='" + clubIntroduction + '\'' +
                 ", clubCode='" + clubCode + '\'' +
-                ", erollDate=" + erollDate +
+                ", erollDate=" + enrollDate +
                 ", memberCount=" + memberCount +
                 ", peakHours=" + times +
                 ", peakDays=" + days +

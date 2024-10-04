@@ -1,14 +1,13 @@
 package com.yfmf.footlog.domain.match.entity;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import jakarta.persistence.Column;
 import jakarta.persistence.Embeddable;
 import lombok.*;
 
-
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.time.temporal.ChronoUnit;
-
 
 @Getter
 @ToString
@@ -16,16 +15,18 @@ import java.time.temporal.ChronoUnit;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class MatchSchedule {
 
-    // 경기날짜
+    // 경기 날짜
     @Column(nullable = false)
     private LocalDate matchDate;
 
     // 경기 시작 시간
     @Column(nullable = false)
+    @JsonFormat(pattern = "HH:mm")
     private LocalTime matchStartTime;
 
-    // 경기 종료 시간 - 경기 시작 시간을 설정하면 +2시간을 해주고 뒤에 수정 가능
+    // 경기 종료 시간 - 경기 시작 시간을 설정하면 뒤에 수정 가능
     @Column(nullable = false)
+    @JsonFormat(pattern = "HH:mm")
     private LocalTime matchEndTime;
 
     // 경기 시간
@@ -33,9 +34,8 @@ public class MatchSchedule {
     private long matchTime;
 
     public MatchSchedule(LocalDate matchDate, LocalTime matchStartTime, LocalTime matchEndTime) {
-
-        // 에러 검사
-        validMatch(matchStartTime, matchEndTime);
+        // 유효성 검사
+        validateMatch(matchStartTime, matchEndTime);
 
         this.matchDate = matchDate;
         this.matchStartTime = matchStartTime;
@@ -43,56 +43,54 @@ public class MatchSchedule {
         this.matchTime = calculateTime(matchStartTime, matchEndTime);
     }
 
-
-
     // 경기 시간 계산
-    private long calculateTime(LocalTime matchStartTIme, LocalTime matchEndTime) {
-        return ChronoUnit.SECONDS.between(matchStartTIme, matchEndTime);
+    private long calculateTime(LocalTime matchStartTime, LocalTime matchEndTime) {
+        return ChronoUnit.SECONDS.between(matchStartTime, matchEndTime);
     }
 
     /* 예외 처리 */
 
     // 경기 시작 시간 null 금지
-    private void validMatchStartTIme(LocalTime matchStartTime) {
+    private void validateMatchStartTime(LocalTime matchStartTime) {
         if (matchStartTime == null) {
-            throw new IllegalArgumentException("시간을 입력해 주세요");
+            throw new IllegalArgumentException("경기 시작 시간을 입력해 주세요");
         }
     }
 
     // 경기 종료 시간 null 금지
-    private void validMatchEndTIme(LocalTime matchEndTime) {
+    private void validateMatchEndTime(LocalTime matchEndTime) {
         if (matchEndTime == null) {
-            throw new IllegalArgumentException("시간을 입력해 주세요");
+            throw new IllegalArgumentException("경기 종료 시간을 입력해 주세요");
         }
     }
 
     // 경기 종료 시간이 시작 시간보다 뒤인지 확인
-    private void validMatchTime(LocalTime MatchStartTime, LocalTime MatchEndTime) {
+    private void validateMatchTimeOrder(LocalTime matchStartTime, LocalTime matchEndTime) {
         if (matchEndTime.isBefore(matchStartTime)) {
-            throw new IllegalArgumentException("경기 종료 시간을 경기 시작 시간보다 앞에 있을 수 없습니다.");
+            throw new IllegalArgumentException("경기 종료 시간은 경기 시작 시간보다 앞에 있을 수 없습니다.");
         }
     }
 
-    // 경기 시간이 30분 미만인지 확인
-    private void validThirtyMin(LocalTime MatchStartTime, LocalTime MatchEndTime) {
-        if (ChronoUnit.MINUTES.between(matchStartTime, MatchEndTime) < 30) {
-            throw new IllegalArgumentException("경기 최소 시간은 30분입니다.");
+    // 경기 시간이 2시간 미만인지 확인
+    private void validateMinimumTwoHours(LocalTime matchStartTime, LocalTime matchEndTime) {
+        if (ChronoUnit.MINUTES.between(matchStartTime, matchEndTime) < 120) {
+            throw new IllegalArgumentException("경기 최소 시간은 2시간입니다.");
         }
     }
 
     // 경기 시간이 4시간 초과인지 확인
-    private void validOverTime(LocalTime MatchStartTime, LocalTime MatchEndTime) {
-        if (ChronoUnit.HOURS.between(matchStartTime, MatchEndTime) > 4) {
+    private void validateMaximumFourHours(LocalTime matchStartTime, LocalTime matchEndTime) {
+        if (ChronoUnit.HOURS.between(matchStartTime, matchEndTime) > 4) {
             throw new IllegalArgumentException("경기 최대 시간은 4시간입니다.");
         }
     }
 
-    private void validMatch(LocalTime matchStartTime, LocalTime matchEndTime) {
-        validMatchStartTIme(matchStartTime);
-        validMatchEndTIme(matchEndTime);
-        validMatchTime(matchStartTime, matchEndTime);
-        validThirtyMin(matchStartTime, matchEndTime);
-        validOverTime(matchStartTime, matchEndTime);
+    // 전체 유효성 검사
+    private void validateMatch(LocalTime matchStartTime, LocalTime matchEndTime) {
+        validateMatchStartTime(matchStartTime);
+        validateMatchEndTime(matchEndTime);
+        validateMatchTimeOrder(matchStartTime, matchEndTime);
+        validateMinimumTwoHours(matchStartTime, matchEndTime);
+        validateMaximumFourHours(matchStartTime, matchEndTime);
     }
-
 }

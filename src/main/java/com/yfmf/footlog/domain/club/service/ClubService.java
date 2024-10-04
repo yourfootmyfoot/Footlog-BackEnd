@@ -57,7 +57,7 @@ public class ClubService {
 
         // 구단 등록 결과 반환
         return new ClubRegistResponseDTO(newClub.getUserId(), newClub.getClubName(), newClub.getClubIntroduction(),
-                newClub.getClubCode(), newClub.getErollDate(), newClub.getMemberCount(),
+                newClub.getClubCode(), newClub.getEnrollDate(), newClub.getMemberCount(),
                 newClub.getDays(), newClub.getTimes(), newClub.getSkillLevel(),
                 newClub.getStadiumName(), newClub.getCity(), newClub.getRegion(),
                 newClub.getAgeGroup(), newClub.getGender());
