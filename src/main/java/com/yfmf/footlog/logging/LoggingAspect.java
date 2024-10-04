@@ -22,7 +22,7 @@ public class LoggingAspect {
      * execution : 메서드 실행 시점
      * * : 리턴 타입
      * com.yfmf.footlog.* : 해당 패키지의 모든 파일
-     * *(..))* : 모든 메서드
+     * *(..)) : 모든 메서드
      */
 
     @Pointcut("execution(* com.yfmf.footlog.domain..*(..))")
