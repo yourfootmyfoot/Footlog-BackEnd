@@ -5,7 +5,7 @@ import com.yfmf.footlog.domain.guest.repository.GuestRepository;
 import com.yfmf.footlog.domain.guest.dto.GuestSaveRequestDto;
 import com.yfmf.footlog.domain.guest.dto.GuestUpdateRequestDto;
 import com.yfmf.footlog.error.ApplicationException;
-import com.yfmf.footlog.exception.ErrorCode;
+import com.yfmf.footlog.error.ErrorCode;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -49,9 +49,7 @@ public class GuestService {
     @Transactional(readOnly = true)
     public Guest findGuestById(Long guestId) {
         return guestRepository.findById(guestId)
-                .orElseThrow(() -> new ApplicationException(ErrorCode.INVALID_CLUB, "Guest not found with id: " + guestId));
-        //        return guestRepository.findById(guestId)
-//                .orElseThrow(() -> new ApplicationException(ErrorCode.INVALID_CLUB, "Guest not found with id: " + guestId));
+                .orElseThrow(() -> new ApplicationException(com.yfmf.footlog.error.ErrorCode.GUEST_NOT_FOUND));
     }
 
     @Transactional
@@ -81,7 +79,7 @@ public class GuestService {
     @Transactional
     public void deleteGuest(Long guestId) {
         if (!guestRepository.existsById(guestId)) {
-            throw new ApplicationException(ErrorCode.INVALID_CLUB, "Guest not found with id: " + guestId);
+            throw new ApplicationException(ErrorCode.GUEST_NOT_FOUND);
         }
         guestRepository.deleteById(guestId);
     }

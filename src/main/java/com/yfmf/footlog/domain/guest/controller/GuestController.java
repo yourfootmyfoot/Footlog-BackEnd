@@ -100,8 +100,3 @@ public class GuestController {
         return ResponseEntity.ok(guestService.findGuestsByLocation(preferredPosition));
     }
 }
-
-// detailed commit meessage
-// Feat: Guest entity CRUD 구현
-//
-//
