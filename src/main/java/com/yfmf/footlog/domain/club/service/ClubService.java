@@ -43,7 +43,7 @@ public class ClubService {
 
         // 새로운 구단 생성 및 저장
         Club newClub = new Club(clubInfo.getUserId(), clubInfo.getClubName(), clubInfo.getClubIntroduction(),
-                clubInfo.getClubCode(), clubInfo.getErollDate(), 1, clubInfo.getDays(),
+                clubInfo.getClubCode(), 1, clubInfo.getDays(),
                 clubInfo.getTimes(), clubInfo.getSkillLevel(), clubInfo.getStadiumName(),
                 clubInfo.getCity(), clubInfo.getRegion(), clubInfo.getAgeGroup(), clubInfo.getGender());
         clubRepository.save(newClub);
@@ -57,7 +57,7 @@ public class ClubService {
 
         // 구단 등록 결과 반환
         return new ClubRegistResponseDTO(newClub.getUserId(), newClub.getClubName(), newClub.getClubIntroduction(),
-                newClub.getClubCode(), newClub.getErollDate(), newClub.getMemberCount(),
+                newClub.getClubCode(), newClub.getMemberCount(),
                 newClub.getDays(), newClub.getTimes(), newClub.getSkillLevel(),
                 newClub.getStadiumName(), newClub.getCity(), newClub.getRegion(),
                 newClub.getAgeGroup(), newClub.getGender());
