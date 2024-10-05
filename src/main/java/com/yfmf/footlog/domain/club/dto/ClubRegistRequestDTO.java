@@ -37,9 +37,9 @@ public class ClubRegistRequestDTO {
     @Pattern(regexp = "^[a-zA-Z0-9]+$", message = "구단 코드는 영문과 숫자로만 구성되어야 합니다.")
     private String clubCode;
 
-    @Schema(description = "등록 날짜")
-    @NotNull(message = "구단 등록 날짜를 입력해주세요.")
-    private LocalDateTime erollDate;
+//    @Schema(description = "등록 날짜")
+//    @NotNull(message = "구단 등록 날짜를 입력해주세요.")
+//    private LocalDateTime erollDate;
 
     @Schema(description = "구단원 수")
     @NotNull(message = "구단원 수를 입력해주세요.")
@@ -81,13 +81,12 @@ public class ClubRegistRequestDTO {
     }
 
     public ClubRegistRequestDTO(Long userId, String clubName, String clubIntroduction, String clubCode,
-                                LocalDateTime erollDate, int memberCount, List<PeakDays> days, List<PeakHours> times, String skillLevel,
+                                int memberCount, List<PeakDays> days, List<PeakHours> times, String skillLevel,
                                 String stadiumName, String city, String region, String ageGroup, String gender) {
         this.userId = userId;
         this.clubName = clubName;
         this.clubIntroduction = clubIntroduction;
         this.clubCode = clubCode;
-        this.erollDate = erollDate;
         this.memberCount = memberCount;
         this.days = days;
         this.times = times;
@@ -106,7 +105,6 @@ public class ClubRegistRequestDTO {
                 ", clubName='" + clubName + '\'' +
                 ", clubIntroduction='" + clubIntroduction + '\'' +
                 ", clubCode='" + clubCode + '\'' +
-                ", erollDate=" + erollDate +
                 ", memberCount=" + memberCount +
                 ", peakHours=" + times +
                 ", peakDays=" + days +
