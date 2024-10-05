@@ -11,7 +11,6 @@ import java.time.LocalDateTime;
 
 @Getter
 @ToString
-@AllArgsConstructor
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Entity
 @Table(name = "tbl_match")
@@ -38,7 +37,7 @@ public class Match extends BaseTimeEntity {
 
     // 상대 구단 - 구단 이름, 구단 로고
     @ManyToOne
-    @JoinColumn(name = "enemy_club_id", referencedColumnName = "CLUB_ID", nullable = false)
+    @JoinColumn(name = "enemy_club_id", referencedColumnName = "CLUB_ID", nullable = true)
     private Club enemyClub;
 
     // 매치 대표사진
@@ -90,9 +89,10 @@ public class Match extends BaseTimeEntity {
     @Enumerated(EnumType.STRING)
     private MatchStatus matchStatus;
 
+    @Builder
     public Match(Long matchEnrollUserId, Long matchApplyUserId, Club myClub, Club enemyClub, String matchPhoto, String matchIntroduce,
-                 MatchSchedule matchSchedule, MatchPlayerQuantity matchPlayerQuantity, QuarterQuantity quarterQuantity, String fieldLocation, Integer matchCost, Pro pro,
-                 ClubLevel clubLevel, MatchGender matchGender, MatchStatus matchStatus) {
+                 MatchSchedule matchSchedule, MatchPlayerQuantity matchPlayerQuantity, QuarterQuantity quarterQuantity,
+                 String fieldLocation, Integer matchCost, Pro pro, ClubLevel clubLevel, MatchGender matchGender, MatchStatus matchStatus) {
         this.matchEnrollUserId = matchEnrollUserId;
         this.matchApplyUserId = matchApplyUserId;
         this.myClub = myClub;
@@ -110,8 +110,40 @@ public class Match extends BaseTimeEntity {
         this.matchStatus = matchStatus;
     }
 
-    public void setMatchIntroduce(String matchIntroduce) {
-        this.matchIntroduce = matchIntroduce;
+    public void updateMatch(String matchIntroduce, MatchSchedule matchSchedule, MatchPlayerQuantity matchPlayerQuantity,
+                            QuarterQuantity quarterQuantity, String fieldLocation, Integer matchCost, Pro pro,
+                            ClubLevel clubLevel, MatchGender matchGender, MatchStatus matchStatus) {
+
+        if (matchIntroduce != null) {
+            this.matchIntroduce = matchIntroduce;
+        }
+        if (matchSchedule != null) {
+            this.matchSchedule = matchSchedule;
+        }
+        if (matchPlayerQuantity != null) {
+            this.matchPlayerQuantity = matchPlayerQuantity;
+        }
+        if (quarterQuantity != null) {
+            this.quarterQuantity = quarterQuantity;
+        }
+        if (fieldLocation != null) {
+            this.fieldLocation = fieldLocation;
+        }
+        if (matchCost != null) {
+            this.matchCost = matchCost;
+        }
+        if (pro != null) {
+            this.pro = pro;
+        }
+        if (clubLevel != null) {
+            this.clubLevel = clubLevel;
+        }
+        if (matchGender != null) {
+            this.matchGender = matchGender;
+        }
+        if (matchStatus != null) {
+            this.matchStatus = matchStatus;
+        }
     }
 
 }
