@@ -17,14 +17,14 @@ def get_modified_files():
 
     response = requests.get(url, headers=headers)
     
-    # 응답 내용 출력
-    print(f"GitHub API Response: {response.text}")
-    
+    # 응답을 텍스트로 출력하여 확인
+    print(f"GitHub API Raw Response: {response.text}")
+
     # 응답을 JSON 형식으로 변환 시도
     try:
         files = response.json()
-    except json.JSONDecodeError:
-        print("Error: Unable to decode JSON response")
+    except json.JSONDecodeError as e:
+        print(f"Error: Unable to decode JSON response: {str(e)}")
         return []
 
     modified_files = []
