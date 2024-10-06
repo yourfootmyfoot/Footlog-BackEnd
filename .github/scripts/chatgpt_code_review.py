@@ -16,12 +16,19 @@ def get_modified_files():
     headers = {"Authorization": f"token {token}"}
 
     response = requests.get(url, headers=headers)
-    files = response.json()
+    
+    # 응답이 JSON 형식인지 확인하고 파싱
+    try:
+        files = response.json()
+    except json.JSONDecodeError:
+        print("Error: Unable to decode JSON response")
+        return []
 
     modified_files = []
     for file in files:
-        if file["status"] == "modified":
-            modified_files.append(file["filename"])
+        # 파일의 변경 상태가 "modified"인지 확인
+        if file.get("status") == "modified":
+            modified_files.append(file.get("filename"))
 
     return modified_files
 
