@@ -1,7 +1,6 @@
-package com.yfmf.footlog.domain.guest;
+package com.yfmf.footlog.domain.guest.entity;
 
-import com.yfmf.footlog.domain.guest.dto.CreateGuestDto;
-import com.yfmf.footlog.domain.guest.entity.Guest;
+import com.yfmf.footlog.domain.guest.dto.GuestSaveRequestDto;
 import com.yfmf.footlog.domain.guest.repository.GuestRepository;
 import com.yfmf.footlog.domain.guest.service.GuestService;
 import org.junit.jupiter.api.Test;
@@ -10,6 +9,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -26,25 +26,30 @@ public class GuestIntegrationTest {
     @Test
     public void testRegisterGuest() {
         // Given
-        CreateGuestDto createGuestDto = CreateGuestDto.builder()
-                .name("Test Guest")
-                .createdAt(LocalDateTime.now())
-                .isAvailable(true)
+        GuestSaveRequestDto requestDto = GuestSaveRequestDto.builder()
+                .memberId(1L)
+                .location("Test Location")
+                .age(20)
+                .scheduleDate(LocalDateTime.now())
+                .scheduleStartTime(LocalTime.now())
+                .scheduleEndTime(LocalTime.now())
+                .specialRequests("Test Request")
+                .available(true)
                 .build();
 
         // When
-        Guest registeredGuest = guestService.registerGuest(createGuestDto);
+        Guest registeredGuest = guestService.registerGuest(requestDto.getMemberId() ,requestDto);
 
         // Then
         assertThat(registeredGuest).isNotNull();
         assertThat(registeredGuest.getId()).isNotNull();
-        assertThat(registeredGuest.getName()).isEqualTo("Test Guest");
-        assertThat(registeredGuest.getIsAvailable()).isTrue();
+        assertThat(registeredGuest.getLocation()).isEqualTo("Test Location");
+        assertThat(registeredGuest.isAvailable()).isTrue();
 
         // Verify that the guest is actually saved in the database
         Guest foundGuest = guestRepository.findById(registeredGuest.getId()).orElse(null);
         assertThat(foundGuest).isNotNull();
-        assertThat(foundGuest.getName()).isEqualTo("Test Guest");
-        assertThat(foundGuest.getIsAvailable()).isTrue();
+        assertThat(foundGuest.getLocation()).isEqualTo("Test Location");
+        assertThat(foundGuest.isAvailable()).isTrue();
     }
 }
