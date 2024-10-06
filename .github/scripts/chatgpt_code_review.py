@@ -17,7 +17,10 @@ def get_modified_files():
 
     response = requests.get(url, headers=headers)
     
-    # 응답이 JSON 형식인지 확인하고 파싱
+    # 응답 확인을 위한 로그 출력
+    print(f"GitHub API Response: {response.text}")
+    
+    # 응답을 JSON 형식으로 변환 시도
     try:
         files = response.json()
     except json.JSONDecodeError:
@@ -25,11 +28,15 @@ def get_modified_files():
         return []
 
     modified_files = []
-    for file in files:
-        # 파일의 변경 상태가 "modified"인지 확인
-        if file.get("status") == "modified":
-            modified_files.append(file.get("filename"))
-
+    
+    # 응답이 리스트인 경우 처리
+    if isinstance(files, list):
+        for file in files:
+            if file.get("status") == "modified":
+                modified_files.append(file.get("filename"))
+    else:
+        print(f"Unexpected response format: {files}")
+    
     return modified_files
 
 def review_code(file_path):
