@@ -17,7 +17,7 @@ def get_modified_files():
 
     response = requests.get(url, headers=headers)
     
-    # 응답 확인을 위한 로그 출력
+    # 응답 내용 출력
     print(f"GitHub API Response: {response.text}")
     
     # 응답을 JSON 형식으로 변환 시도
@@ -32,6 +32,7 @@ def get_modified_files():
     # 응답이 리스트인 경우 처리
     if isinstance(files, list):
         for file in files:
+            print(f"Processing file entry: {file}")  # 파일 정보를 로그로 출력
             if file.get("status") == "modified":
                 modified_files.append(file.get("filename"))
     else:
