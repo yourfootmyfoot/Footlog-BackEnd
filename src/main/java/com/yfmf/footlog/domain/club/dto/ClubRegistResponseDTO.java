@@ -26,8 +26,8 @@ public class ClubRegistResponseDTO {
     @Schema(description = "구단 코드", example = "FCSeoul")
     private String clubCode;
 
-    @Schema(description = "등록 날짜")
-    private LocalDateTime erollDate;
+//    @Schema(description = "등록 날짜")
+//    private LocalDateTime erollDate;
 
     @Schema(description = "구단원 수")
     private int memberCount;
@@ -60,14 +60,13 @@ public class ClubRegistResponseDTO {
 
     // 모든 필드를 받는 생성자
     public ClubRegistResponseDTO(Long userId, String clubName, String clubIntroduction, String clubCode,
-                                 LocalDateTime erollDate, int memberCount, List<PeakDays> days, List<PeakHours> times,
+                                 int memberCount, List<PeakDays> days, List<PeakHours> times,
                                  String skillLevel, String stadiumName, String city, String region,
                                  String ageGroup, String gender) {
         this.userId = userId;
         this.clubName = clubName;
         this.clubIntroduction = clubIntroduction;
         this.clubCode = clubCode;
-        this.erollDate = erollDate;
         this.memberCount = memberCount;
         this.days = days;
         this.times = times;
@@ -86,7 +85,6 @@ public class ClubRegistResponseDTO {
                 ", clubName='" + clubName + '\'' +
                 ", clubIntroduction='" + clubIntroduction + '\'' +
                 ", clubCode='" + clubCode + '\'' +
-                ", erollDate=" + erollDate +
                 ", memberCount=" + memberCount +
                 ", days=" + days +
                 ", times=" + times +
