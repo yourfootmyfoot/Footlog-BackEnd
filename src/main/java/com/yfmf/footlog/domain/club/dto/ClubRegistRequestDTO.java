@@ -5,15 +5,12 @@ package com.yfmf.footlog.domain.club.dto;
 import com.yfmf.footlog.domain.club.enums.PeakDays;
 import com.yfmf.footlog.domain.club.enums.PeakHours;
 import io.swagger.v3.oas.annotations.media.Schema;
-import jakarta.persistence.Column;
-import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
 import lombok.Getter;
 import lombok.Setter;
 
-import java.time.LocalDateTime;
 import java.util.List;
 
 @Getter
@@ -36,10 +33,6 @@ public class ClubRegistRequestDTO {
     @NotNull(message = "구단 코드를 입력해주세요.")
     @Pattern(regexp = "^[a-zA-Z0-9]+$", message = "구단 코드는 영문과 숫자로만 구성되어야 합니다.")
     private String clubCode;
-
-//    @Schema(description = "등록 날짜")
-//    @NotNull(message = "구단 등록 날짜를 입력해주세요.")
-//    private LocalDateTime erollDate;
 
     @Schema(description = "구단원 수")
     @NotNull(message = "구단원 수를 입력해주세요.")
