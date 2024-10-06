@@ -2,10 +2,12 @@ name: ChatGPT Code Review
 
 on:
   pull_request:
+    branches:
+      - dev # dev 브랜치에 PR이 생성될 때만 트리거
     types: [opened, synchronize]
   push:
     branches:
-      - main
+      - dev # dev 브랜치로 푸시될 때 트리거
 
 jobs:
   code-review:
