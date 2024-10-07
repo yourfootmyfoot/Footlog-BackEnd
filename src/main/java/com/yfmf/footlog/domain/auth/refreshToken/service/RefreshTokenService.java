@@ -22,6 +22,7 @@ public class RefreshTokenService {
         try {
             // userId + ":token" 키로 리프레시 토큰 저장
             redisTemplate.opsForValue().set(userId + ":token", refreshToken, expirationTime, TimeUnit.MILLISECONDS);
+            log.info("Saving refresh token for user: {}, refreshToken: {}", userId, refreshToken);
         } catch (Exception e) {
             log.error("Failed to save refresh token in Redis", e);
             throw new RedisSaveFailed("리프레시 토큰 저장 실패", "[RefreshTokenService] saveRefreshToken");
@@ -29,7 +30,7 @@ public class RefreshTokenService {
 
         String savedToken = redisTemplate.opsForValue().get(userId + ":token");
         if (savedToken == null) {
-            log.error("Failed to retrieve saved refresh token from Redis");
+            log.error("Failed to retrieve refresh token for user: {}", userId);
             throw new RedisSaveFailed("Redis에서 리프레시 토큰을 찾을 수 없습니다.", "[RefreshTokenService] saveRefreshToken");
         }
     }

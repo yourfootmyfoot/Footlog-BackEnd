@@ -3,7 +3,7 @@ package com.yfmf.footlog.domain.member.service;
 
 import com.yfmf.footlog.domain.auth.jwt.JWTTokenProvider;
 import com.yfmf.footlog.domain.auth.refreshToken.domain.RefreshToken;
-import com.yfmf.footlog.domain.auth.refreshToken.repository.RefreshTokenRepository;
+import com.yfmf.footlog.domain.auth.refreshToken.service.RefreshTokenService;
 import com.yfmf.footlog.domain.auth.utils.ClientUtils;
 import com.yfmf.footlog.domain.member.domain.Authority;
 import com.yfmf.footlog.domain.member.domain.Gender;
@@ -52,7 +52,7 @@ public class MemberSocialLoginService {
     private final RestTemplate restTemplate = new RestTemplate();
     private final KakaoProviderProperties KakaoProviderProperties;
     private final KakaoRegistrationProperties kakaoRegistrationProperties;
-    private final RefreshTokenRepository refreshTokenRepository;
+    private final RefreshTokenService refreshTokenService;
 
 
     /*
@@ -71,8 +71,15 @@ public class MemberSocialLoginService {
         Member member = memberService.findMemberByEmail(profile.kakaoAccount().email())
                 .orElseGet(() -> kakaoSignUp(profile));
 
-        // Access Token 및 Refresh Token 발급 및 저장
-        return getSocialAuthTokenDTO(member, httpServletRequest);
+        // Access Token 및 Refresh Token 발급
+        MemberResponseDTO.authTokenDTO authTokenDTO = jwtTokenProvider.generateToken(
+                member.getEmail(),
+                member.getId(),
+                member.getName(),
+                Collections.singletonList(new SimpleGrantedAuthority(member.getAuthority().name()))
+        );
+
+        return authTokenDTO;  // **클라이언트에 Access Token만 반환**
     }
 
     private String generateAccessToken(String code) {
@@ -135,23 +142,13 @@ public class MemberSocialLoginService {
         return member;
     }
 
-    private MemberResponseDTO.authTokenDTO getSocialAuthTokenDTO(Member member, HttpServletRequest httpServletRequest) {
-        UserDetails userDetails = new User(member.getEmail(), "",
-                Collections.singletonList(new SimpleGrantedAuthority(member.getAuthority().toString())));
-        Authentication authentication = new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
 
-        // Access Token 및 Refresh Token 발급
-        MemberResponseDTO.authTokenDTO authTokenDTO = jwtTokenProvider.generateToken(authentication);
+    // Redis에 Refresh Token 저장 메서드 수정
+    public void saveRefreshTokenInRedis(String userId, String refreshToken, HttpServletRequest httpServletRequest) {
+        String ipAddress = ClientUtils.getClientIp(httpServletRequest);
 
-        // Refresh Token 저장
-        refreshTokenRepository.save(RefreshToken.builder()
-                .userName(member.getEmail())
-                .ip(ClientUtils.getClientIp(httpServletRequest))  // Client IP 정보 저장
-                .authorities(member.getAuthority())  // 권한 정보 저장
-                .refreshToken(authTokenDTO.refreshToken())  // 발급된 Refresh Token 저장
-                .build()
-        );
-
-        return authTokenDTO;
+        // userId와 IP 주소를 함께 Redis에 저장
+        refreshTokenService.saveRefreshToken(userId, refreshToken, /* expirationTime */ 7L * 24 * 60 * 60 * 1000); // 7일 설정
+        refreshTokenService.saveIp(userId, ipAddress);
     }
 }
