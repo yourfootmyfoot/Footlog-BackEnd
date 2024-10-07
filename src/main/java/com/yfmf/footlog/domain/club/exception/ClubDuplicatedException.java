@@ -1,15 +1,15 @@
 package com.yfmf.footlog.domain.club.exception;
 
-import com.yfmf.footlog.exception.ErrorCode;
-import com.yfmf.footlog.exception.RootException;
+import com.yfmf.footlog.error.ApplicationException;
+import com.yfmf.footlog.error.ErrorCode;
 import lombok.Getter;
 
 @Getter
-public class ClubDuplicatedException extends RootException {
+public class ClubDuplicatedException extends ApplicationException {
     String message;
 
     public ClubDuplicatedException(String message, String logMessage) {
-        super(ErrorCode.INVALID_CLUB, logMessage, message);
+        super(ErrorCode.DUPLICATED_CLUB, logMessage, message);
         this.message = message;
     }
 }

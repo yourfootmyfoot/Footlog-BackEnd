@@ -44,11 +44,18 @@ public class LoggingAspect {
 
         // 리턴값 로깅
         log.info("메서드 리턴값: {}", result);
-        log.info("return type = {}", result.getClass().getSimpleName());
+
+        // 리턴값이 null이 아닌 경우에만 타입을 로깅
+        if (result != null) {
+            log.info("return type = {}", result.getClass().getSimpleName());
+        } else {
+            log.info("메서드 리턴값이 null입니다.");
+        }
 
         // 원래 메서드의 리턴값 반환
         return result;
     }
+
 
     /**
      * ProceedingJoinPoint : Spring AOP에서 @Around 어드바이스에 사용되는 인터페이스. AOP가 적용된 실제 메서드에 대한 정보를 제공

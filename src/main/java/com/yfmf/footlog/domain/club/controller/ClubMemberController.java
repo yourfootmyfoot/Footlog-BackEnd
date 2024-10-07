@@ -5,7 +5,7 @@ import com.yfmf.footlog.domain.auth.exception.LoginRequiredException;
 import com.yfmf.footlog.domain.club.dto.ClubMemberResponseDTO;
 import com.yfmf.footlog.domain.club.entity.ClubMemberRole;
 import com.yfmf.footlog.domain.club.service.ClubMemberService;
-import com.yfmf.footlog.exception.ErrorResponse;
+import com.yfmf.footlog.error.ErrorResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.ExampleObject;
