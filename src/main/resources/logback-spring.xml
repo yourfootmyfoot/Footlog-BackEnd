@@ -10,23 +10,19 @@
     <property name="LOG_PATTERN"
               value="[%d{yyyy-MM-dd HH:mm:ss}:%-4relative] %green([%thread]) %highlight(%-5level) %boldWhite([%C.%M:%yellow(%L)]) - %msg%n"/>
 
-    <springProfile name="!prod">
-        <include resource="console-appender.xml"/>
 
-        <root level="INFO">
-            <appender-ref ref="CONSOLE"/>
-        </root>
-    </springProfile>
-
-    <springProfile name="prod">
+    <springProfile name="!prod"> <!-- 프로파일(특정 환경에 맞게 설정을 분리)에 맞는 로깅 설정: 개발(dev), 테스트(test), 운영(prod)-->
+        <include resource="log-info-appender.xml"/>
         <include resource="file-info-appender.xml"/>
         <include resource="file-warn-appender.xml"/>
         <include resource="file-error-appender.xml"/>
 
-        <root level="INFO">
+        <root level="INFO"> <!-- 기본 출력 로그레벨 -->
+            <appender-ref ref="CONSOLE"/>
             <appender-ref ref="FILE-INFO"/>
             <appender-ref ref="FILE-WARN"/>
             <appender-ref ref="FILE-ERROR"/>
         </root>
     </springProfile>
+
 </configuration>
