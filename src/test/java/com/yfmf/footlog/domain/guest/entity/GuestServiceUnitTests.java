@@ -46,7 +46,7 @@ class GuestServiceUnitTests {
         CreateGuestDto createGuestDto = CreateGuestDto.builder()
                 .name("junsu")
                 .createdAt(LocalDateTime.now())
-                .Available(true)
+                .available(true)
                 .build();
 
         guestRepository.save(any(Guest.class));
