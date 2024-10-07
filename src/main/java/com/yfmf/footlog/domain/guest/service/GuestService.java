@@ -20,7 +20,7 @@ public class GuestService {
     private final GuestRepository guestRepository;
 
     @Transactional
-    public Guest registerGuest(Long memberId, GuestSaveRequestDto requestDto) {
+    public Guest registerGuest(Long memberId ,GuestSaveRequestDto requestDto) {
         Guest guest = Guest.builder()
                 .memberId(memberId)
                 .location(requestDto.getLocation())
@@ -62,7 +62,8 @@ public class GuestService {
                 requestDto.getScheduleDate() != null ? requestDto.getScheduleDate().getDayOfWeek() : null,
                 requestDto.getScheduleStartTime(),
                 requestDto.getScheduleEndTime(),
-                requestDto.getSpecialRequests()
+                requestDto.getSpecialRequests(),
+                requestDto.getAvailable()
         );
 
         return guestRepository.save(guest);
