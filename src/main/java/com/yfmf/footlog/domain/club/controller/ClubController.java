@@ -7,7 +7,7 @@ import com.yfmf.footlog.domain.club.dto.ClubRegistResponseDTO;
 import com.yfmf.footlog.domain.club.entity.Club;
 import com.yfmf.footlog.domain.club.exception.ClubNotFoundException;
 import com.yfmf.footlog.domain.club.service.ClubService;
-import com.yfmf.footlog.exception.ErrorResponse;
+import com.yfmf.footlog.error.ErrorResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.ExampleObject;

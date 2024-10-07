@@ -1,6 +1,8 @@
 package com.yfmf.footlog.domain.member.controller;
 
 
+import com.yfmf.footlog.domain.auth.jwt.JWTTokenProvider;
+import com.yfmf.footlog.domain.auth.refreshToken.service.RefreshTokenService;
 import com.yfmf.footlog.domain.auth.utils.ApiUtils;
 import com.yfmf.footlog.domain.member.dto.MemberRequestDTO;
 import com.yfmf.footlog.domain.member.dto.MemberResponseDTO;
@@ -29,6 +31,8 @@ import org.springframework.web.bind.annotation.RestController;
 public class MemberController {
 
     private final MemberService memberService;
+    private final RefreshTokenService refreshTokenService;
+    private final JWTTokenProvider jwtTokenProvider;
 
     /*
           기본 회원 가입
@@ -50,6 +54,7 @@ public class MemberController {
     @PostMapping("/login")
     public ResponseEntity<?> login(@Valid @RequestBody MemberRequestDTO.loginDTO loginDTO, HttpServletRequest request, HttpServletResponse response) {
         MemberResponseDTO.authTokenDTO authTokenDTO = memberService.login(request, response, loginDTO);
+        log.info("{}님이 로그인에 성공했습니다.", authTokenDTO.userId());
         return ResponseEntity.ok(authTokenDTO);  // 쿠키는 이미 설정된 상태이므로 body에 추가 정보가 필요 없다면 간단히 처리
     }
 
@@ -66,7 +71,7 @@ public class MemberController {
     }
 
     /*
-        로그아웃 - Refresh Token 필요
+        로그아웃
      */
     @Operation(summary = "로그아웃", description = "Refresh Token을 사용하여 로그아웃을 처리합니다.")
     @PostMapping("/logout")
@@ -75,6 +80,12 @@ public class MemberController {
 
         // 로그아웃 처리 (Refresh Token 확인 및 제거)
         memberService.logout(httpServletRequest);
+
+        // Redis에서 Refresh Token 삭제
+        String refreshToken = jwtTokenProvider.resolveToken(httpServletRequest, "refreshToken");
+        if (refreshToken != null) {
+            refreshTokenService.deleteRefreshToken(refreshToken);
+        }
 
         // Access Token 쿠키 삭제
         Cookie accessTokenCookie = new Cookie("accessToken", null);

@@ -3,7 +3,7 @@ package com.yfmf.footlog.domain.match.controller;
 import com.yfmf.footlog.domain.match.dto.MatchRegisterRequestDTO;
 import com.yfmf.footlog.domain.match.dto.MatchResponseDTO;
 import com.yfmf.footlog.domain.match.service.MatchService;
-import com.yfmf.footlog.exception.ErrorResponse;
+import com.yfmf.footlog.error.ErrorResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.ExampleObject;
