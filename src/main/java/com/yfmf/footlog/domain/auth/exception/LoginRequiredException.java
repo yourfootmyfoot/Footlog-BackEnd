@@ -1,11 +1,12 @@
 package com.yfmf.footlog.domain.auth.exception;
 
-import com.yfmf.footlog.exception.ErrorCode;
-import com.yfmf.footlog.exception.RootException;
+
+import com.yfmf.footlog.error.ApplicationException;
+import com.yfmf.footlog.error.ErrorCode;
 import lombok.Getter;
 
 @Getter
-public class LoginRequiredException extends RootException {
+public class LoginRequiredException extends ApplicationException {
     private String message;
 
     public LoginRequiredException(String message, String logMessage) {

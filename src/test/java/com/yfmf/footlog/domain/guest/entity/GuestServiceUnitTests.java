@@ -2,16 +2,10 @@ package com.yfmf.footlog.domain.guest.entity;
 
 
 import com.yfmf.footlog.domain.guest.dto.CreateGuestDto;
-import com.yfmf.footlog.domain.guest.dto.UpdateGuestDto;
 import com.yfmf.footlog.domain.guest.repository.GuestRepository;
 import com.yfmf.footlog.domain.guest.service.GuestService;
-import com.yfmf.footlog.enums.MainFoot;
-import com.yfmf.footlog.enums.Position;
 
-import com.yfmf.footlog.domain.guest.dto.CreateGuestDto;
-import com.yfmf.footlog.domain.guest.dto.UpdateGuestDto;
-import com.yfmf.footlog.domain.guest.repository.GuestRepository;
-import com.yfmf.footlog.domain.guest.service.GuestService;
+
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
@@ -19,7 +13,6 @@ import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
 import java.time.LocalDateTime;
-import java.util.Optional;
 
 import static org.mockito.ArgumentMatchers.any;
 
@@ -53,7 +46,7 @@ class GuestServiceUnitTests {
         CreateGuestDto createGuestDto = CreateGuestDto.builder()
                 .name("junsu")
                 .createdAt(LocalDateTime.now())
-                .isAvailable(true)
+                .Available(true)
                 .build();
 
         guestRepository.save(any(Guest.class));
