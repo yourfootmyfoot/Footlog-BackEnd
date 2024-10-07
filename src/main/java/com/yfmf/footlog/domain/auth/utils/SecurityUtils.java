@@ -11,7 +11,7 @@ public class SecurityUtils {
         String name = SecurityContextHolder.getContext().getAuthentication().getName();
 
         if(name.equals("anonymousUser")) {
-            throw new ApplicationException(ErrorCode.ANONYMOUS_USER);
+            throw new ApplicationException(ErrorCode.ANONYMOUS_USER, "[SecurityUtils] ANONYMOUS_USER");
         }
 
         return Long.parseLong(name);

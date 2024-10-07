@@ -93,7 +93,7 @@ public class MemberSocialLoginService {
         );
 
         if(!response.getStatusCode().is2xxSuccessful()) {
-            throw new ApplicationException(ErrorCode.FAILED_GET_ACCESS_TOKEN);
+            throw new ApplicationException(ErrorCode.FAILED_GET_ACCESS_TOKEN, "[MemberSocialLoginService] fail generateAccessToken");
         }
 
         return response.getBody().accessToken();
@@ -112,7 +112,7 @@ public class MemberSocialLoginService {
         );
 
         if(!response.getStatusCode().is2xxSuccessful()) {
-            throw new ApplicationException(ErrorCode.FAILED_GET_KAKAO_PROFILE);
+            throw new ApplicationException(ErrorCode.FAILED_GET_KAKAO_PROFILE, "[MemberSocialLoginService] fail getKakaoProfile");
         }
 
         return response.getBody();

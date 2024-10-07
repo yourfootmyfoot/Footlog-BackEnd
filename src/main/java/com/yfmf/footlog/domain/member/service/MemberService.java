@@ -70,7 +70,7 @@ public class MemberService {
 
         // 1. 이메일 확인
         Member member = findMemberByEmail(requestDTO.email())
-                .orElseThrow(() -> new ApplicationException(ErrorCode.EMPTY_EMAIL_MEMBER));
+                .orElseThrow(() -> new ApplicationException(ErrorCode.EMPTY_EMAIL_MEMBER, "[MemberService] not exited email"));
 
         // 2. 비밀번호 확인
         checkValidPassword(requestDTO.password(), member.getPassword());
@@ -100,7 +100,7 @@ public class MemberService {
         log.info("{} {}", rawPassword, encodedPassword);
 
         if(!passwordEncoder.matches(rawPassword, encodedPassword)) {
-            throw new ApplicationException(ErrorCode.INVALID_PASSWORD);
+            throw new ApplicationException(ErrorCode.INVALID_PASSWORD, "[MemberService] checkValidPassword");
         }
     }
 
@@ -131,7 +131,7 @@ public class MemberService {
         Authentication authentication = manager.authenticate(usernamePasswordAuthenticationToken);
 
         // 회원 정보 조회 후 LoginedInfo 생성
-        Member member = findMemberByEmail(email).orElseThrow(() -> new ApplicationException(ErrorCode.EMPTY_EMAIL_MEMBER));
+        Member member = findMemberByEmail(email).orElseThrow(() -> new ApplicationException(ErrorCode.EMPTY_EMAIL_MEMBER, "[MemberService] not exited email"));
         LoginedInfo loginedInfo = new LoginedInfo(member.getId(), member.getName(), member.getEmail(), member.getAuthority());
 
         // 인증 객체에서 LoginedInfo로 교체
@@ -150,25 +150,25 @@ public class MemberService {
 
         // 토큰 유효성 검사
         if(token == null || !jwtTokenProvider.validateToken(token)) {
-            throw new ApplicationException(ErrorCode.FAILED_VALIDATE_ACCESS_TOKEN);
+            throw new ApplicationException(ErrorCode.FAILED_VALIDATE_ACCESS_TOKEN, "[MemberService] fail validate reissueToken");
         }
 
         // type 확인
         if(!jwtTokenProvider.isRefreshToken(token)) {
-            throw new ApplicationException(ErrorCode.IS_NOT_REFRESH_TOKEN);
+            throw new ApplicationException(ErrorCode.IS_NOT_REFRESH_TOKEN, "[MemberService] isNotRefreshToken");
         }
 
         // RefreshToken
         Optional<RefreshToken> refreshToken = refreshTokenRepository.findByRefreshToken(token);
 
         if(refreshToken.isEmpty()) {
-            throw new ApplicationException(ErrorCode.FAILED_GET_RERFRESH_TOKEN);
+            throw new ApplicationException(ErrorCode.FAILED_GET_REFRESH_TOKEN, "[MemberService] fail getRefreshToken");
         }
 
         // 최초 로그인한 ip와 같은지 확인
         String currentIp = ClientUtils.getClientIp(httpServletRequest);
         if(!currentIp.equals(refreshToken.get().getIp())) {
-            throw new ApplicationException(ErrorCode.DIFFERENT_IP_ADDRESS);
+            throw new ApplicationException(ErrorCode.DIFFERENT_IP_ADDRESS, "[MemberService] different ip");
         }
 
         // 저장된 RefreshToken 정보를 기반으로 JWT Token 생성
@@ -204,19 +204,19 @@ public class MemberService {
         String token = jwtTokenProvider.resolveToken(httpServletRequest, "refreshToken");
 
         if(token == null || !jwtTokenProvider.validateToken(token)) {
-            throw new ApplicationException(ErrorCode.FAILED_VALIDATE__REFRESH_TOKEN);
+            throw new ApplicationException(ErrorCode.FAILED_VALIDATE_REFRESH_TOKEN, "[MemberService] fail validate refreshToken");
         }
 
         // Refresh Token 확인
         if (!jwtTokenProvider.isRefreshToken(token)) {
-            throw new ApplicationException(ErrorCode.IS_NOT_REFRESH_TOKEN);
+            throw new ApplicationException(ErrorCode.IS_NOT_REFRESH_TOKEN, "[MemberService] isNotRefreshToken");
         }
 
         // RefreshToken 조회 및 null 체크
         RefreshToken refreshToken = refreshTokenRepository.findByRefreshToken(token)
                 .orElseThrow(() -> {
                     log.error("Refresh Token 을 얻을 수 없습니다. 토큰: {}", token);
-                    return new ApplicationException(ErrorCode.FAILED_GET_RERFRESH_TOKEN);
+                    return new ApplicationException(ErrorCode.FAILED_GET_REFRESH_TOKEN, "[MemberService] fail getRefreshToken");
                 });
 
         // RefreshToken 삭제

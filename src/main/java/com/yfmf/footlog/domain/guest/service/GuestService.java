@@ -10,7 +10,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -49,7 +48,7 @@ public class GuestService {
     @Transactional(readOnly = true)
     public Guest findGuestById(Long guestId) {
         return guestRepository.findById(guestId)
-                .orElseThrow(() -> new ApplicationException(com.yfmf.footlog.error.ErrorCode.GUEST_NOT_FOUND));
+                .orElseThrow(() -> new ApplicationException(com.yfmf.footlog.error.ErrorCode.GUEST_NOT_FOUND, "[GuestService] GUEST_NOT_FOUND"));
     }
 
     @Transactional
@@ -79,7 +78,7 @@ public class GuestService {
     @Transactional
     public void deleteGuest(Long guestId) {
         if (!guestRepository.existsById(guestId)) {
-            throw new ApplicationException(ErrorCode.GUEST_NOT_FOUND);
+            throw new ApplicationException(ErrorCode.GUEST_NOT_FOUND, "[GuestService] GUEST_NOT_FOUND");
         }
         guestRepository.deleteById(guestId);
     }
