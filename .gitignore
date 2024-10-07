@@ -38,3 +38,6 @@ out/
 .vscode/
 
 tree
+
+### log ###
+log/**/*.log
