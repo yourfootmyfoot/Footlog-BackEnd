@@ -186,22 +186,22 @@ public class MemberService {
         로그아웃
      */
     public void logout(HttpServletRequest httpServletRequest) {
-        
-        log.info("로그아웃 - Refresh Token 확인");
+        log.info("로그아웃 요청 수신");  // 로그아웃 시도 시 로그 기록
 
-        String token = jwtTokenProvider.resolveToken(httpServletRequest, "refreshToken");
-
-        if(token == null || !jwtTokenProvider.validateToken(token)) {
-            throw new ApplicationException(ErrorCode.FAILED_VALIDATE_REFRESH_TOKEN, "[MemberService] fail validate refreshToken");
+        String token = jwtTokenProvider.resolveToken(httpServletRequest, "accessToken");
+        if(token == null) {
+            log.error("토큰이 없습니다."); // 로그에 토큰이 없을 경우를 기록
+            throw new ApplicationException(ErrorCode.FAILED_VALIDATE_ACCESS_TOKEN, "액세스 토큰이 존재하지 않습니다.");
+        }
+        if(!jwtTokenProvider.validateToken(token)) {
+            log.error("유효하지 않은 액세스 토큰: {}", token);  // 유효하지 않은 토큰일 경우 기록
+            throw new ApplicationException(ErrorCode.FAILED_VALIDATE_ACCESS_TOKEN, "유효하지 않은 액세스 토큰입니다.");
         }
 
-        // Refresh Token 확인
-        if (!jwtTokenProvider.isRefreshToken(token)) {
-            throw new ApplicationException(ErrorCode.IS_NOT_REFRESH_TOKEN, "[MemberService] isNotRefreshToken");
-        }
+        Long userId = jwtTokenProvider.getUserIdFromToken(token);
+        log.info("사용자 ID: {}의 리프레시 토큰 삭제 요청", userId);  // 유저 정보와 함께 로그 출력
+        refreshTokenService.deleteRefreshToken(userId.toString());
 
-        // RefreshToken 삭제
-        refreshTokenService.deleteRefreshToken(token);
-        log.info("로그아웃 성공");
+        log.info("로그아웃 성공 - 사용자 ID: {}", userId);  // 성공적인 로그아웃 후 기록
     }
 }

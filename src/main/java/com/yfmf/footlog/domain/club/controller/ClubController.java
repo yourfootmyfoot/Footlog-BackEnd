@@ -142,7 +142,7 @@ public class ClubController {
             ))
     })
     @GetMapping("/{clubId}")
-    public ResponseEntity<Club> getClubById(@PathVariable Long clubId, @AuthenticationPrincipal LoginedInfo logined) {
+    public ResponseEntity<Club> getClubById(@PathVariable("clubId") Long clubId, @AuthenticationPrincipal LoginedInfo logined) {
 
         log.info("[ClubController] 구단 ID={}에 대한 조회 요청", clubId);
 

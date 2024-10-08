@@ -161,4 +161,9 @@ public class JWTTokenProvider {
         }
         return null;
     }
+
+    public Long getUserIdFromToken(String token) {
+        Claims claims = parseClaims(token); // 토큰을 파싱하여 Claims 추출
+        return claims.get("userId", Long.class); // Claims에서 userId 추출
+    }
 }
