@@ -14,4 +14,6 @@ public interface ClubRepository extends JpaRepository<Club, Long> {
     boolean existsByClubCode(String clubCode);
 
     Club findByClubId(Long clubId);
+
+    boolean existsByClubName(String clubName);
 }

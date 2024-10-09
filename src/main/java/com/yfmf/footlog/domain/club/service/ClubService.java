@@ -137,4 +137,17 @@ public class ClubService {
         log.info("[ClubService] 구단 삭제 성공: 구단 ID={}", clubId);
     }
 
+    // 구단 이름 중복 확인
+    public boolean isClubNameDuplicate(String name) {
+        log.info("구단 이름 중복 확인: {}", name);
+        return clubRepository.existsByClubName(name);
+    }
+
+    // 구단 코드 중복 확인
+    public boolean isClubCodeDuplicate(String code) {
+        log.info("구단 코드 중복 확인: {}", code);
+        return clubRepository.existsByClubCode(code);
+    }
+
+
 }
