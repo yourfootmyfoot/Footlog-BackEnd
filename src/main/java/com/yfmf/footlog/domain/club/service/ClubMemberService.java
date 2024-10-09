@@ -151,4 +151,24 @@ public class ClubMemberService {
         clubMemberRepository.save(clubMember);
         log.info("[ClubMemberService] 사용자 ID={}의 역할이 {}로 성공적으로 수정되었습니다.", userId, newRole);
     }
+
+
+    /**
+     * 구단원 여부 확인
+     */
+    public boolean isClubMember(Long userId, Long clubId) {
+        return clubMemberRepository.existsByMemberIdAndClubId(userId, clubId);
+    }
+
+    /**
+     * 구단원 권한 확인
+     */
+    public boolean hasClubPermission(Long userId, Long clubId) {
+        ClubMember member = clubMemberRepository.findByMemberIdAndClubId(userId, clubId)
+                .orElseThrow(() -> new IllegalArgumentException("구단원이 아닙니다."));
+
+        return member.getRole() == ClubMemberRole.OWNER || member.getRole() == ClubMemberRole.MANAGER;
+    }
+
+
 }
