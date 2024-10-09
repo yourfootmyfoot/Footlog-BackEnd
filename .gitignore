@@ -40,3 +40,6 @@ out/
 tree
 
 READEME2.md
+
+### log ###
+log/**/*.log
