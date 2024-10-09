@@ -3,7 +3,7 @@ package com.yfmf.footlog.domain.club.controller;
 import com.yfmf.footlog.domain.auth.dto.LoginedInfo;
 import com.yfmf.footlog.domain.auth.exception.LoginRequiredException;
 import com.yfmf.footlog.domain.club.dto.ClubMemberResponseDTO;
-import com.yfmf.footlog.domain.club.entity.ClubMemberRole;
+import com.yfmf.footlog.domain.club.enums.ClubMemberRole;
 import com.yfmf.footlog.domain.club.service.ClubMemberService;
 import com.yfmf.footlog.error.ErrorResponse;
 import io.swagger.v3.oas.annotations.Operation;
@@ -15,11 +15,14 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 @Slf4j
@@ -57,7 +60,7 @@ public class ClubMemberController {
             ))
     })
     @PostMapping("/{clubId}/join")
-    public ResponseEntity<ClubMemberResponseDTO> joinClub(@PathVariable Long clubId, @AuthenticationPrincipal LoginedInfo logined) {
+    public ResponseEntity<ClubMemberResponseDTO> joinClub(@PathVariable("clubId") Long clubId, @AuthenticationPrincipal LoginedInfo logined) {
         if (logined == null) {
             log.error("[ClubMemberController] 로그인되지 않은 사용자가 구단에 가입을 시도했습니다.");
             throw new LoginRequiredException("로그인 후 이용이 가능합니다.", "[ClubMemberController] joinClub");
@@ -99,7 +102,7 @@ public class ClubMemberController {
             ))
     })
     @DeleteMapping("/{clubId}/leave")
-    public ResponseEntity<ClubMemberResponseDTO> leaveClub(@PathVariable Long clubId, @AuthenticationPrincipal LoginedInfo logined) {
+    public ResponseEntity<ClubMemberResponseDTO> leaveClub(@PathVariable("clubId") Long clubId, @AuthenticationPrincipal LoginedInfo logined) {
         if (logined == null) {
             log.error("[ClubMemberController] 로그인되지 않은 사용자가 구단 탈퇴를 시도했습니다.");
             throw new LoginRequiredException("로그인 후 이용이 가능합니다.", "[ClubMemberController] leaveClub");
@@ -188,4 +191,55 @@ public class ClubMemberController {
 
         return ResponseEntity.ok("구단원의 역할이 성공적으로 수정되었습니다.");
     }
+
+    @Operation(summary = "구단원 여부 확인", description = "현재 사용자가 해당 구단에 소속된 구단원인지 확인합니다.")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "구단원 여부 확인 성공",
+                    content = @Content(mediaType = "application/json", schema = @Schema(implementation = Boolean.class),
+                            examples = @ExampleObject(value = "{\"isMember\": true}"))),
+            @ApiResponse(responseCode = "401", description = "로그인 필요",
+                    content = @Content(mediaType = "application/json",
+                            examples = @ExampleObject(value = "{\"status\": 401, \"errorType\": \"Unauthorized\", \"message\": \"로그인이 필요합니다.\"}"))),
+            @ApiResponse(responseCode = "404", description = "구단을 찾을 수 없음",
+                    content = @Content(mediaType = "application/json",
+                            examples = @ExampleObject(value = "{\"status\": 404, \"errorType\": \"Not Found\", \"message\": \"구단을 찾을 수 없습니다.\"}")))
+    })
+    @GetMapping("/{clubId}/is-member")
+    public ResponseEntity<Map<String, Boolean>> isMember(@PathVariable("clubId") Long clubId, @AuthenticationPrincipal LoginedInfo logined) {
+        if (logined == null) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+        }
+
+        boolean isMember = clubMemberService.isClubMember(logined.getUserId(), clubId);
+
+        Map<String, Boolean> response = new HashMap<>();
+        response.put("isMember", isMember);
+        return ResponseEntity.ok(response);
+    }
+
+    @Operation(summary = "구단 권한 여부 확인", description = "현재 사용자가 구단의 구단주 혹은 매니저 권한을 가지고 있는지 확인합니다.")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "권한 확인 성공",
+                    content = @Content(mediaType = "application/json", schema = @Schema(implementation = Boolean.class),
+                            examples = @ExampleObject(value = "{\"hasPermission\": true}"))),
+            @ApiResponse(responseCode = "401", description = "로그인 필요",
+                    content = @Content(mediaType = "application/json",
+                            examples = @ExampleObject(value = "{\"status\": 401, \"errorType\": \"Unauthorized\", \"message\": \"로그인이 필요합니다.\"}"))),
+            @ApiResponse(responseCode = "404", description = "구단을 찾을 수 없음",
+                    content = @Content(mediaType = "application/json",
+                            examples = @ExampleObject(value = "{\"status\": 404, \"errorType\": \"Not Found\", \"message\": \"구단을 찾을 수 없습니다.\"}")))
+    })
+    @GetMapping("/{clubId}/permissions")
+    public ResponseEntity<Map<String, Boolean>> hasPermission(@PathVariable("clubId") Long clubId, @AuthenticationPrincipal LoginedInfo logined) {
+        if (logined == null) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+        }
+
+        boolean hasPermission = clubMemberService.hasClubPermission(logined.getUserId(), clubId);
+
+        Map<String, Boolean> response = new HashMap<>();
+        response.put("hasPermission", hasPermission);
+        return ResponseEntity.ok(response);
+    }
+
 }

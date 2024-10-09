@@ -1,6 +1,6 @@
 package com.yfmf.footlog.domain.club.entity;
 
-import com.yfmf.footlog.domain.member.domain.Member;
+import com.yfmf.footlog.domain.club.enums.ClubMemberRole;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;

@@ -2,6 +2,7 @@ package com.yfmf.footlog.error;
 
 import com.yfmf.footlog.domain.auth.exception.LoginRequiredException;
 import com.yfmf.footlog.domain.auth.utils.ApiUtils;
+import com.yfmf.footlog.domain.club.exception.ClubAlreadyJoinedException;
 import com.yfmf.footlog.domain.club.exception.ClubDuplicatedException;
 import com.yfmf.footlog.domain.club.exception.ClubNotFoundException;
 import com.yfmf.footlog.domain.club.exception.IllegalClubArgumentException;
@@ -88,6 +89,11 @@ public class GlobalControllerAdvice {
     @ExceptionHandler(IllegalClubArgumentException.class)
     public ResponseEntity<ErrorResponse> handleIllegalClubArgumentException(IllegalClubArgumentException ex) {
         return buildErrorResponse(HttpStatus.BAD_REQUEST, ex.getErrorCode().getErrorType(), ex.getMessage());
+    }
+
+    @ExceptionHandler(ClubAlreadyJoinedException.class)
+    public ResponseEntity<ErrorResponse> handleClubAlreadyJoinedException(ClubAlreadyJoinedException ex) {
+        return buildErrorResponse(HttpStatus.CONFLICT, "Club Already Joined", ex.getMessage());
     }
 
     /**** 인증 및 접근 권한 관련 예외 처리 ****/
