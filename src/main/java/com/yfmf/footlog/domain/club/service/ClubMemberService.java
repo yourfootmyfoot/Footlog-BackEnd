@@ -40,9 +40,8 @@ public class ClubMemberService {
         log.info("[ClubMemberService] 구단 ID={}에 사용자 ID={}를 추가하려고 합니다.", clubId, userId);
 
         // 구단이 존재하는지 확인
-        if (!clubRepository.existsById(clubId)) {
-            throw new ClubNotFoundException("구단을 찾을 수 없습니다.", "[ClubMemberService] joinClub");
-        }
+        Club club = clubRepository.findById(clubId)
+                .orElseThrow(() -> new ClubNotFoundException("구단을 찾을 수 없습니다.", "[ClubMemberService] joinClub"));
 
         // 이미 구단에 가입된 회원인지 확인
         if (clubMemberRepository.existsByMemberIdAndClubId(userId, clubId)) {
@@ -54,7 +53,13 @@ public class ClubMemberService {
         // 구단원 추가
         ClubMember clubMember = new ClubMember(clubId, userId, ClubMemberRole.MEMBER);
         clubMemberRepository.save(clubMember);
-        log.info("[ClubMemberService] 사용자 ID={}가 구단 ID={}에 성공적으로 가입되었습니다.", userId, clubId);
+
+
+        // 구단원 수 업데이트
+        club.setMemberCount(club.getMemberCount() + 1);
+        clubRepository.save(club);  // 구단 정보 업데이트
+
+        log.info("[ClubMemberService] 사용자 ID={}가 구단 ID={}에 성공적으로 가입되었으며, 구단원 수가 {}로 업데이트되었습니다.", userId, clubId, club.getMemberCount());
     }
 
     /**
@@ -66,19 +71,24 @@ public class ClubMemberService {
 
 
         // 구단이 존재하는지 확인
-        if (!clubRepository.existsById(clubId)) {
-            log.error("[ClubMemberService] 구단 ID={}가 존재하지 않습니다.", clubId);
-            throw new ClubNotFoundException("구단을 찾을 수 없습니다.", "[ClubMemberService] leaveClub");
-        }
+        Club club = clubRepository.findById(clubId)
+                .orElseThrow(() -> new ClubNotFoundException("구단을 찾을 수 없습니다.", "[ClubMemberService] leaveClub"));
 
-        // 구단원 탈퇴
+        // 구단 가입유무 확인
         if (!clubMemberRepository.existsByMemberIdAndClubId(userId, clubId)) {
             log.error("[ClubMemberService] 사용자 ID={}는 구단 ID={}에 가입되어 있지 않습니다.", userId, clubId);
             throw new IllegalArgumentException("해당 회원은 구단에 가입되어 있지 않습니다.");
         }
 
+        // 구단원 삭제
         clubMemberRepository.deleteByMemberIdAndClubId(userId, clubId);
-        log.info("[ClubMemberService] 사용자 ID={}가 구단 ID={}에서 성공적으로 탈퇴되었습니다.", userId, clubId);
+
+        // 구단원 수 업데이트 (최소 값이 0이 되도록 처리)
+        int updatedMemberCount = Math.max(0, club.getMemberCount() - 1);
+        club.setMemberCount(updatedMemberCount);
+        clubRepository.save(club);  // 구단 정보 업데이트
+
+        log.info("[ClubMemberService] 사용자 ID={}가 구단 ID={}에서 성공적으로 탈퇴하였으며, 구단원 수가 {}로 업데이트되었습니다.", userId, clubId, club.getMemberCount());
     }
 
     public String getClubNameById(Long clubId) {

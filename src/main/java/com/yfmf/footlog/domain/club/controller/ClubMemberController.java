@@ -102,7 +102,7 @@ public class ClubMemberController {
             ))
     })
     @DeleteMapping("/{clubId}/leave")
-    public ResponseEntity<ClubMemberResponseDTO> leaveClub(@PathVariable Long clubId, @AuthenticationPrincipal LoginedInfo logined) {
+    public ResponseEntity<ClubMemberResponseDTO> leaveClub(@PathVariable("clubId") Long clubId, @AuthenticationPrincipal LoginedInfo logined) {
         if (logined == null) {
             log.error("[ClubMemberController] 로그인되지 않은 사용자가 구단 탈퇴를 시도했습니다.");
             throw new LoginRequiredException("로그인 후 이용이 가능합니다.", "[ClubMemberController] leaveClub");
