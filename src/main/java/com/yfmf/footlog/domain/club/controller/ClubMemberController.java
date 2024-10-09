@@ -3,7 +3,7 @@ package com.yfmf.footlog.domain.club.controller;
 import com.yfmf.footlog.domain.auth.dto.LoginedInfo;
 import com.yfmf.footlog.domain.auth.exception.LoginRequiredException;
 import com.yfmf.footlog.domain.club.dto.ClubMemberResponseDTO;
-import com.yfmf.footlog.domain.club.entity.ClubMemberRole;
+import com.yfmf.footlog.domain.club.enums.ClubMemberRole;
 import com.yfmf.footlog.domain.club.service.ClubMemberService;
 import com.yfmf.footlog.error.ErrorResponse;
 import io.swagger.v3.oas.annotations.Operation;

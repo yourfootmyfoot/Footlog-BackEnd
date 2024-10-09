@@ -2,7 +2,7 @@ package com.yfmf.footlog.domain.club.service;
 
 import com.yfmf.footlog.domain.club.entity.Club;
 import com.yfmf.footlog.domain.club.entity.ClubMember;
-import com.yfmf.footlog.domain.club.entity.ClubMemberRole;
+import com.yfmf.footlog.domain.club.enums.ClubMemberRole;
 import com.yfmf.footlog.domain.club.exception.ClubNotFoundException;
 import com.yfmf.footlog.domain.club.repository.ClubMemberRepository;
 import com.yfmf.footlog.domain.club.repository.ClubRepository;
