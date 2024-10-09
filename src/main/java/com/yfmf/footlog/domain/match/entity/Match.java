@@ -7,8 +7,6 @@ import com.yfmf.footlog.domain.match.enums.*;
 import jakarta.persistence.*;
 import lombok.*;
 
-import java.time.LocalDateTime;
-
 @Getter
 @ToString
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
@@ -18,7 +16,7 @@ public class Match extends BaseTimeEntity {
 
     // 경기 아이디
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY) // AUTO_INCREMENT 사용
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "match_id", nullable = false)
     private Long matchId;
 
@@ -27,7 +25,7 @@ public class Match extends BaseTimeEntity {
     private Long matchEnrollUserId;
 
     // 경기 신청 유저 아이디
-    @Column(name="match_apply_user_id", nullable = false)
+    @Column(name="match_apply_user_id")
     private Long matchApplyUserId;
 
     // 내 구단 - 구단 라인업, 매치 생성 매니저, 구단 이름, 구단 로고, 구단
