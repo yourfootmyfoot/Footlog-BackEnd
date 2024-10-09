@@ -166,9 +166,16 @@ public class ClubController {
     /**
      * 구단 업데이트
      */
-    @Operation(summary = "구단 업데이트", description = "구단 정보를 업데이트합니다.")
+    @Operation(summary = "구단 업데이트", description = "구단 정보를 업데이트합니다. 구단주 또는 매니저만 업데이트할 수 있습니다.")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "구단이 성공적으로 업데이트되었습니다."),
+            @ApiResponse(responseCode = "403", description = "구단주 또는 매니저만 업데이트할 수 있습니다.", content = @Content(
+                    mediaType = "application/json",
+                    schema = @Schema(implementation = ErrorResponse.class),
+                    examples = @ExampleObject(
+                            value = "{\"status\": 403, \"errorType\": \"Forbidden\", \"message\": \"구단주 또는 매니저만 업데이트할 수 있습니다.\"}"
+                    )
+            )),
             @ApiResponse(responseCode = "404", description = "업데이트할 구단이 존재하지 않습니다.", content = @Content(
                     mediaType = "application/json",
                     schema = @Schema(implementation = ErrorResponse.class),
@@ -179,31 +186,38 @@ public class ClubController {
     })
     @PutMapping("/{id}")
     public ResponseEntity<String> updateClub(@PathVariable("id") Long id, @RequestBody ClubRegistRequestDTO clubInfo, @AuthenticationPrincipal LoginedInfo logined) {
-
-        log.info("[ClubController] 구단 ID={}에 대한 업데이트 요청", id);
-
         // 로그인된 사용자인지 확인
         if (logined == null) {
             log.error("[ClubController] 로그인되지 않은 사용자가 구단 업데이트를 시도했습니다.");
             throw new LoginRequiredException("로그인 후 이용이 가능합니다.", "[ClubController] updateClub");
         }
 
-        try {
+        log.info("[ClubController] 구단 업데이트 요청: 구단 ID={}, 사용자 ID={}", id, logined.getUserId());
+
+        // 구단주 또는 매니저만 업데이트 가능
+        if (clubService.hasClubAuthority(id, logined.getUserId())) {  // 권한이 있을 때 업데이트 가능
             clubService.updateClub(id, clubInfo);
             log.info("[ClubController] 구단 업데이트 성공: 구단 ID={}", id);
             return ResponseEntity.ok("구단이 성공적으로 업데이트되었습니다.");
-        } catch (ClubNotFoundException e) {
-            log.error("[ClubController] 구단 업데이트 실패 - 구단이 존재하지 않음: 구단 ID={}", id);
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
+        } else {
+            log.error("[ClubController] 권한 없음: 구단주 또는 매니저만 업데이트할 수 있습니다.");
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).body("구단주 또는 매니저만 업데이트할 수 있습니다.");
         }
     }
 
     /**
      * 구단 삭제
      */
-    @Operation(summary = "구단 삭제", description = "구단을 삭제합니다.")
+    @Operation(summary = "구단 삭제", description = "구단을 삭제합니다. 구단주 또는 매니저만 삭제할 수 있습니다.")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "구단이 성공적으로 삭제되었습니다."),
+            @ApiResponse(responseCode = "403", description = "구단주 또는 매니저만 삭제할 수 있습니다.", content = @Content(
+                    mediaType = "application/json",
+                    schema = @Schema(implementation = ErrorResponse.class),
+                    examples = @ExampleObject(
+                            value = "{\"status\": 403, \"errorType\": \"Forbidden\", \"message\": \"구단주 또는 매니저만 삭제할 수 있습니다.\"}"
+                    )
+            )),
             @ApiResponse(responseCode = "404", description = "삭제할 구단이 존재하지 않습니다.", content = @Content(
                     mediaType = "application/json",
                     schema = @Schema(implementation = ErrorResponse.class),
@@ -214,19 +228,23 @@ public class ClubController {
     })
     @DeleteMapping("/{id}")
     public ResponseEntity<String> deleteClub(@PathVariable Long id, @AuthenticationPrincipal LoginedInfo logined) {
-
         // 로그인된 사용자인지 확인
         if (logined == null) {
             log.error("[ClubController] 로그인되지 않은 사용자가 구단 삭제를 시도했습니다.");
-            throw new LoginRequiredException("로그인 후 이용이 가능합니다.", "[ClubController] updateClub");
+            throw new LoginRequiredException("로그인 후 이용이 가능합니다.", "[ClubController] deleteClub");
         }
 
-        log.info("[ClubController] 구단 삭제 요청 시작: 구단 ID={}", id);
+        log.info("[ClubController] 구단 삭제 요청 시작: 구단 ID={}, 사용자 ID={}", id, logined.getUserId());
 
-        clubService.deleteClub(id);
-
-        log.info("[ClubController] 구단 삭제 완료: 구단 ID={}", id);
-        return ResponseEntity.ok("구단이 성공적으로 삭제되었습니다.");  // 성공 메시지 포함
+        // 구단주 또는 매니저만 삭제 가능
+        if (clubService.hasClubAuthority(id, logined.getUserId())) {  // 권한이 있을 때 삭제 가능
+            clubService.deleteClub(id);
+            log.info("[ClubController] 구단 삭제 완료: 구단 ID={}", id);
+            return ResponseEntity.ok("구단이 성공적으로 삭제되었습니다.");
+        } else {
+            log.error("[ClubController] 권한 없음: 구단주 또는 매니저만 삭제할 수 있습니다.");
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).body("구단주 또는 매니저만 삭제할 수 있습니다.");
+        }
     }
 
     /**

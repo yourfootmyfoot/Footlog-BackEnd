@@ -30,7 +30,9 @@ public class ClubService {
         this.clubMemberRepository = clubMemberRepository;
     }
 
-    // 구단 등록
+    /**
+     * 구단주 등록
+     * */
     @Transactional
     public ClubRegistResponseDTO registClub(ClubRegistRequestDTO clubInfo) {
         log.info("구단 등록 시도: 구단 이름={}, 구단 코드={}", clubInfo.getClubName(), clubInfo.getClubCode());
@@ -64,7 +66,9 @@ public class ClubService {
     }
 
 
-    // 모든 구단 조회
+    /**
+     * 모든 구단 조회
+     * */
     public List<Club> getAllClubs() {
         log.info("모든 구단 조회 요청");
         List<Club> clubs = clubRepository.findAll();
@@ -72,7 +76,10 @@ public class ClubService {
         return clubs;
     }
 
-    // 구단주 아이디로 특정 구단 조회
+
+    /**
+     * 구단주 아이디로 특정 구단 조회
+     * */
     public List<Club> getClubsByUserId(Long userId) {
         log.info("구단주 ID={}에 대한 구단 조회 요청", userId);
         List<Club> clubs = clubRepository.findByUserId(userId);
@@ -84,7 +91,9 @@ public class ClubService {
         return clubs;
     }
 
-    // 구단 아이디로 특정 구단 조회
+    /**
+     * 구단 아이디로 특정 구단 조회
+     * */
     public Club getClubByClubId(Long clubId) {
         log.info("구단 ID={}에 대한 구단 조회 요청", clubId);
         Club club = clubRepository.findByClubId(clubId);
@@ -97,10 +106,12 @@ public class ClubService {
     }
 
 
-    // 구단 업데이트
+    /**
+     * 구단 업데이트
+     * */
     @Transactional
     public void updateClub(Long clubId, ClubRegistRequestDTO clubInfo) {
-        log.info("구단 ID={}에 대한 업데이트 시도", clubId);
+        log.info("[ClubService] 구단 업데이트 시도: 구단 ID={}", clubId);
         Optional<Club> optionalClub = clubRepository.findById(clubId);
         if (optionalClub.isEmpty()) {
             log.error("업데이트할 구단이 존재하지 않음: 구단 ID={}", clubId);
@@ -120,10 +131,12 @@ public class ClubService {
         club.setRegion(clubInfo.getRegion());
         log.debug("업데이트된 구단 정보: {}", club);
         clubRepository.save(club);
-        log.info("구단 업데이트 완료: 구단 ID={}", clubId);
+        log.info("[ClubService] 구단 업데이트 완료: 구단 ID={}", clubId);
     }
 
-    // 구단 삭제
+    /**
+     * 구단 삭제
+     * */
     @Transactional
     public void deleteClub(Long clubId) {
         log.info("[ClubService] 구단 삭제 시도: 구단 ID={}", clubId);
@@ -137,13 +150,29 @@ public class ClubService {
         log.info("[ClubService] 구단 삭제 성공: 구단 ID={}", clubId);
     }
 
-    // 구단 이름 중복 확인
+    /**
+     * 구단원 역할 확인 (구단주 또는 매니저인지 확인)
+     * */
+    public boolean hasClubAuthority(Long clubId, Long userId) {
+        Optional<ClubMember> member = clubMemberRepository.findByClubIdAndMemberId(clubId, userId);
+        if (member.isPresent()) {
+            ClubMemberRole role = member.get().getRole();
+            return role == ClubMemberRole.OWNER || role == ClubMemberRole.MANAGER;
+        }
+        return false;
+    }
+
+    /**
+     * 구단 이름 중복 확인
+     * */
     public boolean isClubNameDuplicate(String name) {
         log.info("구단 이름 중복 확인: {}", name);
         return clubRepository.existsByClubName(name);
     }
 
-    // 구단 코드 중복 확인
+    /**
+     * 구단 코드 중복 확인
+     * */
     public boolean isClubCodeDuplicate(String code) {
         log.info("구단 코드 중복 확인: {}", code);
         return clubRepository.existsByClubCode(code);
