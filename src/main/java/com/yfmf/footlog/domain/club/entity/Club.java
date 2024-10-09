@@ -3,11 +3,11 @@ package com.yfmf.footlog.domain.club.entity;
 import com.yfmf.footlog.BaseTimeEntity;
 import com.yfmf.footlog.domain.club.enums.PeakDays;
 import com.yfmf.footlog.domain.club.enums.PeakHours;
+import com.yfmf.footlog.domain.club.enums.ClubLevel;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
 
-import java.time.LocalDateTime;
 import java.util.List;
 
 @Entity
@@ -49,8 +49,9 @@ public class Club extends BaseTimeEntity {
     @Enumerated(EnumType.STRING)
     private List<PeakHours> times;  // 자주 운동하는 시간대 (Enum)
 
+    @Enumerated(EnumType.STRING)
     @Column(nullable = false)
-    private String skillLevel;  // 실력 등급 (예: 입문자, 아마추어 등)
+    private ClubLevel clubLevel;  // 실력 등급 (예: 입문자, 아마추어 등)
 
     @Column(name = "AGE_GROUP") // 나이대 필드
     private String ageGroup;
@@ -72,7 +73,7 @@ public class Club extends BaseTimeEntity {
     }
 
     public Club(Long userId, String clubName, String clubIntroduction, String clubCode,
-                int memberCount, List<PeakDays> days, List<PeakHours> times, String skillLevel, String stadiumName,
+                int memberCount, List<PeakDays> days, List<PeakHours> times, ClubLevel clubLevel, String stadiumName,
                 String city, String region, String ageGroup, String gender) {
         this.userId = userId;
         this.clubName = clubName;
@@ -81,7 +82,7 @@ public class Club extends BaseTimeEntity {
         this.memberCount = memberCount;
         this.days = days;
         this.times = times;
-        this.skillLevel = skillLevel;
+        this.clubLevel = clubLevel;
         this.stadiumName = stadiumName;
         this.city = city;
         this.region = region;
@@ -100,7 +101,7 @@ public class Club extends BaseTimeEntity {
                 ", memberCount=" + memberCount +
                 ", peakHours=" + times +
                 ", peakDays=" + days +
-                ", skillLevel=" + skillLevel +
+                ", clubLevel=" + clubLevel +
                 ", stadiumName=" + stadiumName +
                 ", city=" + city +
                 ", region=" + region +

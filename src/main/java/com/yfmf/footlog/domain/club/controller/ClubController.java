@@ -178,7 +178,7 @@ public class ClubController {
             ))
     })
     @PutMapping("/{id}")
-    public ResponseEntity<String> updateClub(@PathVariable Long id, @RequestBody ClubRegistRequestDTO clubInfo, @AuthenticationPrincipal LoginedInfo logined) {
+    public ResponseEntity<String> updateClub(@PathVariable("id") Long id, @RequestBody ClubRegistRequestDTO clubInfo, @AuthenticationPrincipal LoginedInfo logined) {
 
         log.info("[ClubController] 구단 ID={}에 대한 업데이트 요청", id);
 
