@@ -44,7 +44,7 @@ public class ClubService {
         // 새로운 구단 생성 및 저장
         Club newClub = new Club(clubInfo.getUserId(), clubInfo.getClubName(), clubInfo.getClubIntroduction(),
                 clubInfo.getClubCode(), 1, clubInfo.getDays(),
-                clubInfo.getTimes(), clubInfo.getSkillLevel(), clubInfo.getStadiumName(),
+                clubInfo.getTimes(), clubInfo.getClubLevel(), clubInfo.getStadiumName(),
                 clubInfo.getCity(), clubInfo.getRegion(), clubInfo.getAgeGroup(), clubInfo.getGender());
         clubRepository.save(newClub);
         log.info("[ClubService] 구단 등록 성공: 구단 ID={}", newClub.getClubId());
@@ -58,7 +58,7 @@ public class ClubService {
         // 구단 등록 결과 반환
         return new ClubRegistResponseDTO(newClub.getUserId(), newClub.getClubName(), newClub.getClubIntroduction(),
                 newClub.getClubCode(), newClub.getMemberCount(),
-                newClub.getDays(), newClub.getTimes(), newClub.getSkillLevel(),
+                newClub.getDays(), newClub.getTimes(), newClub.getClubLevel(),
                 newClub.getStadiumName(), newClub.getCity(), newClub.getRegion(),
                 newClub.getAgeGroup(), newClub.getGender());
     }
@@ -114,7 +114,7 @@ public class ClubService {
         club.setClubCode(clubInfo.getClubCode());
         club.setTimes(clubInfo.getTimes());
         club.setDays(clubInfo.getDays());
-        club.setSkillLevel(clubInfo.getSkillLevel());
+        club.setClubLevel(clubInfo.getClubLevel());
         club.setStadiumName(clubInfo.getStadiumName());
         club.setCity(clubInfo.getCity());
         club.setRegion(clubInfo.getRegion());
@@ -136,5 +136,18 @@ public class ClubService {
         clubRepository.deleteById(clubId);
         log.info("[ClubService] 구단 삭제 성공: 구단 ID={}", clubId);
     }
+
+    // 구단 이름 중복 확인
+    public boolean isClubNameDuplicate(String name) {
+        log.info("구단 이름 중복 확인: {}", name);
+        return clubRepository.existsByClubName(name);
+    }
+
+    // 구단 코드 중복 확인
+    public boolean isClubCodeDuplicate(String code) {
+        log.info("구단 코드 중복 확인: {}", code);
+        return clubRepository.existsByClubCode(code);
+    }
+
 
 }

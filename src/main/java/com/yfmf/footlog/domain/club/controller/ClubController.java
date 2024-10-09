@@ -178,7 +178,7 @@ public class ClubController {
             ))
     })
     @PutMapping("/{id}")
-    public ResponseEntity<String> updateClub(@PathVariable Long id, @RequestBody ClubRegistRequestDTO clubInfo, @AuthenticationPrincipal LoginedInfo logined) {
+    public ResponseEntity<String> updateClub(@PathVariable("id") Long id, @RequestBody ClubRegistRequestDTO clubInfo, @AuthenticationPrincipal LoginedInfo logined) {
 
         log.info("[ClubController] 구단 ID={}에 대한 업데이트 요청", id);
 
@@ -221,4 +221,27 @@ public class ClubController {
         log.info("[ClubController] 구단 삭제 완료: 구단 ID={}", id);
         return ResponseEntity.ok("구단이 성공적으로 삭제되었습니다.");  // 성공 메시지 포함
     }
+
+    /**
+     * 구단 이름 중복 확인
+     */
+    @Operation(summary = "구단 이름 중복 확인", description = "구단 이름의 중복 여부를 확인합니다.")
+    @GetMapping("/check-name")
+    public ResponseEntity<Boolean> checkClubNameDuplicate(@RequestParam("name") String name) {
+        log.info("[ClubController] 구단 이름 중복 확인 요청: {}", name);
+        boolean exists = clubService.isClubNameDuplicate(name);
+        return ResponseEntity.ok(exists); // 중복 여부를 Boolean 값으로 반환
+    }
+
+    /**
+     * 구단 코드 중복 확인
+     */
+    @Operation(summary = "구단 코드 중복 확인", description = "구단 코드의 중복 여부를 확인합니다.")
+    @GetMapping("/check-code")
+    public ResponseEntity<Boolean> checkClubCodeDuplicate(@RequestParam("code") String code) {
+        log.info("[ClubController] 구단 코드 중복 확인 요청: {}", code);
+        boolean exists = clubService.isClubCodeDuplicate(code);
+        return ResponseEntity.ok(exists); // 중복 여부를 Boolean 값으로 반환
+    }
+
 }

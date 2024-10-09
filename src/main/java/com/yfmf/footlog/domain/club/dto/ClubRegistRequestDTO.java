@@ -2,6 +2,7 @@ package com.yfmf.footlog.domain.club.dto;
 
 
 
+import com.yfmf.footlog.domain.club.enums.ClubLevel;
 import com.yfmf.footlog.domain.club.enums.PeakDays;
 import com.yfmf.footlog.domain.club.enums.PeakHours;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -46,9 +47,10 @@ public class ClubRegistRequestDTO {
     @NotNull(message = "자주 운동하는 시간대를 입력해주세요.")
     private List<PeakHours> times;  // Enum 사용
 
-    @Schema(description = "실력 등급", example = "입문자")
+    @Schema(description = "실력 등급", example = "BEGINNER")
     @NotNull(message = "실력 등급을 입력해주세요.")
-    private String skillLevel;
+    private ClubLevel clubLevel;  // ClubLevel enum 사용
+
 
     @Schema(description = "주 활동 구장", example = "서울월드컵경기장")
     @NotNull(message = "주로 사용하는 경기장을 입력해주세요.")
@@ -74,7 +76,7 @@ public class ClubRegistRequestDTO {
     }
 
     public ClubRegistRequestDTO(Long userId, String clubName, String clubIntroduction, String clubCode,
-                                int memberCount, List<PeakDays> days, List<PeakHours> times, String skillLevel,
+                                int memberCount, List<PeakDays> days, List<PeakHours> times, ClubLevel clubLevel,
                                 String stadiumName, String city, String region, String ageGroup, String gender) {
         this.userId = userId;
         this.clubName = clubName;
@@ -83,7 +85,7 @@ public class ClubRegistRequestDTO {
         this.memberCount = memberCount;
         this.days = days;
         this.times = times;
-        this.skillLevel = skillLevel;
+        this.clubLevel = clubLevel;
         this.stadiumName = stadiumName;
         this.city = city;
         this.region = region;
@@ -101,7 +103,7 @@ public class ClubRegistRequestDTO {
                 ", memberCount=" + memberCount +
                 ", peakHours=" + times +
                 ", peakDays=" + days +
-                ", skillLevel='" + skillLevel + '\'' +
+                ", clubLevel='" + clubLevel + '\'' +
                 ", stadiumName='" + stadiumName + '\'' +
                 ", city='" + city + '\'' +
                 ", region='" + region + '\'' +
