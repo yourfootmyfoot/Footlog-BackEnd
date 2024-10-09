@@ -3,6 +3,7 @@ package com.yfmf.footlog.domain.club.service;
 import com.yfmf.footlog.domain.club.entity.Club;
 import com.yfmf.footlog.domain.club.entity.ClubMember;
 import com.yfmf.footlog.domain.club.enums.ClubMemberRole;
+import com.yfmf.footlog.domain.club.exception.ClubAlreadyJoinedException;
 import com.yfmf.footlog.domain.club.exception.ClubNotFoundException;
 import com.yfmf.footlog.domain.club.repository.ClubMemberRepository;
 import com.yfmf.footlog.domain.club.repository.ClubRepository;
@@ -40,14 +41,14 @@ public class ClubMemberService {
 
         // 구단이 존재하는지 확인
         if (!clubRepository.existsById(clubId)) {
-            log.error("[ClubMemberService] 구단 ID={}가 존재하지 않습니다.", clubId);
             throw new ClubNotFoundException("구단을 찾을 수 없습니다.", "[ClubMemberService] joinClub");
         }
 
         // 이미 구단에 가입된 회원인지 확인
         if (clubMemberRepository.existsByMemberIdAndClubId(userId, clubId)) {
             log.error("[ClubMemberService] 사용자 ID={}는 이미 구단 ID={}에 가입되어 있습니다.", userId, clubId);
-            throw new IllegalArgumentException("이미 구단에 가입된 회원입니다.");
+            // 409 Conflict 에러를 던지도록 IllegalArgumentException 대신 Custom Exception 사용
+            throw new ClubAlreadyJoinedException("사용자가 이미 구단에 가입되어 있습니다.", "[ClubMemberService] joinClub");
         }
 
         // 구단원 추가

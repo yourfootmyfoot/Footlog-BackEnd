@@ -57,7 +57,7 @@ public class ClubMemberController {
             ))
     })
     @PostMapping("/{clubId}/join")
-    public ResponseEntity<ClubMemberResponseDTO> joinClub(@PathVariable Long clubId, @AuthenticationPrincipal LoginedInfo logined) {
+    public ResponseEntity<ClubMemberResponseDTO> joinClub(@PathVariable("clubId") Long clubId, @AuthenticationPrincipal LoginedInfo logined) {
         if (logined == null) {
             log.error("[ClubMemberController] 로그인되지 않은 사용자가 구단에 가입을 시도했습니다.");
             throw new LoginRequiredException("로그인 후 이용이 가능합니다.", "[ClubMemberController] joinClub");
