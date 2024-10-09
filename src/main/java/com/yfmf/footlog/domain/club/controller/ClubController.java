@@ -206,6 +206,44 @@ public class ClubController {
     }
 
     /**
+     * 구단 업에이트 권한 확인
+     */
+    @Operation(summary = "구단 수정 권한 확인", description = "구단의 소유자 또는 매니저가 수정할 수 있는 권한을 확인합니다.")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "사용자가 구단을 수정할 권한이 있습니다."),
+            @ApiResponse(responseCode = "403", description = "사용자가 구단을 수정할 권한이 없습니다.", content = @Content(
+                    mediaType = "application/json",
+                    schema = @Schema(implementation = ErrorResponse.class),
+                    examples = @ExampleObject(value = "{\"status\": 403, \"errorType\": \"Forbidden\", \"message\": \"구단 수정 권한이 없습니다.\"}")
+            )),
+            @ApiResponse(responseCode = "401", description = "로그인이 필요합니다.", content = @Content(
+                    mediaType = "application/json",
+                    schema = @Schema(implementation = ErrorResponse.class),
+                    examples = @ExampleObject(value = "{\"status\": 401, \"errorType\": \"Unauthorized\", \"message\": \"로그인이 필요합니다.\"}")
+            ))
+    })
+    @GetMapping("/{clubId}/edit-check")
+    public ResponseEntity<Void> checkClubEditAuthority(@PathVariable("clubId") Long clubId, @AuthenticationPrincipal LoginedInfo logined) {
+
+        // 로그인된 사용자인지 확인
+        if (logined == null) {
+            log.error("[ClubController] 로그인되지 않은 사용자가 구단 수정 권한 확인을 시도했습니다.");
+            throw new LoginRequiredException("로그인 후 이용이 가능합니다.", "[ClubController] checkClubEditAuthority");
+        }
+
+        // 구단 수정 권한 체크 (소유자 또는 매니저 여부 확인)
+        boolean hasAuthority = clubService.hasClubAuthority(clubId, logined.getUserId());
+
+        if (!hasAuthority) {
+            log.error("[ClubController] 사용자에게 구단 수정 권한이 없습니다: 사용자 ID={}, 구단 ID={}", logined.getUserId(), clubId);
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).build(); // 403 Forbidden 응답
+        }
+
+        log.info("[ClubController] 구단 수정 권한 확인 성공: 사용자 ID={}, 구단 ID={}", logined.getUserId(), clubId);
+        return ResponseEntity.ok().build();  // 권한이 있으면 200 OK 응답
+    }
+
+    /**
      * 구단 삭제
      */
     @Operation(summary = "구단 삭제", description = "구단을 삭제합니다. 구단주 또는 매니저만 삭제할 수 있습니다.")
@@ -227,7 +265,7 @@ public class ClubController {
             ))
     })
     @DeleteMapping("/{id}")
-    public ResponseEntity<String> deleteClub(@PathVariable Long id, @AuthenticationPrincipal LoginedInfo logined) {
+    public ResponseEntity<String> deleteClub(@PathVariable("id") Long id, @AuthenticationPrincipal LoginedInfo logined) {
         // 로그인된 사용자인지 확인
         if (logined == null) {
             log.error("[ClubController] 로그인되지 않은 사용자가 구단 삭제를 시도했습니다.");

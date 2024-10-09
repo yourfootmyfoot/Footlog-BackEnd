@@ -154,6 +154,9 @@ public class ClubService {
      * 구단원 역할 확인 (구단주 또는 매니저인지 확인)
      * */
     public boolean hasClubAuthority(Long clubId, Long userId) {
+        log.info("구단 권한 확인: 구단 ID={}, 사용자 ID={}", clubId, userId);
+
+        // 구단 소유자 또는 매니저인지 확인
         Optional<ClubMember> member = clubMemberRepository.findByClubIdAndMemberId(clubId, userId);
         if (member.isPresent()) {
             ClubMemberRole role = member.get().getRole();
@@ -177,6 +180,4 @@ public class ClubService {
         log.info("구단 코드 중복 확인: {}", code);
         return clubRepository.existsByClubCode(code);
     }
-
-
 }
