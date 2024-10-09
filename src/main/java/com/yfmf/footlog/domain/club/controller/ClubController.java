@@ -213,7 +213,14 @@ public class ClubController {
             ))
     })
     @DeleteMapping("/{id}")
-    public ResponseEntity<String> deleteClub(@PathVariable Long id) {
+    public ResponseEntity<String> deleteClub(@PathVariable Long id, @AuthenticationPrincipal LoginedInfo logined) {
+
+        // 로그인된 사용자인지 확인
+        if (logined == null) {
+            log.error("[ClubController] 로그인되지 않은 사용자가 구단 삭제를 시도했습니다.");
+            throw new LoginRequiredException("로그인 후 이용이 가능합니다.", "[ClubController] updateClub");
+        }
+
         log.info("[ClubController] 구단 삭제 요청 시작: 구단 ID={}", id);
 
         clubService.deleteClub(id);
@@ -227,7 +234,14 @@ public class ClubController {
      */
     @Operation(summary = "구단 이름 중복 확인", description = "구단 이름의 중복 여부를 확인합니다.")
     @GetMapping("/check-name")
-    public ResponseEntity<Boolean> checkClubNameDuplicate(@RequestParam("name") String name) {
+    public ResponseEntity<Boolean> checkClubNameDuplicate(@RequestParam("name") String name, @AuthenticationPrincipal LoginedInfo logined) {
+
+        // 로그인된 사용자인지 확인
+        if (logined == null) {
+            log.error("[ClubController] 로그인되지 않은 사용자가 구단 이름중복 확인을 시도했습니다.");
+            throw new LoginRequiredException("로그인 후 이용이 가능합니다.", "[ClubController] updateClub");
+        }
+
         log.info("[ClubController] 구단 이름 중복 확인 요청: {}", name);
         boolean exists = clubService.isClubNameDuplicate(name);
         return ResponseEntity.ok(exists); // 중복 여부를 Boolean 값으로 반환
@@ -238,7 +252,15 @@ public class ClubController {
      */
     @Operation(summary = "구단 코드 중복 확인", description = "구단 코드의 중복 여부를 확인합니다.")
     @GetMapping("/check-code")
-    public ResponseEntity<Boolean> checkClubCodeDuplicate(@RequestParam("code") String code) {
+    public ResponseEntity<Boolean> checkClubCodeDuplicate(@RequestParam("code") String code, @AuthenticationPrincipal LoginedInfo logined) {
+
+        // 로그인된 사용자인지 확인
+        if (logined == null) {
+            log.error("[ClubController] 로그인되지 않은 사용자가 구단 코드중복을 시도했습니다.");
+            throw new LoginRequiredException("로그인 후 이용이 가능합니다.", "[ClubController] updateClub");
+        }
+
+
         log.info("[ClubController] 구단 코드 중복 확인 요청: {}", code);
         boolean exists = clubService.isClubCodeDuplicate(code);
         return ResponseEntity.ok(exists); // 중복 여부를 Boolean 값으로 반환
