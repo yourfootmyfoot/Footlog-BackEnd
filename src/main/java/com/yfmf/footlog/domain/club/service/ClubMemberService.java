@@ -150,4 +150,26 @@ public class ClubMemberService {
         clubMemberRepository.save(clubMember);
         log.info("[ClubMemberService] 사용자 ID={}의 역할이 {}로 성공적으로 수정되었습니다.", userId, newRole);
     }
+
+
+
+    @Transactional
+    public List<Club> getMyClubListByCurrentUser(Long userId) {
+
+        log.info("[ClubMemberService] 본인이 속한 클럽을 조회하기 위해 userId = {} 를 받습니다.", userId);
+
+        // 사용자가 구단원으로 속한 클럽 멤버 정보 가져오기
+        log.info("[ClubMemberService] clubMemberRepository -> userId = {}로 가입된 클럽정보를 받습니다.", userId);
+        List<ClubMember> clubMembers = clubMemberRepository.findByMemberId(userId);
+        List<Long> clubIdList = clubMembers.stream().map((clubMember)->clubMember.getClubId()).toList();
+
+        // clubIdList -> Club 객체들을 가져오기
+        log.info("[ClubMemberService] clubRepository -> clubIdList = {}로 가입된 클럽정보를 받습니다.", clubIdList);
+        List<Club> clubList = clubRepository.findAllById(clubIdList);
+
+        // result
+        log.info("Clubs = {}", clubList.toString());
+
+        return clubList;
+    }
 }

@@ -3,6 +3,7 @@ package com.yfmf.footlog.domain.club.controller;
 import com.yfmf.footlog.domain.auth.dto.LoginedInfo;
 import com.yfmf.footlog.domain.auth.exception.LoginRequiredException;
 import com.yfmf.footlog.domain.club.dto.ClubMemberResponseDTO;
+import com.yfmf.footlog.domain.club.entity.Club;
 import com.yfmf.footlog.domain.club.entity.ClubMemberRole;
 import com.yfmf.footlog.domain.club.service.ClubMemberService;
 import com.yfmf.footlog.error.ErrorResponse;
@@ -15,6 +16,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
@@ -188,4 +190,42 @@ public class ClubMemberController {
 
         return ResponseEntity.ok("구단원의 역할이 성공적으로 수정되었습니다.");
     }
+
+    @Operation(summary = "사용자가 속한 클럽 목록 조회", description = "현재 로그인된 사용자가 속한 클럽들의 목록을 조회합니다.")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "사용자가 속한 클럽 목록이 성공적으로 조회되었습니다."),
+            @ApiResponse(responseCode = "401", description = "로그인이 필요합니다.", content = @Content(
+                    mediaType = "application/json",
+                    schema = @Schema(implementation = ErrorResponse.class),
+                    examples = @ExampleObject(
+                            value = "{\"status\": 401, \"errorType\": \"Unauthorized\", \"message\": \"로그인이 필요합니다.\"}"
+                    )
+            )),
+            @ApiResponse(responseCode = "404", description = "사용자가 속한 클럽이 존재하지 않습니다.", content = @Content(
+                    mediaType = "application/json",
+                    schema = @Schema(implementation = ErrorResponse.class),
+                    examples = @ExampleObject(
+                            value = "{\"status\": 404, \"errorType\": \"Not Found\", \"message\": \"사용자가 속한 클럽이 존재하지 않습니다.\"}"
+                    )
+            ))
+    })
+    @GetMapping("/my")
+    public ResponseEntity<List<Club>> getMemberClubList(@AuthenticationPrincipal LoginedInfo logined) {
+
+        Long userId = logined.getUserId();
+        if (logined == null) {
+            log.error("[ClubMemberController] 로그인되지 않은 사용자가 클럽 목록 조회를 시도했습니다. userId={}", userId);
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(null);
+        }
+
+        List<Club> clubList = clubMemberService.getMyClubListByCurrentUser(userId);
+
+        if (clubList == null || clubList.isEmpty()) {
+            log.warn("[ClubMemberController] 사용자 ID={}는 속한 클럽이 없습니다.", userId);
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
+        }
+
+        return ResponseEntity.ok(clubList);
+    }
+
 }

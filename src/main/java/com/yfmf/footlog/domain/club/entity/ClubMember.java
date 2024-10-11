@@ -4,11 +4,13 @@ import com.yfmf.footlog.domain.member.domain.Member;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
+import lombok.ToString;
 
 @Entity
 @Table(name = "tbl_club_member")
 @Getter
 @Setter
+@ToString
 public class ClubMember {
 
     @Id
