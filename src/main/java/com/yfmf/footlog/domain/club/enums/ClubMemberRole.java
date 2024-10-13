@@ -1,4 +1,4 @@
-package com.yfmf.footlog.domain.club.entity;
+package com.yfmf.footlog.domain.club.enums;
 
 public enum ClubMemberRole {
     OWNER,  // 구단주

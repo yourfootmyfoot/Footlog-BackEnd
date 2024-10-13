@@ -20,4 +20,6 @@ public interface ClubMemberRepository extends JpaRepository<ClubMember, Long> {
 
     // 구단원 ID와 구단 ID로 특정 구단원 조회
     Optional<ClubMember> findByMemberIdAndClubId(Long memberId, Long clubId);
+
+    Optional<ClubMember> findByClubIdAndMemberId(Long clubId, Long memberId);
 }
