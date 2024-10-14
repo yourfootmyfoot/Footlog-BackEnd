@@ -12,7 +12,8 @@ public class MemberResponseDTO {
             String accessToken,
             Long accessTokenValidTime,
             String refreshToken,
-            Long refreshTokenValidTime
+            Long refreshTokenValidTime,
+            Long userId // 추가: userId를 포함하여 Redis에 저장 시 참조 가능하도록 함
     ) {
     }
 

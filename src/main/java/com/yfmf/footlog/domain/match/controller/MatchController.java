@@ -1,9 +1,11 @@
 package com.yfmf.footlog.domain.match.controller;
 
+import com.yfmf.footlog.domain.auth.dto.LoginedInfo;
+import com.yfmf.footlog.domain.auth.exception.LoginRequiredException;
 import com.yfmf.footlog.domain.match.dto.MatchRegisterRequestDTO;
 import com.yfmf.footlog.domain.match.dto.MatchResponseDTO;
 import com.yfmf.footlog.domain.match.service.MatchService;
-import com.yfmf.footlog.exception.ErrorResponse;
+import com.yfmf.footlog.error.ErrorResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.ExampleObject;
@@ -16,6 +18,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -94,8 +97,26 @@ public class MatchController {
             ))
     })
     @PostMapping
-    public ResponseEntity<MatchResponseDTO> createMatch(@RequestBody @Valid MatchRegisterRequestDTO matchRegisterRequestDTO) {
+    public ResponseEntity<MatchResponseDTO> createMatch(@RequestBody @Valid MatchRegisterRequestDTO matchRegisterRequestDTO,
+                                                        @AuthenticationPrincipal LoginedInfo logined) {
+
+        log.info("[MatchController-createMatch] 경기 등록 요청 시작: ", matchRegisterRequestDTO.getMatchEnrollUserId());
+
+        if (logined == null) {
+            log.error("[MatchController-createMatch] 로그인되지 않은 사용자가 구단 등록 시도.");
+            throw new LoginRequiredException("로그인 후 이용이 가능합니다.", "[MatchController-createMatch] 시 로그인 정보 확인하세요.");
+        }
+        log.info("matchRegisterRequestDTO: {}", matchRegisterRequestDTO.getMatchEnrollUserId());
+
+        log.trace("matchRegisterRequestDTO: {}", matchRegisterRequestDTO.toString());
+        if(matchRegisterRequestDTO.getMatchEnrollUserId() == null) {
+            matchRegisterRequestDTO.setMatchEnrollUserId(logined.getUserId());
+        }
+        log.info("matchRegisterRequestDTO set: {}", matchRegisterRequestDTO.getMatchEnrollUserId());
+        // 자동으로 설정되어야 할 설정들? 로그인 정보에서 작성자 아이디 fetch.
+
         MatchResponseDTO createdMatch = matchService.saveMatch(matchRegisterRequestDTO);
+        log.info("[MatchController-createMatch] 경기 등록 성공, 매치 상태 확인하기 : ", createdMatch.getMatchStatus());
         return ResponseEntity.status(HttpStatus.CREATED).body(createdMatch);
     }
 

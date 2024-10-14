@@ -3,7 +3,7 @@ package com.yfmf.footlog.domain.member.service;
 import com.yfmf.footlog.domain.auth.dto.LoginedInfo;
 import com.yfmf.footlog.domain.auth.jwt.JWTTokenProvider;
 import com.yfmf.footlog.domain.auth.refreshToken.domain.RefreshToken;
-import com.yfmf.footlog.domain.auth.refreshToken.repository.RefreshTokenRepository;
+import com.yfmf.footlog.domain.auth.refreshToken.service.RefreshTokenService;
 import com.yfmf.footlog.domain.auth.utils.ClientUtils;
 import com.yfmf.footlog.domain.member.domain.Authority;
 import com.yfmf.footlog.domain.member.domain.Gender;
@@ -39,11 +39,10 @@ import java.util.Optional;
 public class MemberService {
     
     private final MemberRepository memberRepository;
-    private final RefreshTokenRepository refreshTokenRepository;
-
     private final PasswordEncoder passwordEncoder;
     private final AuthenticationManagerBuilder authenticationManagerBuilder;
     private final JWTTokenProvider jwtTokenProvider;
+    private final RefreshTokenService refreshTokenService;
 
     /*
         기본 회원 가입
@@ -70,17 +69,19 @@ public class MemberService {
 
         // 1. 이메일 확인
         Member member = findMemberByEmail(requestDTO.email())
-                .orElseThrow(() -> new ApplicationException(ErrorCode.EMPTY_EMAIL_MEMBER));
+                .orElseThrow(() -> new ApplicationException(ErrorCode.EMPTY_EMAIL_MEMBER, "[MemberService] not exited email"));
 
         // 2. 비밀번호 확인
         checkValidPassword(requestDTO.password(), member.getPassword());
 
-        // 3. 토큰 발급 및 쿠키에 저장
+        // 3. Access Token 발급 및 쿠키에 저장
         MemberResponseDTO.authTokenDTO authTokenDTO = getAuthTokenDTO(requestDTO.email(), requestDTO.password(), httpServletRequest);
         addTokenToCookie(httpServletResponse, "accessToken", authTokenDTO.accessToken());
-        addTokenToCookie(httpServletResponse, "refreshToken", authTokenDTO.refreshToken());
 
-        return authTokenDTO;
+        // 4. Refresh Token은 클라이언트에 응답하지 않고, Redis에 저장
+        refreshTokenService.saveRefreshToken(member.getId().toString(), authTokenDTO.refreshToken(), authTokenDTO.refreshTokenValidTime());
+
+        return authTokenDTO; // 여기에서는 Access Token만 클라이언트에 응답
     }
 
     // 쿠키에 토큰 추가
@@ -100,7 +101,7 @@ public class MemberService {
         log.info("{} {}", rawPassword, encodedPassword);
 
         if(!passwordEncoder.matches(rawPassword, encodedPassword)) {
-            throw new ApplicationException(ErrorCode.INVALID_PASSWORD);
+            throw new ApplicationException(ErrorCode.INVALID_PASSWORD, "[MemberService] checkValidPassword");
         }
     }
 
@@ -131,7 +132,7 @@ public class MemberService {
         Authentication authentication = manager.authenticate(usernamePasswordAuthenticationToken);
 
         // 회원 정보 조회 후 LoginedInfo 생성
-        Member member = findMemberByEmail(email).orElseThrow(() -> new ApplicationException(ErrorCode.EMPTY_EMAIL_MEMBER));
+        Member member = findMemberByEmail(email).orElseThrow(() -> new ApplicationException(ErrorCode.EMPTY_EMAIL_MEMBER, "[MemberService] not exited email"));
         LoginedInfo loginedInfo = new LoginedInfo(member.getId(), member.getName(), member.getEmail(), member.getAuthority());
 
         // 인증 객체에서 LoginedInfo로 교체
@@ -150,47 +151,34 @@ public class MemberService {
 
         // 토큰 유효성 검사
         if(token == null || !jwtTokenProvider.validateToken(token)) {
-            throw new ApplicationException(ErrorCode.FAILED_VALIDATE_ACCESS_TOKEN);
+            throw new ApplicationException(ErrorCode.FAILED_VALIDATE_ACCESS_TOKEN, "[MemberService] fail validate reissueToken");
         }
 
         // type 확인
         if(!jwtTokenProvider.isRefreshToken(token)) {
-            throw new ApplicationException(ErrorCode.IS_NOT_REFRESH_TOKEN);
+            throw new ApplicationException(ErrorCode.IS_NOT_REFRESH_TOKEN, "[MemberService] isNotRefreshToken");
         }
 
-        // RefreshToken
-        Optional<RefreshToken> refreshToken = refreshTokenRepository.findByRefreshToken(token);
+        String storedRefreshToken = refreshTokenService.getRefreshToken(token);
 
-        if(refreshToken.isEmpty()) {
-            throw new ApplicationException(ErrorCode.FAILED_GET_RERFRESH_TOKEN);
+        if (storedRefreshToken == null) {
+            throw new ApplicationException(ErrorCode.FAILED_GET_REFRESH_TOKEN, "[MemberService] fail getRefreshToken");
         }
 
         // 최초 로그인한 ip와 같은지 확인
         String currentIp = ClientUtils.getClientIp(httpServletRequest);
-        if(!currentIp.equals(refreshToken.get().getIp())) {
-            throw new ApplicationException(ErrorCode.DIFFERENT_IP_ADDRESS);
+        String storedIp = refreshTokenService.getStoredIp(token);
+        if (!currentIp.equals(storedIp)) {
+            throw new ApplicationException(ErrorCode.DIFFERENT_IP_ADDRESS, "[MemberService] different ip");
         }
 
-        // 저장된 RefreshToken 정보를 기반으로 JWT Token 생성
-        RefreshToken refreshTokenEntity = refreshToken.get();
-        String email = refreshTokenEntity.getUserName();
-        Long userId = refreshTokenEntity.getId();  // 적절한 userId 추출 방식
-        String name = ""; // name 정보를 refresh token에서 찾을 수 없다면 적절히 처리
-        Authority authority = refreshTokenEntity.getAuthorities();
+        Member member = findMemberByEmail(token).orElseThrow(() -> new ApplicationException(ErrorCode.EMPTY_EMAIL_MEMBER, "[MemberService] not exited email"));
 
-
-        // JWT 토큰 발급
         MemberResponseDTO.authTokenDTO authTokenDTO = jwtTokenProvider.generateToken(
-                email, userId, name, Collections.singletonList(new SimpleGrantedAuthority(authority.name()))
+                member.getEmail(), member.getId(), member.getName(), Collections.singletonList(new SimpleGrantedAuthority(member.getAuthority().name()))
         );
 
-        // RefreshToken Update
-        refreshTokenRepository.save(RefreshToken.builder()
-                        .ip(currentIp) // IP 주소를 업데이트
-                        .authorities(refreshToken.get().getAuthorities())
-                        .refreshToken(authTokenDTO.refreshToken())
-                .build());
-
+        refreshTokenService.saveRefreshToken(member.getEmail(), authTokenDTO.refreshToken(), authTokenDTO.refreshTokenValidTime());
         return authTokenDTO;
     }
 
@@ -198,31 +186,22 @@ public class MemberService {
         로그아웃
      */
     public void logout(HttpServletRequest httpServletRequest) {
-        
-        log.info("로그아웃 - Refresh Token 확인");
+        log.info("로그아웃 요청 수신");  // 로그아웃 시도 시 로그 기록
 
-        String token = jwtTokenProvider.resolveToken(httpServletRequest, "refreshToken");
-
-        if(token == null || !jwtTokenProvider.validateToken(token)) {
-            throw new ApplicationException(ErrorCode.FAILED_VALIDATE__REFRESH_TOKEN);
+        String token = jwtTokenProvider.resolveToken(httpServletRequest, "accessToken");
+        if(token == null) {
+            log.error("토큰이 없습니다."); // 로그에 토큰이 없을 경우를 기록
+            throw new ApplicationException(ErrorCode.FAILED_VALIDATE_ACCESS_TOKEN, "액세스 토큰이 존재하지 않습니다.");
+        }
+        if(!jwtTokenProvider.validateToken(token)) {
+            log.error("유효하지 않은 액세스 토큰: {}", token);  // 유효하지 않은 토큰일 경우 기록
+            throw new ApplicationException(ErrorCode.FAILED_VALIDATE_ACCESS_TOKEN, "유효하지 않은 액세스 토큰입니다.");
         }
 
-        // Refresh Token 확인
-        if (!jwtTokenProvider.isRefreshToken(token)) {
-            throw new ApplicationException(ErrorCode.IS_NOT_REFRESH_TOKEN);
-        }
+        Long userId = jwtTokenProvider.getUserIdFromToken(token);
+        log.info("사용자 ID: {}의 리프레시 토큰 삭제 요청", userId);  // 유저 정보와 함께 로그 출력
+        refreshTokenService.deleteRefreshToken(userId.toString());
 
-        // RefreshToken 조회 및 null 체크
-        RefreshToken refreshToken = refreshTokenRepository.findByRefreshToken(token)
-                .orElseThrow(() -> {
-                    log.error("Refresh Token 을 얻을 수 없습니다. 토큰: {}", token);
-                    return new ApplicationException(ErrorCode.FAILED_GET_RERFRESH_TOKEN);
-                });
-
-        // RefreshToken 삭제
-        refreshTokenRepository.delete(refreshToken);
-        log.info("로그아웃 성공");
+        log.info("로그아웃 성공 - 사용자 ID: {}", userId);  // 성공적인 로그아웃 후 기록
     }
-
-
 }

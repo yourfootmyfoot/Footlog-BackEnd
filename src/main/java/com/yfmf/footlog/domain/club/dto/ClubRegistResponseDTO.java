@@ -1,5 +1,6 @@
 package com.yfmf.footlog.domain.club.dto;
 
+import com.yfmf.footlog.domain.club.enums.ClubLevel;
 import com.yfmf.footlog.domain.club.enums.PeakDays;
 import com.yfmf.footlog.domain.club.enums.PeakHours;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -26,8 +27,8 @@ public class ClubRegistResponseDTO {
     @Schema(description = "구단 코드", example = "FCSeoul")
     private String clubCode;
 
-    @Schema(description = "등록 날짜")
-    private LocalDateTime erollDate;
+//    @Schema(description = "등록 날짜")
+//    private LocalDateTime erollDate;
 
     @Schema(description = "구단원 수")
     private int memberCount;
@@ -39,7 +40,7 @@ public class ClubRegistResponseDTO {
     private List<PeakHours> times;
 
     @Schema(description = "구단 실력", example = "아마추어")
-    private String skillLevel;
+    private ClubLevel clubLevel;
 
     @Schema(description = "주사용 운동장", example = "울산문수월드컵경기장")
     private String stadiumName;  // 운동하는 경기장 이름
@@ -60,18 +61,17 @@ public class ClubRegistResponseDTO {
 
     // 모든 필드를 받는 생성자
     public ClubRegistResponseDTO(Long userId, String clubName, String clubIntroduction, String clubCode,
-                                 LocalDateTime erollDate, int memberCount, List<PeakDays> days, List<PeakHours> times,
-                                 String skillLevel, String stadiumName, String city, String region,
+                                 int memberCount, List<PeakDays> days, List<PeakHours> times,
+                                 ClubLevel clubLevel, String stadiumName, String city, String region,
                                  String ageGroup, String gender) {
         this.userId = userId;
         this.clubName = clubName;
         this.clubIntroduction = clubIntroduction;
         this.clubCode = clubCode;
-        this.erollDate = erollDate;
         this.memberCount = memberCount;
         this.days = days;
         this.times = times;
-        this.skillLevel = skillLevel;
+        this.clubLevel = clubLevel;
         this.stadiumName = stadiumName;
         this.city = city;
         this.region = region;
@@ -86,11 +86,10 @@ public class ClubRegistResponseDTO {
                 ", clubName='" + clubName + '\'' +
                 ", clubIntroduction='" + clubIntroduction + '\'' +
                 ", clubCode='" + clubCode + '\'' +
-                ", erollDate=" + erollDate +
                 ", memberCount=" + memberCount +
                 ", days=" + days +
                 ", times=" + times +
-                ", skillLevel='" + skillLevel + '\'' +
+                ", clubLevel='" + clubLevel + '\'' +
                 ", stadiumName='" + stadiumName + '\'' +
                 ", city='" + city + '\'' +
                 ", region='" + region + '\'' +

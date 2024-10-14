@@ -36,9 +36,12 @@ public class GuestSaveRequestDto {
 
     private String specialRequests;
 
+    @NotNull(message = "가능 여부는 필수입니다.")
+    private Boolean available;
+
     @Builder
     public GuestSaveRequestDto(Long memberId, String location, Integer age, LocalDateTime scheduleDate,
-                               LocalTime scheduleStartTime, LocalTime scheduleEndTime, String specialRequests) {
+                               LocalTime scheduleStartTime, LocalTime scheduleEndTime, String specialRequests, Boolean available) {
         this.memberId = memberId;
         this.location = location;
         this.age = age;
@@ -46,6 +49,7 @@ public class GuestSaveRequestDto {
         this.scheduleStartTime = scheduleStartTime;
         this.scheduleEndTime = scheduleEndTime;
         this.specialRequests = specialRequests;
+        this.available = available;
     }
 
     public Guest toEntity() {

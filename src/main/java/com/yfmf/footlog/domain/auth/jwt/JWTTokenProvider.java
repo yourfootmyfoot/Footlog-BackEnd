@@ -97,7 +97,15 @@ public class JWTTokenProvider {
                 .signWith(secretKey, SignatureAlgorithm.HS256)
                 .compact();
 
-        return new MemberResponseDTO.authTokenDTO(BEARER_TYPE, accessToken, ACCESS_TOKEN_LIFETIME, refreshToken, REFRESH_TOKEN_LIFETIME);
+        // userId를 추가하여 반환
+        return new MemberResponseDTO.authTokenDTO(
+                BEARER_TYPE,
+                accessToken,
+                ACCESS_TOKEN_LIFETIME,
+                refreshToken,
+                REFRESH_TOKEN_LIFETIME,
+                userId // userId 전달
+        );
     }
 
     public boolean validateToken(String token) {
@@ -152,5 +160,10 @@ public class JWTTokenProvider {
             }
         }
         return null;
+    }
+
+    public Long getUserIdFromToken(String token) {
+        Claims claims = parseClaims(token); // 토큰을 파싱하여 Claims 추출
+        return claims.get("userId", Long.class); // Claims에서 userId 추출
     }
 }

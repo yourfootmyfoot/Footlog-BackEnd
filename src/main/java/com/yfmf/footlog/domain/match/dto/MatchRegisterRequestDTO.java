@@ -20,8 +20,8 @@ public class MatchRegisterRequestDTO {
 
     private Long matchEnrollUserId;
     private Long matchApplyUserId;
-    private Club myClub;
-    private Club enemyClub;
+    private Long myClubId;
+    private Long enemyClubId;
     private String matchPhoto;
     private String matchIntroduce;
 
@@ -29,13 +29,8 @@ public class MatchRegisterRequestDTO {
     @JsonFormat(pattern = "yyyy-MM-dd")
     private LocalDate matchDate;
 
-//    @JsonFormat(pattern = "HH:mm")
-//    private LocalTime matchStartTime;
     private String matchStartTime;
     private String matchEndTime;
-
-//    @JsonFormat(pattern = "HH:mm")
-//    private LocalTime matchEndTime;
 
     private MatchPlayerQuantity matchPlayerQuantity;
     private QuarterQuantity quarterQuantity;
@@ -46,8 +41,7 @@ public class MatchRegisterRequestDTO {
     private MatchGender matchGender;
     private MatchStatus matchStatus;
 
-    // Match 엔티티로 변환하는 메소드
-    public Match toEntity() {
+    public Match toEntity(Club myClub, Club enemyClub) {
 
         LocalTime startTime = null;
         LocalTime endTime = null;
@@ -64,7 +58,6 @@ public class MatchRegisterRequestDTO {
             throw new IllegalArgumentException("Invalid time format provided for matchStartTime or matchEndTime. Expected format is HH:mm.", e);
         }
 
-        // Create MatchSchedule object if all necessary values are available
         MatchSchedule matchSchedule = null;
         if (matchDate != null && startTime != null && endTime != null) {
             matchSchedule = new MatchSchedule(matchDate, startTime, endTime);
@@ -73,8 +66,8 @@ public class MatchRegisterRequestDTO {
         return new Match(
                 this.matchEnrollUserId,
                 this.matchApplyUserId,
-                this.myClub,
-                this.enemyClub,
+                myClub,
+                enemyClub,
                 this.matchPhoto,
                 this.matchIntroduce,
                 matchSchedule,

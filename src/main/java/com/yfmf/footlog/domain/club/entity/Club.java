@@ -3,11 +3,11 @@ package com.yfmf.footlog.domain.club.entity;
 import com.yfmf.footlog.BaseTimeEntity;
 import com.yfmf.footlog.domain.club.enums.PeakDays;
 import com.yfmf.footlog.domain.club.enums.PeakHours;
+import com.yfmf.footlog.domain.club.enums.ClubLevel;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
 
-import java.time.LocalDateTime;
 import java.util.List;
 
 @Entity
@@ -33,9 +33,6 @@ public class Club extends BaseTimeEntity {
     @Column(name = "CLUB_CODE", unique = true)
     private String clubCode;  //구단코드
 
-    @Column(name = "EROLL_DATE")
-    private LocalDateTime erollDate;  //구단등록일
-
     // 구단원 수를 자동으로 관리하는 필드
     @Column(name = "MEMBER_COUNT", nullable = false)
     private int memberCount = 1;  // 기본값을 1로 설정
@@ -52,8 +49,9 @@ public class Club extends BaseTimeEntity {
     @Enumerated(EnumType.STRING)
     private List<PeakHours> times;  // 자주 운동하는 시간대 (Enum)
 
+    @Enumerated(EnumType.STRING)
     @Column(nullable = false)
-    private String skillLevel;  // 실력 등급 (예: 입문자, 아마추어 등)
+    private ClubLevel clubLevel;  // 실력 등급 (예: 입문자, 아마추어 등)
 
     @Column(name = "AGE_GROUP") // 나이대 필드
     private String ageGroup;
@@ -74,18 +72,17 @@ public class Club extends BaseTimeEntity {
     public Club() {
     }
 
-    public Club(Long userId, String clubName, String clubIntroduction, String clubCode, LocalDateTime erollDate,
-                int memberCount, List<PeakDays> days, List<PeakHours> times, String skillLevel, String stadiumName,
+    public Club(Long userId, String clubName, String clubIntroduction, String clubCode,
+                int memberCount, List<PeakDays> days, List<PeakHours> times, ClubLevel clubLevel, String stadiumName,
                 String city, String region, String ageGroup, String gender) {
         this.userId = userId;
         this.clubName = clubName;
         this.clubIntroduction = clubIntroduction;
         this.clubCode = clubCode;
-        this.erollDate = erollDate;
         this.memberCount = memberCount;
         this.days = days;
         this.times = times;
-        this.skillLevel = skillLevel;
+        this.clubLevel = clubLevel;
         this.stadiumName = stadiumName;
         this.city = city;
         this.region = region;
@@ -101,11 +98,10 @@ public class Club extends BaseTimeEntity {
                 ", clubName='" + clubName + '\'' +
                 ", clubIntroduction='" + clubIntroduction + '\'' +
                 ", clubCode='" + clubCode + '\'' +
-                ", erollDate=" + erollDate +
                 ", memberCount=" + memberCount +
                 ", peakHours=" + times +
                 ", peakDays=" + days +
-                ", skillLevel=" + skillLevel +
+                ", clubLevel=" + clubLevel +
                 ", stadiumName=" + stadiumName +
                 ", city=" + city +
                 ", region=" + region +

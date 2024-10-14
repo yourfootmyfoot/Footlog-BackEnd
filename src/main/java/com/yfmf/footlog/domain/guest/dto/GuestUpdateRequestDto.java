@@ -1,5 +1,6 @@
 package com.yfmf.footlog.domain.guest.dto;
 
+
 import com.yfmf.footlog.domain.guest.entity.Guest;
 import jakarta.validation.constraints.*;
 import lombok.Builder;
@@ -20,6 +21,7 @@ public class GuestUpdateRequestDto {
     private LocalTime scheduleStartTime;
     private LocalTime scheduleEndTime;
     private String specialRequests;
+    private Boolean available;
 
     @Builder
     public GuestUpdateRequestDto(String name, String location, Integer age, LocalDateTime scheduleDate,

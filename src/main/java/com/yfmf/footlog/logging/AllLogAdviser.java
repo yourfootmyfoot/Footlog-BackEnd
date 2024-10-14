@@ -1,6 +1,5 @@
 package com.yfmf.footlog.logging;
 
-import com.yfmf.footlog.domain.auth.refreshToken.repository.RefreshTokenRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.*;

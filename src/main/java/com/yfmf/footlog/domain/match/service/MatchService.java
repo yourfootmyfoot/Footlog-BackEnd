@@ -1,10 +1,13 @@
 package com.yfmf.footlog.domain.match.service;
 
+import com.yfmf.footlog.domain.club.entity.Club;
+import com.yfmf.footlog.domain.club.repository.ClubRepository;
 import com.yfmf.footlog.domain.match.dto.MatchRegisterRequestDTO;
 import com.yfmf.footlog.domain.match.dto.MatchResponseDTO;
 import com.yfmf.footlog.domain.match.entity.Match;
 import com.yfmf.footlog.domain.match.entity.MatchSchedule;
 import com.yfmf.footlog.domain.match.repository.MatchRepository;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -15,14 +18,17 @@ import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
 import java.util.List;
 
+@Slf4j
 @Service
 public class MatchService {
 
     private final MatchRepository matchRepository;
+    private final ClubRepository clubRepository;
 
     @Autowired
-    public MatchService(MatchRepository matchRepository) {
+    public MatchService(MatchRepository matchRepository, ClubRepository clubRepository) {
         this.matchRepository = matchRepository;
+        this.clubRepository = clubRepository;
     }
 
     // 모든 경기 조회
@@ -41,8 +47,16 @@ public class MatchService {
     // 경기 등록
     @Transactional
     public MatchResponseDTO saveMatch(MatchRegisterRequestDTO matchInfo) {
-        Match savedMatch = matchRepository.save(matchInfo.toEntity());
-        return new MatchResponseDTO(savedMatch);
+        Club myClub = clubRepository.findById(matchInfo.getMyClubId())
+                .orElseThrow(() -> new IllegalArgumentException("Invalid myClub ID: " + matchInfo.getMyClubId()));
+
+        // 초기 등록시 enemyClub null
+        Match savedMatch = matchRepository.save(matchInfo.toEntity(myClub, null));
+
+        log.warn("[MatchService] savedMatch + ", savedMatch);
+        MatchResponseDTO matchResponse = new MatchResponseDTO(savedMatch);
+        log.info("[MatchService] savedMatch" + matchResponse);
+        return matchResponse;
     }
 
     // 경기 수정

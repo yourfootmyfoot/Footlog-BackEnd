@@ -45,9 +45,12 @@ public class Guest extends BaseTimeEntity {
 
     private String specialRequests;
 
+    @Column(nullable = false)
+    private boolean available;
+
     @Builder
     public Guest(Long memberId, String location, Integer age, LocalDateTime scheduleDate, DayOfWeek scheduleDay,
-                 LocalTime scheduleStartTime, LocalTime scheduleEndTime, String specialRequests) {
+                 LocalTime scheduleStartTime, LocalTime scheduleEndTime, String specialRequests, Boolean available) {
         this.memberId = memberId;
         this.location = location;
         this.age = age;
@@ -56,20 +59,23 @@ public class Guest extends BaseTimeEntity {
         this.scheduleStartTime = scheduleStartTime;
         this.scheduleEndTime = scheduleEndTime;
         this.specialRequests = specialRequests;
+        this.available = available;
     }
 
     public void update(String location, Integer age, LocalDateTime scheduleDate, DayOfWeek scheduleDay,
-                       LocalTime scheduleStartTime, LocalTime scheduleEndTime, String specialRequests) {
+                       LocalTime scheduleStartTime, LocalTime scheduleEndTime, String specialRequests, Boolean available) {
         this.location = location;
         this.age = age;
         this.scheduleDate = scheduleDate;
         this.scheduleDay = scheduleDay;
         this.scheduleStartTime = scheduleStartTime;
         this.scheduleEndTime = scheduleEndTime;
-        this.specialRequests = specialRequests;
+        this.available = available;
+
     }
 
     public boolean updateAvailability(boolean available) {
         return available;
     }
+
 }

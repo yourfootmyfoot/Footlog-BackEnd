@@ -15,7 +15,7 @@ import java.lang.reflect.Method;
 @Component
 public class ClubLogAdviser {
 
-    @Around("Pointcuts.clubLogPointcut()")
+    //@Around("Pointcuts.clubLogPointcut()")
     public Object advice(ProceedingJoinPoint proceedingJoinPoint) throws Throwable {
 
         MethodSignature methodSignature = (MethodSignature) proceedingJoinPoint.getSignature();

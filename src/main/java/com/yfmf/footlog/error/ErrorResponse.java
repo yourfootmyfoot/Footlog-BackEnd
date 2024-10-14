@@ -1,4 +1,4 @@
-package com.yfmf.footlog.exception;
+package com.yfmf.footlog.error;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
