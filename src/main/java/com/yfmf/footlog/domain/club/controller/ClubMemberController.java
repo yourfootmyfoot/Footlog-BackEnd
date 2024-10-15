@@ -192,6 +192,9 @@ public class ClubMemberController {
         return ResponseEntity.ok("구단원의 역할이 성공적으로 수정되었습니다.");
     }
 
+    /**
+     * 구단원 여부 확인
+     */
     @Operation(summary = "구단원 여부 확인", description = "현재 사용자가 해당 구단에 소속된 구단원인지 확인합니다.")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "구단원 여부 확인 성공",
@@ -217,6 +220,9 @@ public class ClubMemberController {
         return ResponseEntity.ok(response);
     }
 
+    /**
+     * 구단원 권한 여부 확인
+     */
     @Operation(summary = "구단 권한 여부 확인", description = "현재 사용자가 구단의 구단주 혹은 매니저 권한을 가지고 있는지 확인합니다.")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "권한 확인 성공",

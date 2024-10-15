@@ -179,6 +179,4 @@ public class ClubMemberService {
 
         return member.getRole() == ClubMemberRole.OWNER || member.getRole() == ClubMemberRole.MANAGER;
     }
-
-
 }

@@ -165,7 +165,10 @@ public class JWTTokenProvider {
     private String resolveAccessTokenFromHeader(HttpServletRequest request) {
         String bearerToken = request.getHeader("Authorization");
         if (bearerToken != null && bearerToken.startsWith("Bearer ")) {
+            log.info("Access Token 추출 성공: {}", bearerToken.substring(7));  // 디버그용 로그 추가
             return bearerToken.substring(7); // "Bearer " 이후의 토큰 값만 추출
+        } else {
+            log.warn("Authorization 헤더에 Access Token이 없습니다.");
         }
         return null;
     }
@@ -176,10 +179,12 @@ public class JWTTokenProvider {
         if (cookies != null) {
             for (Cookie cookie : cookies) {
                 if ("refreshToken".equals(cookie.getName())) {
+                    log.info("Refresh Token 추출 성공: {}", cookie.getValue());  // 디버그용 로그 추가
                     return cookie.getValue();
                 }
             }
         }
+        log.warn("쿠키에 Refresh Token이 없습니다.");
         return null;
     }
 
