@@ -74,13 +74,17 @@ public class MemberService {
         // 2. 비밀번호 확인
         checkValidPassword(requestDTO.password(), member.getPassword());
 
-        // 3. Access Token 발급 및 쿠키에 저장
+        // 3. Access Token 발급
         MemberResponseDTO.authTokenDTO authTokenDTO = getAuthTokenDTO(requestDTO.email(), requestDTO.password(), httpServletRequest);
-        addTokenToCookie(httpServletResponse, "accessToken", authTokenDTO.accessToken());
 
-        // 4. Refresh Token은 클라이언트에 응답하지 않고, Redis에 저장
+        // 4. Refresh Token을 HttpOnly 쿠키에 저장
+        addTokenToCookie(httpServletResponse, "refreshToken", authTokenDTO.refreshToken());
+
+
+        // 5. Refresh Token은 클라이언트에 응답하지 않고, Redis에 저장
         refreshTokenService.saveRefreshToken(member.getId().toString(), authTokenDTO.refreshToken(), authTokenDTO.refreshTokenValidTime());
 
+        // 6. Access Token은 클라이언트가 로컬 스토리지에 저장할 수 있도록 응답 바디로 반환
         return authTokenDTO; // 여기에서는 Access Token만 클라이언트에 응답
     }
 

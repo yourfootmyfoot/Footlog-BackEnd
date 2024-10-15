@@ -55,7 +55,9 @@ public class MemberController {
     public ResponseEntity<?> login(@Valid @RequestBody MemberRequestDTO.loginDTO loginDTO, HttpServletRequest request, HttpServletResponse response) {
         MemberResponseDTO.authTokenDTO authTokenDTO = memberService.login(request, response, loginDTO);
         log.info("{}님이 로그인에 성공했습니다.", authTokenDTO.userId());
-        return ResponseEntity.ok(authTokenDTO);  // 쿠키는 이미 설정된 상태이므로 body에 추가 정보가 필요 없다면 간단히 처리
+
+        // Access Token은 로컬 스토리지에 저장할 수 있도록 응답으로 반환
+        return ResponseEntity.ok(authTokenDTO);  // Access Token만 바디에 반환 (Refresh Token은 HttpOnly 쿠키로 설정)
     }
 
     /*

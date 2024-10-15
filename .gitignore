@@ -40,6 +40,4 @@ out/
 tree
 
 READEME2.md
-
-### log ###
-log/**/*.log
+match_system_flow_korean.md
