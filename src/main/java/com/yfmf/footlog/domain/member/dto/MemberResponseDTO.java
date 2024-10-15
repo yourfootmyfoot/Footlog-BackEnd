@@ -1,10 +1,30 @@
 package com.yfmf.footlog.domain.member.dto;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.yfmf.footlog.domain.member.domain.Authority;
+import com.yfmf.footlog.domain.member.domain.Gender;
 
 import java.time.LocalDateTime;
 
 public class MemberResponseDTO {
+
+    // 회원 정보 응답 DTO
+    public static class MemberInfoDTO {
+        private Long id;
+        private String name;
+        private String email;
+        private Gender gender;
+        private Authority authority;
+
+        // 모든 필드를 포함하는 생성자가 필요
+        public MemberInfoDTO(Long id, String name, String email, Gender gender, Authority authority) {
+            this.id = id;
+            this.name = name;
+            this.email = email;
+            this.gender = gender;
+            this.authority = authority;
+        }
+    }
 
     // 토큰 발급
     public record authTokenDTO(

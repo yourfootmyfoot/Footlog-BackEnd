@@ -53,6 +53,7 @@ public class SecurityConfig {
                         sessionManagement.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests((request) -> request
                         .requestMatchers(mvc.pattern("/api/clubs/**")).authenticated()  // 클럽 관련 엔드포인트는 인증 필요
+                        .requestMatchers(mvc.pattern("/api/auth/members")).hasRole("ADMIN")
                         .requestMatchers(this.createMvcRequestMatcherForWhiteList(mvc)).permitAll() // 화이트리스트 엔드포인트는 인증 없이 접근 가능
                         .anyRequest().authenticated()) // 그 외 모든 요청은 인증 필요
                 .addFilterBefore(new JWTTokenFilter(jwtTokenProvider), UsernamePasswordAuthenticationFilter.class);  // JWT 필터 추가
