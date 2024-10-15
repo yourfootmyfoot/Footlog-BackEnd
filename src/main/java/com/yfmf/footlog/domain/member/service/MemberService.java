@@ -152,41 +152,48 @@ public class MemberService {
     // 토큰 재발급
     public MemberResponseDTO.authTokenDTO reissueToken(HttpServletRequest httpServletRequest) {
 
-        // Request Header 에서 JWT Token 추출
-        String token = jwtTokenProvider.resolveToken(httpServletRequest, "accessToken");
+        // Request 쿠키에서 Refresh Token 추출
+        String refreshToken = jwtTokenProvider.resolveToken(httpServletRequest, "refreshToken");
 
-        // 토큰 유효성 검사
-        if(token == null || !jwtTokenProvider.validateToken(token)) {
-            throw new ApplicationException(ErrorCode.FAILED_VALIDATE_ACCESS_TOKEN, "[MemberService] fail validate reissueToken");
+        // 리프레시 토큰 유효성 검사
+        if (refreshToken == null || !jwtTokenProvider.validateToken(refreshToken)) {
+            throw new ApplicationException(ErrorCode.FAILED_VALIDATE_REFRESH_TOKEN, "[MemberService] 리프레시 토큰이 유효하지 않거나 존재하지 않습니다.");
         }
 
-        // type 확인
-        if(!jwtTokenProvider.isRefreshToken(token)) {
-            throw new ApplicationException(ErrorCode.IS_NOT_REFRESH_TOKEN, "[MemberService] isNotRefreshToken");
+        // type 확인: 리프레시 토큰인지 확인
+        if (!jwtTokenProvider.isRefreshToken(refreshToken)) {
+            throw new ApplicationException(ErrorCode.IS_NOT_REFRESH_TOKEN, "[MemberService] 제공된 토큰은 리프레시 토큰이 아닙니다.");
         }
 
-        String storedRefreshToken = refreshTokenService.getRefreshToken(token);
-
+        // 저장된 리프레시 토큰 가져오기
+        String storedRefreshToken = refreshTokenService.getRefreshToken(refreshToken);
         if (storedRefreshToken == null) {
-            throw new ApplicationException(ErrorCode.FAILED_GET_REFRESH_TOKEN, "[MemberService] fail getRefreshToken");
+            throw new ApplicationException(ErrorCode.FAILED_GET_REFRESH_TOKEN, "[MemberService] 저장된 리프레시 토큰을 찾을 수 없습니다.");
         }
 
-        // 최초 로그인한 ip와 같은지 확인
+        // IP 주소 확인
         String currentIp = ClientUtils.getClientIp(httpServletRequest);
-        String storedIp = refreshTokenService.getStoredIp(token);
+        String storedIp = refreshTokenService.getStoredIp(refreshToken);
         if (!currentIp.equals(storedIp)) {
-            throw new ApplicationException(ErrorCode.DIFFERENT_IP_ADDRESS, "[MemberService] different ip");
+            throw new ApplicationException(ErrorCode.DIFFERENT_IP_ADDRESS, "[MemberService] 로그인한 IP와 다릅니다.");
         }
 
-        Member member = findMemberByEmail(token).orElseThrow(() -> new ApplicationException(ErrorCode.EMPTY_EMAIL_MEMBER, "[MemberService] not exited email"));
+        // 저장된 리프레시 토큰과 일치하는 사용자 찾기
+        Member member = refreshTokenService.getMemberByToken(storedRefreshToken)
+                .orElseThrow(() -> new ApplicationException(ErrorCode.EMPTY_EMAIL_MEMBER, "[MemberService] 리프레시 토큰에 해당하는 사용자를 찾을 수 없습니다."));
 
+        // 새로운 엑세스 토큰 발급
         MemberResponseDTO.authTokenDTO authTokenDTO = jwtTokenProvider.generateToken(
                 member.getEmail(), member.getId(), member.getName(), Collections.singletonList(new SimpleGrantedAuthority(member.getAuthority().name()))
         );
 
+        // 리프레시 토큰 갱신 후 저장
         refreshTokenService.saveRefreshToken(member.getEmail(), authTokenDTO.refreshToken(), authTokenDTO.refreshTokenValidTime());
+
+        // 새로운 토큰 반환
         return authTokenDTO;
     }
+
 
     /*
         로그아웃
