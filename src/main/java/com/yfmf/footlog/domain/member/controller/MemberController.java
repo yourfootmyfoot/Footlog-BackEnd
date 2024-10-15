@@ -16,11 +16,10 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
 
 
 @Slf4j
@@ -34,7 +33,7 @@ public class MemberController {
     private final RefreshTokenService refreshTokenService;
     private final JWTTokenProvider jwtTokenProvider;
 
-    /*
+    /**
           기본 회원 가입
        */
     @Operation(summary = "회원 가입", description = "회원 가입을 처리합니다.")
@@ -47,7 +46,7 @@ public class MemberController {
     }
 
 
-    /*
+    /**
          기본 로그인
       */
     @Operation(summary = "로그인", description = "회원 로그인을 처리하고 인증 토큰을 발급합니다.")
@@ -60,7 +59,7 @@ public class MemberController {
         return ResponseEntity.ok(authTokenDTO);  // Access Token만 바디에 반환 (Refresh Token은 HttpOnly 쿠키로 설정)
     }
 
-    /*
+    /**
        Access Token 재발급 - Refresh Token 필요
     */
     @Operation(summary = "토큰 재발급", description = "Refresh Token을 사용하여 Access Token을 재발급합니다.")
@@ -72,7 +71,7 @@ public class MemberController {
         return ResponseEntity.ok().body(ApiUtils.success(responseDTO));
     }
 
-    /*
+    /**
         로그아웃
      */
     @Operation(summary = "로그아웃", description = "Refresh Token을 사용하여 로그아웃을 처리합니다.")
@@ -106,5 +105,16 @@ public class MemberController {
         httpServletResponse.addCookie(refreshTokenCookie);
 
         return ResponseEntity.ok().body(ApiUtils.success(null));
+    }
+
+    /**
+     * 전체회원 조회
+     */
+    @Operation(summary = "멤버 전체 조회", description = "등록된 모든 멤버를 조회합니다. (관리자만 가능)")
+    @PreAuthorize("hasRole('ADMIN')")
+    @GetMapping("/members")
+    public ResponseEntity<?> getAllMembers() {
+        List<MemberResponseDTO.MemberInfoDTO> memberList = memberService.getAllMembers();
+        return ResponseEntity.ok().body(ApiUtils.success(memberList));
     }
 }

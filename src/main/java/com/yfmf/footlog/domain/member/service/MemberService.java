@@ -30,7 +30,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Collections;
+import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Slf4j
 @Transactional(readOnly = false)
@@ -207,5 +209,20 @@ public class MemberService {
         refreshTokenService.deleteRefreshToken(userId.toString());
 
         log.info("로그아웃 성공 - 사용자 ID: {}", userId);  // 성공적인 로그아웃 후 기록
+    }
+
+    public List<MemberResponseDTO.MemberInfoDTO> getAllMembers() {
+        List<Member> members = memberRepository.findAll();
+
+        // Member 엔티티를 DTO로 변환
+        return members.stream()
+                .map(member -> new MemberResponseDTO.MemberInfoDTO(
+                        member.getId(),
+                        member.getName(),
+                        member.getEmail(),
+                        member.getGender(),
+                        member.getAuthority())
+                )
+                .collect(Collectors.toList());
     }
 }
