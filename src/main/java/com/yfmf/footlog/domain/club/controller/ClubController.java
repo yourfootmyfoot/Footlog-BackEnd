@@ -340,4 +340,34 @@ public class ClubController {
         boolean exists = clubService.isClubCodeDuplicate(code);
         return ResponseEntity.ok(exists);
     }
+
+    /**
+     * 로그인한 사용자가 자기가 속한 클럽 조회
+     */
+    @Operation(summary = "로그인한 사용자가 속한 클럽 조회", description = "현재 로그인한 사용자가 속한 클럽 목록을 조회합니다.")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "로그인한 사용자가 속한 클럽 목록이 성공적으로 조회되었습니다."),
+            @ApiResponse(responseCode = "401", description = "로그인이 필요합니다.", content = @Content(
+                    mediaType = "application/json",
+                    schema = @Schema(implementation = ErrorResponse.class),
+                    examples = @ExampleObject(value = "{\"status\": 401, \"errorType\": \"Unauthorized\", \"message\": \"로그인이 필요합니다.\"}")
+            ))
+    })
+    @GetMapping("/my-clubs")
+    public ResponseEntity<List<Club>> getMyClubs(@AuthenticationPrincipal LoginedInfo logined) {
+        // 로그인된 사용자인지 확인
+        if (logined == null) {
+            log.error("[ClubController] 로그인되지 않은 사용자가 자신의 클럽을 조회하려고 시도했습니다.");
+            throw new LoginRequiredException("로그인 후 이용이 가능합니다.", "[ClubController] getMyClubs");
+        }
+
+        log.info("[ClubController] 사용자가 속한 클럽 조회 요청: 사용자 ID={}", logined.getUserId());
+
+        // 로그인된 사용자가 속한 클럽 목록 조회
+        List<Club> myClubs = clubService.getClubsByUserId(logined.getUserId());
+        log.info("[ClubController] 조회된 클럽 수: {}", myClubs.size());
+
+        return ResponseEntity.ok(myClubs);
+    }
+
 }
