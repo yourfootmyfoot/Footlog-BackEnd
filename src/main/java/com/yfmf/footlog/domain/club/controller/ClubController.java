@@ -288,38 +288,56 @@ public class ClubController {
     /**
      * 구단 이름 중복 확인
      */
-    @Operation(summary = "구단 이름 중복 확인", description = "구단 이름의 중복 여부를 확인합니다.")
+    @Operation(summary = "구단 이름 중복 확인", description = "주어진 구단 이름이 이미 등록된 구단과 중복되는지 확인합니다.")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "구단 이름의 중복 여부가 성공적으로 확인되었습니다.", content = @Content(
+                    mediaType = "application/json",
+                    schema = @Schema(implementation = Boolean.class),
+                    examples = @ExampleObject(value = "{\"status\": 200, \"data\": true}")
+            )),
+            @ApiResponse(responseCode = "401", description = "로그인이 필요합니다.", content = @Content(
+                    mediaType = "application/json",
+                    schema = @Schema(implementation = ErrorResponse.class),
+                    examples = @ExampleObject(value = "{\"status\": 401, \"errorType\": \"Unauthorized\", \"message\": \"로그인이 필요합니다.\"}")
+            ))
+    })
     @GetMapping("/check-name")
     public ResponseEntity<Boolean> checkClubNameDuplicate(@RequestParam("name") String name, @AuthenticationPrincipal LoginedInfo logined) {
-
-        // 로그인된 사용자인지 확인
         if (logined == null) {
-            log.error("[ClubController] 로그인되지 않은 사용자가 구단 이름중복 확인을 시도했습니다.");
-            throw new LoginRequiredException("로그인 후 이용이 가능합니다.", "[ClubController] updateClub");
+            log.error("[ClubController] 로그인되지 않은 사용자가 구단 이름 중복 확인을 시도했습니다.");
+            throw new LoginRequiredException("로그인 후 이용이 가능합니다.", "[ClubController] checkClubNameDuplicate");
         }
 
         log.info("[ClubController] 구단 이름 중복 확인 요청: {}", name);
         boolean exists = clubService.isClubNameDuplicate(name);
-        return ResponseEntity.ok(exists); // 중복 여부를 Boolean 값으로 반환
+        return ResponseEntity.ok(exists);
     }
 
     /**
      * 구단 코드 중복 확인
      */
-    @Operation(summary = "구단 코드 중복 확인", description = "구단 코드의 중복 여부를 확인합니다.")
+    @Operation(summary = "구단 코드 중복 확인", description = "주어진 구단 코드가 이미 등록된 구단과 중복되는지 확인합니다.")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "구단 코드의 중복 여부가 성공적으로 확인되었습니다.", content = @Content(
+                    mediaType = "application/json",
+                    schema = @Schema(implementation = Boolean.class),
+                    examples = @ExampleObject(value = "{\"status\": 200, \"data\": true}")
+            )),
+            @ApiResponse(responseCode = "401", description = "로그인이 필요합니다.", content = @Content(
+                    mediaType = "application/json",
+                    schema = @Schema(implementation = ErrorResponse.class),
+                    examples = @ExampleObject(value = "{\"status\": 401, \"errorType\": \"Unauthorized\", \"message\": \"로그인이 필요합니다.\"}")
+            ))
+    })
     @GetMapping("/check-code")
     public ResponseEntity<Boolean> checkClubCodeDuplicate(@RequestParam("code") String code, @AuthenticationPrincipal LoginedInfo logined) {
-
-        // 로그인된 사용자인지 확인
         if (logined == null) {
-            log.error("[ClubController] 로그인되지 않은 사용자가 구단 코드중복을 시도했습니다.");
-            throw new LoginRequiredException("로그인 후 이용이 가능합니다.", "[ClubController] updateClub");
+            log.error("[ClubController] 로그인되지 않은 사용자가 구단 코드 중복 확인을 시도했습니다.");
+            throw new LoginRequiredException("로그인 후 이용이 가능합니다.", "[ClubController] checkClubCodeDuplicate");
         }
-
 
         log.info("[ClubController] 구단 코드 중복 확인 요청: {}", code);
         boolean exists = clubService.isClubCodeDuplicate(code);
-        return ResponseEntity.ok(exists); // 중복 여부를 Boolean 값으로 반환
+        return ResponseEntity.ok(exists);
     }
-
 }
