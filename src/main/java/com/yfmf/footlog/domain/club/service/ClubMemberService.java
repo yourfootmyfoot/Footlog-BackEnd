@@ -174,9 +174,8 @@ public class ClubMemberService {
      * 구단원 권한 확인
      */
     public boolean hasClubPermission(Long userId, Long clubId) {
-        ClubMember member = clubMemberRepository.findByMemberIdAndClubId(userId, clubId)
-                .orElseThrow(() -> new IllegalArgumentException("구단원이 아닙니다."));
-
-        return member.getRole() == ClubMemberRole.OWNER || member.getRole() == ClubMemberRole.MANAGER;
+        return clubMemberRepository.findByMemberIdAndClubId(userId, clubId)
+                .map(member -> member.getRole() == ClubMemberRole.OWNER || member.getRole() == ClubMemberRole.MANAGER)
+                .orElse(false); // 구단원이 아닌 경우 false 반환
     }
 }
