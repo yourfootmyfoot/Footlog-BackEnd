@@ -151,14 +151,40 @@ public class JWTTokenProvider {
     }
 
     public String resolveToken(HttpServletRequest request, String tokenType) {
+        if ("accessToken".equals(tokenType)) {
+            // Access Token은 헤더에서 가져옴
+            return resolveAccessTokenFromHeader(request);
+        } else if ("refreshToken".equals(tokenType)) {
+            // Refresh Token은 쿠키에서 가져옴
+            return resolveRefreshTokenFromCookies(request);
+        }
+        return null;
+    }
+
+    // 헤더에서 Access Token 추출
+    private String resolveAccessTokenFromHeader(HttpServletRequest request) {
+        String bearerToken = request.getHeader("Authorization");
+        if (bearerToken != null && bearerToken.startsWith("Bearer ")) {
+            log.info("Access Token 추출 성공: {}", bearerToken.substring(7));  // 디버그용 로그 추가
+            return bearerToken.substring(7); // "Bearer " 이후의 토큰 값만 추출
+        } else {
+            log.warn("Authorization 헤더에 Access Token이 없습니다.");
+        }
+        return null;
+    }
+
+    // 쿠키에서 Refresh Token 추출
+    private String resolveRefreshTokenFromCookies(HttpServletRequest request) {
         Cookie[] cookies = request.getCookies();
         if (cookies != null) {
             for (Cookie cookie : cookies) {
-                if (tokenType.equals(cookie.getName())) {
+                if ("refreshToken".equals(cookie.getName())) {
+                    log.info("Refresh Token 추출 성공: {}", cookie.getValue());  // 디버그용 로그 추가
                     return cookie.getValue();
                 }
             }
         }
+        log.warn("쿠키에 Refresh Token이 없습니다.");
         return null;
     }
 

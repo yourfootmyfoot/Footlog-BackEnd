@@ -2,10 +2,12 @@ package com.yfmf.footlog.domain.club.controller;
 
 import com.yfmf.footlog.domain.auth.dto.LoginedInfo;
 import com.yfmf.footlog.domain.auth.exception.LoginRequiredException;
+import com.yfmf.footlog.domain.club.dto.ClubDetailResponseDTO;
 import com.yfmf.footlog.domain.club.dto.ClubRegistRequestDTO;
 import com.yfmf.footlog.domain.club.dto.ClubRegistResponseDTO;
 import com.yfmf.footlog.domain.club.entity.Club;
 import com.yfmf.footlog.domain.club.exception.ClubNotFoundException;
+import com.yfmf.footlog.domain.club.service.ClubMemberService;
 import com.yfmf.footlog.domain.club.service.ClubService;
 import com.yfmf.footlog.error.ErrorResponse;
 import io.swagger.v3.oas.annotations.Operation;
@@ -17,7 +19,6 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -32,10 +33,11 @@ import java.util.List;
 public class ClubController {
 
     private final ClubService clubService;
+    private final ClubMemberService clubMemberService;
 
-    @Autowired
-    public ClubController(ClubService clubService) {
+    public ClubController(ClubService clubService, ClubMemberService clubMemberService) {
         this.clubService = clubService;
+        this.clubMemberService = clubMemberService;
     }
 
     /**
@@ -142,24 +144,22 @@ public class ClubController {
             ))
     })
     @GetMapping("/{clubId}")
-    public ResponseEntity<Club> getClubById(@PathVariable("clubId") Long clubId, @AuthenticationPrincipal LoginedInfo logined) {
-
+    public ResponseEntity<ClubDetailResponseDTO> getClubById(@PathVariable("clubId") Long clubId, @AuthenticationPrincipal LoginedInfo logined) {
         log.info("[ClubController] 구단 ID={}에 대한 조회 요청", clubId);
 
         // 로그인된 사용자인지 확인
-        if (logined == null) {
-            log.error("[ClubController] 로그인되지 않은 사용자가 구단 조회를 시도했습니다.");
-            throw new LoginRequiredException("로그인 후 이용이 가능합니다.", "[ClubController] getClubById");
+        Club club = clubService.getClubByClubId(clubId);
+
+        boolean isMember = false;
+        boolean hasPermission = false;
+
+        if (logined != null) {
+            isMember = clubMemberService.isClubMember(logined.getUserId(), clubId);
+            hasPermission = clubMemberService.hasClubPermission(logined.getUserId(), clubId);
         }
 
-        try {
-            Club club = clubService.getClubByClubId(clubId);
-            log.info("[ClubController] 구단 조회 성공: 구단 ID={}", clubId);
-            return ResponseEntity.ok(club);
-        } catch (ClubNotFoundException e) {
-            log.error("[ClubController] 구단 조회 실패 - 구단이 존재하지 않음: 구단 ID={}", clubId);
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
-        }
+        ClubDetailResponseDTO response = new ClubDetailResponseDTO(club, isMember, hasPermission);
+        return ResponseEntity.ok(response);
     }
 
 
@@ -288,38 +288,85 @@ public class ClubController {
     /**
      * 구단 이름 중복 확인
      */
-    @Operation(summary = "구단 이름 중복 확인", description = "구단 이름의 중복 여부를 확인합니다.")
+    @Operation(summary = "구단 이름 중복 확인", description = "주어진 구단 이름이 이미 등록된 구단과 중복되는지 확인합니다.")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "구단 이름의 중복 여부가 성공적으로 확인되었습니다.", content = @Content(
+                    mediaType = "application/json",
+                    schema = @Schema(implementation = Boolean.class),
+                    examples = @ExampleObject(value = "{\"status\": 200, \"data\": true}")
+            )),
+            @ApiResponse(responseCode = "401", description = "로그인이 필요합니다.", content = @Content(
+                    mediaType = "application/json",
+                    schema = @Schema(implementation = ErrorResponse.class),
+                    examples = @ExampleObject(value = "{\"status\": 401, \"errorType\": \"Unauthorized\", \"message\": \"로그인이 필요합니다.\"}")
+            ))
+    })
     @GetMapping("/check-name")
     public ResponseEntity<Boolean> checkClubNameDuplicate(@RequestParam("name") String name, @AuthenticationPrincipal LoginedInfo logined) {
-
-        // 로그인된 사용자인지 확인
         if (logined == null) {
-            log.error("[ClubController] 로그인되지 않은 사용자가 구단 이름중복 확인을 시도했습니다.");
-            throw new LoginRequiredException("로그인 후 이용이 가능합니다.", "[ClubController] updateClub");
+            log.error("[ClubController] 로그인되지 않은 사용자가 구단 이름 중복 확인을 시도했습니다.");
+            throw new LoginRequiredException("로그인 후 이용이 가능합니다.", "[ClubController] checkClubNameDuplicate");
         }
 
         log.info("[ClubController] 구단 이름 중복 확인 요청: {}", name);
         boolean exists = clubService.isClubNameDuplicate(name);
-        return ResponseEntity.ok(exists); // 중복 여부를 Boolean 값으로 반환
+        return ResponseEntity.ok(exists);
     }
 
     /**
      * 구단 코드 중복 확인
      */
-    @Operation(summary = "구단 코드 중복 확인", description = "구단 코드의 중복 여부를 확인합니다.")
+    @Operation(summary = "구단 코드 중복 확인", description = "주어진 구단 코드가 이미 등록된 구단과 중복되는지 확인합니다.")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "구단 코드의 중복 여부가 성공적으로 확인되었습니다.", content = @Content(
+                    mediaType = "application/json",
+                    schema = @Schema(implementation = Boolean.class),
+                    examples = @ExampleObject(value = "{\"status\": 200, \"data\": true}")
+            )),
+            @ApiResponse(responseCode = "401", description = "로그인이 필요합니다.", content = @Content(
+                    mediaType = "application/json",
+                    schema = @Schema(implementation = ErrorResponse.class),
+                    examples = @ExampleObject(value = "{\"status\": 401, \"errorType\": \"Unauthorized\", \"message\": \"로그인이 필요합니다.\"}")
+            ))
+    })
     @GetMapping("/check-code")
     public ResponseEntity<Boolean> checkClubCodeDuplicate(@RequestParam("code") String code, @AuthenticationPrincipal LoginedInfo logined) {
-
-        // 로그인된 사용자인지 확인
         if (logined == null) {
-            log.error("[ClubController] 로그인되지 않은 사용자가 구단 코드중복을 시도했습니다.");
-            throw new LoginRequiredException("로그인 후 이용이 가능합니다.", "[ClubController] updateClub");
+            log.error("[ClubController] 로그인되지 않은 사용자가 구단 코드 중복 확인을 시도했습니다.");
+            throw new LoginRequiredException("로그인 후 이용이 가능합니다.", "[ClubController] checkClubCodeDuplicate");
         }
-
 
         log.info("[ClubController] 구단 코드 중복 확인 요청: {}", code);
         boolean exists = clubService.isClubCodeDuplicate(code);
-        return ResponseEntity.ok(exists); // 중복 여부를 Boolean 값으로 반환
+        return ResponseEntity.ok(exists);
     }
 
+    /**
+     * 로그인한 사용자가 자기가 속한 클럽 조회
+     */
+    @Operation(summary = "로그인한 사용자가 속한 클럽 조회", description = "현재 로그인한 사용자가 속한 클럽 목록을 조회합니다.")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "로그인한 사용자가 속한 클럽 목록이 성공적으로 조회되었습니다."),
+            @ApiResponse(responseCode = "401", description = "로그인이 필요합니다.", content = @Content(
+                    mediaType = "application/json",
+                    schema = @Schema(implementation = ErrorResponse.class),
+                    examples = @ExampleObject(value = "{\"status\": 401, \"errorType\": \"Unauthorized\", \"message\": \"로그인이 필요합니다.\"}")
+            ))
+    })
+    @GetMapping("/my-clubs")
+    public ResponseEntity<List<Club>> getMyClubs(@AuthenticationPrincipal LoginedInfo logined) {
+        // 로그인된 사용자인지 확인
+        if (logined == null) {
+            log.error("[ClubController] 로그인되지 않은 사용자가 자신의 클럽을 조회하려고 시도했습니다.");
+            throw new LoginRequiredException("로그인 후 이용이 가능합니다.", "[ClubController] getMyClubs");
+        }
+
+        log.info("[ClubController] 사용자가 속한 클럽 조회 요청: 사용자 ID={}", logined.getUserId());
+
+        // 로그인된 사용자가 속한 클럽 목록 조회
+        List<Club> myClubs = clubService.getClubsByUserId(logined.getUserId());
+        log.info("[ClubController] 조회된 클럽 수: {}", myClubs.size());
+
+        return ResponseEntity.ok(myClubs);
+    }
 }
