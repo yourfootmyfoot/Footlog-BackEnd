@@ -1,7 +1,7 @@
 package com.yfmf.footlog.domain.ask.entity;
 
 import com.yfmf.footlog.BaseTimeEntity;
-import com.yfmf.footlog.domain.ask.enums.askCategory;
+import com.yfmf.footlog.domain.ask.enums.AskCategory;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -10,7 +10,7 @@ import lombok.*;
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @ToString
-public class ask extends BaseTimeEntity {
+public class Ask extends BaseTimeEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -18,12 +18,12 @@ public class ask extends BaseTimeEntity {
     private Long id;
 
     private Long userId; // 작성 유저 ID
-    private askCategory category; // 질문 카테고리
+    private AskCategory category; // 질문 카테고리
     private String title;
     private String content;
 
     @Builder
-    public ask(Long userId, askCategory category, String title, String content) {
+    public Ask(Long userId, AskCategory category, String title, String content) {
         this.userId = userId;
         this.category = category;
         this.title = title;
