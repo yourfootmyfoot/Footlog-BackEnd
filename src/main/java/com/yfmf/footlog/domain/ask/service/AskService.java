@@ -30,6 +30,7 @@ public class AskService {
         responseDto.setCategory(savedAsk.getCategory());
         responseDto.setTitle(savedAsk.getTitle());
         responseDto.setContent(savedAsk.getContent());
+        responseDto.setAnswered(savedAsk.getAnswered());
 
         return responseDto;
     }

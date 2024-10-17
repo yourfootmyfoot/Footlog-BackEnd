@@ -2,6 +2,7 @@ package com.yfmf.footlog.domain.ask.dto;
 
 import com.yfmf.footlog.domain.ask.enums.AskCategory;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import lombok.Builder;
 import lombok.Data;
@@ -30,12 +31,16 @@ public class AskResponseDto {
     @Size(min = 5, message = "문의 내용은 5글자 이상입니다.")
     private String content;
 
+    @NotNull(message = "답변 여부는 필수입니다.")
+    private Boolean answered;
+
     @Builder
-    public AskResponseDto(Long askId, Long userId, AskCategory category, String title, String content) {
+    public AskResponseDto(Long askId, Long userId, AskCategory category, String title, String content, Boolean answered) {
         this.askId = askId;
         this.userId = userId;
         this.category = category;
         this.title = title;
         this.content = content;
+        this.answered = answered;
     }
 }

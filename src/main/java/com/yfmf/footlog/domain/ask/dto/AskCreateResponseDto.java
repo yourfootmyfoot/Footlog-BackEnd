@@ -2,6 +2,7 @@ package com.yfmf.footlog.domain.ask.dto;
 
 import com.yfmf.footlog.domain.ask.enums.AskCategory;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -28,4 +29,7 @@ public class AskCreateResponseDto {
     @NotBlank(message = "문의 내용은 필수입니다.")
     @Size(min = 5, message = "문의 내용은 5글자 이상입니다.")
     private String content;
+
+    @NotNull(message = "답변 여부는 필수입니다.")
+    private Boolean answered;
 }

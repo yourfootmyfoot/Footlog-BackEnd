@@ -22,6 +22,7 @@ public class Ask extends BaseTimeEntity {
     private AskCategory category; // 질문 카테고리
     private String title;
     private String content;
+    private Boolean answered; // 답변 여부
 
     @Builder
     public Ask(Long userId, AskCategory category, String title, String content) {
@@ -29,6 +30,7 @@ public class Ask extends BaseTimeEntity {
         this.category = category;
         this.title = title;
         this.content = content;
+        this.answered = false;
     }
 
     public AskResponseDto toResponseDto() {
@@ -37,6 +39,7 @@ public class Ask extends BaseTimeEntity {
                 .category(category)
                 .title(title)
                 .content(content)
+                .answered(answered)
                 .build();
     }
 }

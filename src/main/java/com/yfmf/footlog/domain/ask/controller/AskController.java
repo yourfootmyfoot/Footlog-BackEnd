@@ -60,4 +60,8 @@ public class AskController {
         List<AskResponseDto> askList = askService.getAllAsks();
         return ResponseEntity.status(HttpStatus.OK).body(askList);
     }
+    
+    // 유저 아이디로 조회
+    // 완료/미완료 정리도 해야겠다
+    // 답변 기능
 }
