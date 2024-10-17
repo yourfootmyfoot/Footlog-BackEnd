@@ -1,6 +1,7 @@
 package com.yfmf.footlog.domain.ask.entity;
 
 import com.yfmf.footlog.BaseTimeEntity;
+import com.yfmf.footlog.domain.ask.dto.AskResponseDto;
 import com.yfmf.footlog.domain.ask.enums.AskCategory;
 import jakarta.persistence.*;
 import lombok.*;
@@ -28,5 +29,14 @@ public class Ask extends BaseTimeEntity {
         this.category = category;
         this.title = title;
         this.content = content;
+    }
+
+    public AskResponseDto toResponseDto() {
+        return AskResponseDto.builder()
+                .userId(userId)
+                .category(category)
+                .title(title)
+                .content(content)
+                .build();
     }
 }
