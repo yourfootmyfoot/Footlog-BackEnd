@@ -4,6 +4,7 @@ import com.yfmf.footlog.domain.auth.dto.LoginedInfo;
 import com.yfmf.footlog.domain.auth.exception.LoginRequiredException;
 import com.yfmf.footlog.domain.match.dto.MatchRegisterRequestDTO;
 import com.yfmf.footlog.domain.match.dto.MatchResponseDTO;
+import com.yfmf.footlog.domain.match.entity.Match;
 import com.yfmf.footlog.domain.match.service.MatchService;
 import com.yfmf.footlog.error.ErrorResponse;
 import io.swagger.v3.oas.annotations.Operation;
@@ -168,4 +169,43 @@ public class MatchController {
         matchService.removeMatch(matchId);
         return ResponseEntity.noContent().build();
     }
+
+    // 매칭 신청
+    @PostMapping("/{matchId}/apply")
+    public ResponseEntity<MatchResponseDTO> applyForMatch(@PathVariable Long matchId,
+                                                          @RequestParam Long applyingUserId,
+                                                          @RequestParam Long enemyClubId) {
+        // 매칭 신청 처리
+        Match updatedMatch = matchService.applyForMatch(matchId, applyingUserId, enemyClubId);
+
+        // 신청 후 MatchResponseDTO로 반환
+        MatchResponseDTO matchResponseDTO = new MatchResponseDTO(updatedMatch);
+        return ResponseEntity.ok(matchResponseDTO);
+    }
+
+    // 매칭 수락
+    @PostMapping("/{matchId}/accept")
+    public ResponseEntity<MatchResponseDTO> acceptMatch(@PathVariable Long matchId,
+                                                        @RequestParam Long matchOwnerId) {
+        // 매칭 수락 처리
+        Match acceptedMatch = matchService.acceptMatch(matchId, matchOwnerId);
+
+        // 수락 후 MatchResponseDTO로 반환
+        MatchResponseDTO matchResponseDTO = new MatchResponseDTO(acceptedMatch);
+        return ResponseEntity.ok(matchResponseDTO);
+    }
+
+    // 매칭 거절
+    @PostMapping("/{matchId}/reject")
+    public ResponseEntity<MatchResponseDTO> rejectMatch(@PathVariable Long matchId,
+                                                        @RequestParam Long matchOwnerId) {
+        // 매칭 거절 처리
+        Match rejectedMatch = matchService.rejectMatch(matchId, matchOwnerId);
+
+        // 거절 후 MatchResponseDTO로 반환
+        MatchResponseDTO matchResponseDTO = new MatchResponseDTO(rejectedMatch);
+        return ResponseEntity.ok(matchResponseDTO);
+    }
+
+
 }

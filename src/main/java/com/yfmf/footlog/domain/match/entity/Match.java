@@ -144,4 +144,32 @@ public class Match extends BaseTimeEntity {
         }
     }
 
+    public void updateApplyInfo(Long applyingUserId, Club enemyClub, MatchStatus matchStatus) {
+        if (this.matchStatus == MatchStatus.WAITING) {
+            this.matchApplyUserId = applyingUserId;
+            this.enemyClub = enemyClub;
+            this.matchStatus = matchStatus;
+        } else {
+            throw new IllegalStateException("매칭 신청이 불가능한 상태입니다.");
+        }
+    }
+
+    public void acceptMatchStatus() {
+        if (this.matchStatus == MatchStatus.PENDING) {
+            this.matchStatus = MatchStatus.ACCEPTED;
+        } else {
+            throw new IllegalStateException("매칭을 수락할 수 없는 상태입니다.");
+        }
+    }
+
+    public void rejectMatchStatus() {
+        if (this.matchStatus == MatchStatus.PENDING) {
+            this.matchStatus = MatchStatus.WAITING;
+            this.enemyClub = null;
+            this.matchApplyUserId = null;
+        } else {
+            throw new IllegalStateException("매칭을 거절할 수 없는 상태입니다.");
+        }
+    }
+
 }
