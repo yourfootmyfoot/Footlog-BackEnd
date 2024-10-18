@@ -6,6 +6,7 @@ import com.yfmf.footlog.domain.match.dto.MatchRegisterRequestDTO;
 import com.yfmf.footlog.domain.match.dto.MatchResponseDTO;
 import com.yfmf.footlog.domain.match.entity.Match;
 import com.yfmf.footlog.domain.match.entity.MatchSchedule;
+import com.yfmf.footlog.domain.match.enums.MatchStatus;
 import com.yfmf.footlog.domain.match.repository.MatchRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -117,4 +118,72 @@ public class MatchService {
         return matchRepository.findById(matchId).orElseThrow(()-> new IllegalArgumentException("해당 ID의 경기를 찾을 수 없습니다. id=" + matchId));
     }
 
+
+    @Transactional
+    public Match applyForMatch(Long matchId, Long applyingUserId, Long enemyClubId) {
+        // 매치 아이디로 매치 찾기
+        Match match = matchRepository.findById(matchId)
+                .orElseThrow(() -> new IllegalArgumentException("해당 매치를 찾을 수 없습니다."));
+
+        // 매치 상태가 'WAITING' 또는 'PENDING'인지 확인
+        if (match.getMatchStatus() != MatchStatus.WAITING && match.getMatchStatus() != MatchStatus.PENDING) {
+            throw new IllegalStateException("현재 매칭 신청이 불가능한 상태입니다.");
+        }
+
+        // 상대 구단 찾기
+        Club enemyClub = clubRepository.findById(enemyClubId)
+                .orElseThrow(() -> new IllegalArgumentException("해당 구단을 찾을 수 없습니다."));
+
+        // 매치 상태 및 상대 유저, 구단 정보 업데이트
+        match.updateApplyInfo(applyingUserId, enemyClub, MatchStatus.PENDING);
+
+        // 변경 사항 저장
+        return matchRepository.save(match);
+    }
+
+    @Transactional
+    public Match acceptMatch(Long matchId, Long matchOwnerId) {
+        // 매치 아이디로 매치 찾기
+        Match match = matchRepository.findById(matchId)
+                .orElseThrow(() -> new IllegalArgumentException("해당 매치를 찾을 수 없습니다."));
+
+        // 매치 상태가 'PENDING'인지 확인
+        if (match.getMatchStatus() != MatchStatus.PENDING) {
+            throw new IllegalStateException("현재 매칭 수락이 불가능한 상태입니다.");
+        }
+
+        // 매치 소유자 확인
+        if (!match.getMatchEnrollUserId().equals(matchOwnerId)) {
+            throw new IllegalArgumentException("매칭 수락 권한이 없습니다.");
+        }
+
+        // 매치 상태를 ACCEPTED로 변경
+        match.acceptMatchStatus();
+
+        // 변경 사항 저장
+        return matchRepository.save(match);
+    }
+
+    @Transactional
+    public Match rejectMatch(Long matchId, Long matchOwnerId) {
+        // 매치 아이디로 매치 찾기
+        Match match = matchRepository.findById(matchId)
+                .orElseThrow(() -> new IllegalArgumentException("해당 매치를 찾을 수 없습니다."));
+
+        // 매치 상태가 'PENDING'인지 확인
+        if (match.getMatchStatus() != MatchStatus.PENDING) {
+            throw new IllegalStateException("현재 매칭 거절이 불가능한 상태입니다.");
+        }
+
+        // 매치 소유자 확인
+        if (!match.getMatchEnrollUserId().equals(matchOwnerId)) {
+            throw new IllegalArgumentException("매칭 거절 권한이 없습니다.");
+        }
+
+        // 매치 상태를 WAITING 변경
+        match.rejectMatchStatus();
+
+        // 변경 사항 저장
+        return matchRepository.save(match);
+    }
 }

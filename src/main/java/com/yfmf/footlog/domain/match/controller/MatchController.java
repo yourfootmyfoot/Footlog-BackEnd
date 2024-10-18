@@ -4,6 +4,7 @@ import com.yfmf.footlog.domain.auth.dto.LoginedInfo;
 import com.yfmf.footlog.domain.auth.exception.LoginRequiredException;
 import com.yfmf.footlog.domain.match.dto.MatchRegisterRequestDTO;
 import com.yfmf.footlog.domain.match.dto.MatchResponseDTO;
+import com.yfmf.footlog.domain.match.entity.Match;
 import com.yfmf.footlog.domain.match.service.MatchService;
 import com.yfmf.footlog.error.ErrorResponse;
 import io.swagger.v3.oas.annotations.Operation;
@@ -38,7 +39,7 @@ public class MatchController {
 
     // 매치 id로 매치 정보 반환
     @GetMapping("/detail/{matchId}")
-    public MatchResponseDTO findAllMatches(@PathVariable Long matchId) {
+    public MatchResponseDTO findAllMatches(@PathVariable("matchId") Long matchId) {
         return matchService.findMatchByMatchId(matchId);
     }
 
@@ -73,7 +74,7 @@ public class MatchController {
             ))
     })
     @GetMapping("/{matchId}")
-    public ResponseEntity<MatchResponseDTO> getMatchById(@PathVariable Long matchId) {
+    public ResponseEntity<MatchResponseDTO> getMatchById(@PathVariable("matchId") Long matchId) {
         MatchResponseDTO match = matchService.findMatchByMatchId(matchId);
         return ResponseEntity.ok(match);
     }
@@ -146,7 +147,7 @@ public class MatchController {
             ))
     })
     @PutMapping("/{matchId}")
-    public ResponseEntity<MatchResponseDTO> updateMatch(@PathVariable Long matchId, @RequestBody MatchRegisterRequestDTO updateRequestDTO) {
+    public ResponseEntity<MatchResponseDTO> updateMatch(@PathVariable("matchId") Long matchId, @RequestBody MatchRegisterRequestDTO updateRequestDTO) {
         MatchResponseDTO updatedMatch = matchService.updateMatch(matchId, updateRequestDTO);
         return ResponseEntity.ok(updatedMatch);
     }
@@ -164,8 +165,69 @@ public class MatchController {
             ))
     })
     @DeleteMapping("/{matchId}")
-    public ResponseEntity<Void> deleteMatch(@PathVariable Long matchId) {
+    public ResponseEntity<Void> deleteMatch(@PathVariable("matchId") Long matchId) {
         matchService.removeMatch(matchId);
         return ResponseEntity.noContent().build();
     }
+
+    // 매칭 신청
+    @PostMapping("/{matchId}/application")
+    public ResponseEntity<MatchResponseDTO> applyForMatch(@PathVariable("matchId") Long matchId,
+                                                          @AuthenticationPrincipal LoginedInfo logined,
+                                                          @RequestParam Long enemyClubId) {
+
+        if (logined == null) {
+            log.error("[MatchController-applyForMatch] 로그인되지 않은 사용자가 매칭 신청 시도.");
+            throw new LoginRequiredException("로그인 후 이용이 가능합니다.", "[MatchController-applyForMatch] 시 로그인 정보 확인하세요.");
+        }
+
+        Long applyingUserId = logined.getUserId();
+
+        // 매칭 신청 처리
+        Match updatedMatch = matchService.applyForMatch(matchId, applyingUserId, enemyClubId);
+
+        // 신청 후 MatchResponseDTO로 반환
+        MatchResponseDTO matchResponseDTO = new MatchResponseDTO(updatedMatch);
+        return ResponseEntity.ok(matchResponseDTO);
+    }
+
+    // 매칭 수락
+    @PostMapping("/{matchId}/accept")
+    public ResponseEntity<MatchResponseDTO> acceptMatch(@PathVariable("matchId") Long matchId,
+                                                        @AuthenticationPrincipal LoginedInfo logined) {
+
+        if (logined == null) {
+            log.error("[MatchController-acceptMatch] 로그인되지 않은 사용자가 매칭 거절 시도.");
+            throw new LoginRequiredException("로그인 후 이용이 가능합니다.", "[MatchController-acceptMatch] 시 로그인 정보 확인하세요.");
+        }
+
+        Long matchOwnerId = logined.getUserId();
+        // 매칭 수락 처리
+        Match acceptedMatch = matchService.acceptMatch(matchId, matchOwnerId);
+
+        // 수락 후 MatchResponseDTO로 반환
+        MatchResponseDTO matchResponseDTO = new MatchResponseDTO(acceptedMatch);
+        return ResponseEntity.ok(matchResponseDTO);
+    }
+
+    // 매칭 거절
+    @PostMapping("/{matchId}/reject")
+    public ResponseEntity<MatchResponseDTO> rejectMatch(@PathVariable("matchId") Long matchId,
+                                                        @AuthenticationPrincipal LoginedInfo logined) {
+
+        if (logined == null) {
+            log.error("[MatchController-rejectMatch] 로그인되지 않은 사용자가 매칭 거절 시도.");
+            throw new LoginRequiredException("로그인 후 이용이 가능합니다.", "[MatchController-rejectMatch] 시 로그인 정보 확인하세요.");
+        }
+
+        Long matchOwnerId = logined.getUserId();
+        // 매칭 거절 처리
+        Match rejectedMatch = matchService.rejectMatch(matchId, matchOwnerId);
+
+        // 거절 후 MatchResponseDTO로 반환
+        MatchResponseDTO matchResponseDTO = new MatchResponseDTO(rejectedMatch);
+        return ResponseEntity.ok(matchResponseDTO);
+    }
+
+
 }
