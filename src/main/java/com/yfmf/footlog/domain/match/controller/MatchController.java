@@ -39,7 +39,7 @@ public class MatchController {
 
     // 매치 id로 매치 정보 반환
     @GetMapping("/detail/{matchId}")
-    public MatchResponseDTO findAllMatches(@PathVariable Long matchId) {
+    public MatchResponseDTO findAllMatches(@PathVariable("matchId") Long matchId) {
         return matchService.findMatchByMatchId(matchId);
     }
 
@@ -74,7 +74,7 @@ public class MatchController {
             ))
     })
     @GetMapping("/{matchId}")
-    public ResponseEntity<MatchResponseDTO> getMatchById(@PathVariable Long matchId) {
+    public ResponseEntity<MatchResponseDTO> getMatchById(@PathVariable("matchId") Long matchId) {
         MatchResponseDTO match = matchService.findMatchByMatchId(matchId);
         return ResponseEntity.ok(match);
     }
@@ -147,7 +147,7 @@ public class MatchController {
             ))
     })
     @PutMapping("/{matchId}")
-    public ResponseEntity<MatchResponseDTO> updateMatch(@PathVariable Long matchId, @RequestBody MatchRegisterRequestDTO updateRequestDTO) {
+    public ResponseEntity<MatchResponseDTO> updateMatch(@PathVariable("matchId") Long matchId, @RequestBody MatchRegisterRequestDTO updateRequestDTO) {
         MatchResponseDTO updatedMatch = matchService.updateMatch(matchId, updateRequestDTO);
         return ResponseEntity.ok(updatedMatch);
     }
@@ -165,14 +165,14 @@ public class MatchController {
             ))
     })
     @DeleteMapping("/{matchId}")
-    public ResponseEntity<Void> deleteMatch(@PathVariable Long matchId) {
+    public ResponseEntity<Void> deleteMatch(@PathVariable("matchId") Long matchId) {
         matchService.removeMatch(matchId);
         return ResponseEntity.noContent().build();
     }
 
     // 매칭 신청
     @PostMapping("/{matchId}/application")
-    public ResponseEntity<MatchResponseDTO> applyForMatch(@PathVariable Long matchId,
+    public ResponseEntity<MatchResponseDTO> applyForMatch(@PathVariable("matchId") Long matchId,
                                                           @AuthenticationPrincipal LoginedInfo logined,
                                                           @RequestParam Long enemyClubId) {
 
@@ -193,7 +193,7 @@ public class MatchController {
 
     // 매칭 수락
     @PostMapping("/{matchId}/accept")
-    public ResponseEntity<MatchResponseDTO> acceptMatch(@PathVariable Long matchId,
+    public ResponseEntity<MatchResponseDTO> acceptMatch(@PathVariable("matchId") Long matchId,
                                                         @AuthenticationPrincipal LoginedInfo logined) {
 
         if (logined == null) {
@@ -212,7 +212,7 @@ public class MatchController {
 
     // 매칭 거절
     @PostMapping("/{matchId}/reject")
-    public ResponseEntity<MatchResponseDTO> rejectMatch(@PathVariable Long matchId,
+    public ResponseEntity<MatchResponseDTO> rejectMatch(@PathVariable("matchId") Long matchId,
                                                         @AuthenticationPrincipal LoginedInfo logined) {
 
         if (logined == null) {
