@@ -171,10 +171,18 @@ public class MatchController {
     }
 
     // 매칭 신청
-    @PostMapping("/{matchId}/apply")
+    @PostMapping("/{matchId}/application")
     public ResponseEntity<MatchResponseDTO> applyForMatch(@PathVariable Long matchId,
-                                                          @RequestParam Long applyingUserId,
+                                                          @AuthenticationPrincipal LoginedInfo logined,
                                                           @RequestParam Long enemyClubId) {
+
+        if (logined == null) {
+            log.error("[MatchController-applyForMatch] 로그인되지 않은 사용자가 매칭 신청 시도.");
+            throw new LoginRequiredException("로그인 후 이용이 가능합니다.", "[MatchController-applyForMatch] 시 로그인 정보 확인하세요.");
+        }
+
+        Long applyingUserId = logined.getUserId();
+
         // 매칭 신청 처리
         Match updatedMatch = matchService.applyForMatch(matchId, applyingUserId, enemyClubId);
 
@@ -186,7 +194,14 @@ public class MatchController {
     // 매칭 수락
     @PostMapping("/{matchId}/accept")
     public ResponseEntity<MatchResponseDTO> acceptMatch(@PathVariable Long matchId,
-                                                        @RequestParam Long matchOwnerId) {
+                                                        @AuthenticationPrincipal LoginedInfo logined) {
+
+        if (logined == null) {
+            log.error("[MatchController-acceptMatch] 로그인되지 않은 사용자가 매칭 거절 시도.");
+            throw new LoginRequiredException("로그인 후 이용이 가능합니다.", "[MatchController-acceptMatch] 시 로그인 정보 확인하세요.");
+        }
+
+        Long matchOwnerId = logined.getUserId();
         // 매칭 수락 처리
         Match acceptedMatch = matchService.acceptMatch(matchId, matchOwnerId);
 
@@ -198,7 +213,14 @@ public class MatchController {
     // 매칭 거절
     @PostMapping("/{matchId}/reject")
     public ResponseEntity<MatchResponseDTO> rejectMatch(@PathVariable Long matchId,
-                                                        @RequestParam Long matchOwnerId) {
+                                                        @AuthenticationPrincipal LoginedInfo logined) {
+
+        if (logined == null) {
+            log.error("[MatchController-rejectMatch] 로그인되지 않은 사용자가 매칭 거절 시도.");
+            throw new LoginRequiredException("로그인 후 이용이 가능합니다.", "[MatchController-rejectMatch] 시 로그인 정보 확인하세요.");
+        }
+
+        Long matchOwnerId = logined.getUserId();
         // 매칭 거절 처리
         Match rejectedMatch = matchService.rejectMatch(matchId, matchOwnerId);
 
