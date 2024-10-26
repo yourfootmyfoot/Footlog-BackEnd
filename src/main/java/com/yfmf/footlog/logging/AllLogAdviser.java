@@ -25,20 +25,25 @@ public class AllLogAdviser {
 
     // API 요청 메서드 로그
     @Around("Pointcuts.AllLogPointcut()")
-    public Object AdviceMethod(ProceedingJoinPoint proceedingjoinPoint) throws Throwable { // AOP가 적용된 실제 메서드
+    public Object AdviceMethod(ProceedingJoinPoint joinPoint) throws Throwable { // AOP가 적용된 실제 메서드
 
         long startTime = System.currentTimeMillis(); // 메서드 실행 시작 시간
 
-        MethodSignature methodSignature = (MethodSignature) proceedingjoinPoint.getSignature();
+        MethodSignature methodSignature = (MethodSignature) joinPoint.getSignature();
         Method method = methodSignature.getMethod();
 
         log.info("메서드 호출: {}.{}", method.getDeclaringClass().getName(), method.getName());
-        log.info("파라미터 값: {}", Arrays.toString(proceedingjoinPoint.getArgs()));
+        log.info("파라미터 값: {}", Arrays.toString(joinPoint.getArgs()));
 
-        Object result = proceedingjoinPoint.proceed(); // 메서드 실행
+        Object result = joinPoint.proceed(); // 메서드 실행
         long executionTime = System.currentTimeMillis() - startTime; // 메서드 종료 시간
 
-        log.info("메서드 결과: {}", result);
+        // 리턴값이 null이 아닌 경우에만 타입을 로깅
+        if (result != null) {
+            log.info("메서드 리턴값: {}", result);
+        } else {
+            log.info("메서드 리턴값이 null입니다.");
+        }
         log.info("메서드 실행 시간: {} ms", executionTime);
 
         return result;
