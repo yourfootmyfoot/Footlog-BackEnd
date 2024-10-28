@@ -240,4 +240,13 @@ public class ClubMemberService {
                 .map(member -> member.getRole() == ClubMemberRole.OWNER || member.getRole() == ClubMemberRole.MANAGER)
                 .orElse(false); // 구단원이 아닌 경우 false 반환
     }
+
+    /**
+     * 특정 구단의 가입 요청 목록을 조회
+     */
+    @Transactional(readOnly = true)
+    public List<JoinRequest> getJoinRequestsByClubId(Long clubId) {
+        log.info("[ClubMemberService] 구단 ID={}의 가입 요청 목록을 조회합니다.", clubId);
+        return joinRequestRepository.findByClubClubIdAndStatus(clubId, JoinRequestStatus.PENDING);
+    }
 }

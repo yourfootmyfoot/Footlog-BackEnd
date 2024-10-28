@@ -3,6 +3,7 @@ package com.yfmf.footlog.domain.club.controller;
 import com.yfmf.footlog.domain.auth.dto.LoginedInfo;
 import com.yfmf.footlog.domain.auth.exception.LoginRequiredException;
 import com.yfmf.footlog.domain.club.dto.ClubMemberResponseDTO;
+import com.yfmf.footlog.domain.club.entity.JoinRequest;
 import com.yfmf.footlog.domain.club.enums.ClubMemberRole;
 import com.yfmf.footlog.domain.club.exception.ClubNotFoundException;
 import com.yfmf.footlog.domain.club.exception.DuplicateJoinRequestException;
@@ -79,6 +80,37 @@ public class ClubMemberController {
 
         log.info("[ClubMemberController] 사용자 {}가 구단 {}에 성공적으로 가입 요청을 보냈습니다.", logined.getUserId(), clubId);
         return ResponseEntity.ok("가입 요청 성공");
+    }
+
+    /**
+     * 특정 구단의 가입 요청 목록 조회
+     */
+    @Operation(summary = "구단 가입 요청 목록 조회", description = "구단의 모든 가입 요청 목록을 조회합니다.")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "가입 요청 목록 조회 성공"),
+            @ApiResponse(responseCode = "401", description = "로그인이 필요합니다.", content = @Content(
+                    mediaType = "application/json",
+                    schema = @Schema(implementation = ErrorResponse.class),
+                    examples = @ExampleObject(
+                            value = "{\"status\": 401, \"errorType\": \"Unauthorized\", \"message\": \"로그인이 필요합니다.\"}"
+                    )
+            ))
+    })
+    @GetMapping("/{clubId}/requests")
+    public ResponseEntity<List<JoinRequest>> getJoinRequests(
+            @PathVariable("clubId") Long clubId,
+            @AuthenticationPrincipal LoginedInfo logined) {
+
+        if (logined == null) {
+            log.error("[ClubMemberController] 로그인되지 않은 사용자가 가입 요청 목록 조회를 시도했습니다.");
+            throw new LoginRequiredException("로그인 후 이용이 가능합니다.", "[ClubMemberController] getJoinRequests");
+        }
+
+        log.info("[ClubMemberController] 구단 ID={}의 가입 요청 목록 조회 시도", clubId);
+
+        // 특정 구단의 모든 가입 요청 목록 조회
+        List<JoinRequest> joinRequests = clubMemberService.getJoinRequestsByClubId(clubId);
+        return ResponseEntity.ok(joinRequests);
     }
 
     /**
@@ -249,7 +281,7 @@ public class ClubMemberController {
             ))
     })
     @GetMapping("/{clubId}/members")
-    public ResponseEntity<List<ClubMemberResponseDTO>> getClubMembers(@PathVariable Long clubId, @AuthenticationPrincipal LoginedInfo logined) {
+    public ResponseEntity<List<ClubMemberResponseDTO>> getClubMembers(@PathVariable("clubId") Long clubId, @AuthenticationPrincipal LoginedInfo logined) {
         if (logined == null) {
             log.error("[ClubMemberController] 로그인되지 않은 사용자가 구단원을 조회하려고 시도했습니다.");
             throw new LoginRequiredException("로그인 후 이용이 가능합니다.", "[ClubMemberController] getClubMembers");
