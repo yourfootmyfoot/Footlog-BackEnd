@@ -17,13 +17,18 @@ public class ClubMemberResponseDTO {
     @Schema(description = "구단의 이름", example = "FC서울")
     private String clubName;
 
+    @Schema(description = "사용자의 이름", example = "송호진")
+    private String username;
+
+
     @Schema(description = "가입 또는 탈퇴 상태", example = "가입 성공")
     private String status;
 
-    public ClubMemberResponseDTO(Long userId, Long clubId, String clubName, String status) {
+    public ClubMemberResponseDTO(Long userId, Long clubId, String clubName, String username,String status) {
         this.userId = userId;
         this.clubId = clubId;
         this.clubName = clubName;
+        this.username = username;
         this.status = status;
     }
 
@@ -33,6 +38,7 @@ public class ClubMemberResponseDTO {
                 "userId=" + userId +
                 ", clubId=" + clubId +
                 ", clubName='" + clubName + '\'' +
+                ", username='" + username + '\'' +
                 ", status='" + status + '\'' +
                 '}';
     }

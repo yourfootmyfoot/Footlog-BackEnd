@@ -58,11 +58,6 @@ public class ClubMemberService {
             throw new DuplicateJoinRequestException();
         }
 
-        // 구단원 추가
-        ClubMember clubMember = new ClubMember(clubId, userId, ClubMemberRole.MEMBER);
-        clubMemberRepository.save(clubMember);
-
-
         // 가입 요청 생성
         Member member = memberRepository.findById(userId)
                 .orElseThrow(() -> new IllegalArgumentException("회원 정보를 찾을 수 없습니다."));
@@ -127,7 +122,7 @@ public class ClubMemberService {
      */
     @Transactional
     public void leaveClub(Long userId, Long clubId) {
-        log.info("[ClubMemberService] 구단 ID={}에서 사용자 ID={}를 탈퇴시키려고 합니다.", clubId, userId);
+        log.info("[ClubMemberService] 사용자 ID={}가 구단 ID={}에서 탈퇴하려고 합니다.", userId, clubId);
 
 
         // 구단이 존재하는지 확인
@@ -143,10 +138,6 @@ public class ClubMemberService {
         // 구단원 삭제
         clubMemberRepository.deleteByMemberIdAndClubId(userId, clubId);
 
-        // 구단원 수 업데이트 (최소 값이 0이 되도록 처리)
-        int updatedMemberCount = Math.max(0, club.getMemberCount() - 1);
-        club.setMemberCount(updatedMemberCount);
-        clubRepository.save(club);  // 구단 정보 업데이트
         // 구단원 수 업데이트
         clubService.updateMemberCount(clubId);
 

@@ -252,6 +252,7 @@ public class ClubMemberController {
                 logined.getUserId(),
                 clubId,
                 clubMemberService.getClubNameById(clubId),  // 구단 이름 가져오기
+                logined.getName(),
                 "탈퇴 성공"
         );
 
@@ -293,6 +294,7 @@ public class ClubMemberController {
                         member.getId(),
                         clubId,
                         clubMemberService.getClubNameById(clubId),
+                        member.getName(),
                         "조회 성공"
                 ))
                 .collect(Collectors.toList());
