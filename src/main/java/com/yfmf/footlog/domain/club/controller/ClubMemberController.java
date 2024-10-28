@@ -4,6 +4,8 @@ import com.yfmf.footlog.domain.auth.dto.LoginedInfo;
 import com.yfmf.footlog.domain.auth.exception.LoginRequiredException;
 import com.yfmf.footlog.domain.club.dto.ClubMemberResponseDTO;
 import com.yfmf.footlog.domain.club.enums.ClubMemberRole;
+import com.yfmf.footlog.domain.club.exception.ClubNotFoundException;
+import com.yfmf.footlog.domain.club.exception.DuplicateJoinRequestException;
 import com.yfmf.footlog.domain.club.service.ClubMemberService;
 import com.yfmf.footlog.error.ErrorResponse;
 import io.swagger.v3.oas.annotations.Operation;
@@ -39,11 +41,11 @@ public class ClubMemberController {
     }
 
     /**
-     * 구단원 가입
+     * 구단 가입 요청
      */
-    @Operation(summary = "구단원 가입", description = "사용자가 구단에 가입합니다.")
+    @Operation(summary = "구단 가입 요청", description = "사용자가 구단 가입을 요청합니다.")
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "사용자가 성공적으로 구단에 가입되었습니다."),
+            @ApiResponse(responseCode = "200", description = "사용자가 성공적으로 구단 가입을 요청했습니다."),
             @ApiResponse(responseCode = "401", description = "로그인이 필요합니다.", content = @Content(
                     mediaType = "application/json",
                     schema = @Schema(implementation = ErrorResponse.class),
@@ -51,34 +53,137 @@ public class ClubMemberController {
                             value = "{\"status\": 401, \"errorType\": \"Unauthorized\", \"message\": \"로그인이 필요합니다.\"}"
                     )
             )),
-            @ApiResponse(responseCode = "409", description = "사용자가 이미 구단에 가입되어 있습니다.", content = @Content(
+            @ApiResponse(responseCode = "409", description = "사용자가 이미 구단 가입 요청을 보냈습니다.", content = @Content(
                     mediaType = "application/json",
                     schema = @Schema(implementation = ErrorResponse.class),
                     examples = @ExampleObject(
-                            value = "{\"status\": 409, \"errorType\": \"Conflict\", \"message\": \"사용자가 이미 구단에 가입되어 있습니다.\"}"
+                            value = "{\"status\": 409, \"errorType\": \"Conflict\", \"message\": \"이미 구단 가입 요청을 보냈습니다.\"}"
                     )
             ))
     })
     @PostMapping("/{clubId}/join")
-    public ResponseEntity<ClubMemberResponseDTO> joinClub(@PathVariable("clubId") Long clubId, @AuthenticationPrincipal LoginedInfo logined) {
+    public ResponseEntity<String> requestJoinClub(@PathVariable("clubId") Long clubId, @AuthenticationPrincipal LoginedInfo logined) {
         if (logined == null) {
-            log.error("[ClubMemberController] 로그인되지 않은 사용자가 구단에 가입을 시도했습니다.");
-            throw new LoginRequiredException("로그인 후 이용이 가능합니다.", "[ClubMemberController] joinClub");
+            log.error("[ClubMemberController] 로그인되지 않은 사용자가 구단 가입을 시도했습니다.");
+            throw new LoginRequiredException("로그인 후 이용이 가능합니다.", "[ClubMemberController] requestJoinClub");
         }
 
-        log.info("[ClubMemberController] 사용자 {}가 구단 {}에 가입을 시도합니다.", logined.getUserId(), clubId);
-        clubMemberService.joinClub(logined.getUserId(), clubId);
+        log.info("[ClubMemberController] 사용자 {}가 구단 {}에 가입 요청을 시도합니다.", logined.getUserId(), clubId);
 
-        ClubMemberResponseDTO responseDTO = new ClubMemberResponseDTO(
-                logined.getUserId(),
-                clubId,
-                clubMemberService.getClubNameById(clubId),  // 구단 이름 가져오기
-                "가입 성공"
-        );
+        try {
+            clubMemberService.requestJoinClub(logined.getUserId(), clubId);
+        } catch (DuplicateJoinRequestException e) {
+            log.error("Error occurs: {}", e.getMessage());
+            return ResponseEntity.status(HttpStatus.CONFLICT).body(e.getErrorCode().getDescription());  // 중복 가입 요청 메시지 반환
+        }
 
-        log.info("[ClubMemberController] 사용자 {}가 구단 {}에 성공적으로 가입했습니다.", logined.getUserId(), clubId);
-        return ResponseEntity.ok(responseDTO);
+        log.info("[ClubMemberController] 사용자 {}가 구단 {}에 성공적으로 가입 요청을 보냈습니다.", logined.getUserId(), clubId);
+        return ResponseEntity.ok("가입 요청 성공");
     }
+
+    /**
+     * 구단 가입 승인
+     */
+    @Operation(summary = "구단 가입 요청 승인", description = "구단주나 매니저가 구단 가입 요청을 승인합니다.")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "가입 요청이 성공적으로 승인되었습니다."),
+            @ApiResponse(responseCode = "401", description = "로그인이 필요합니다.", content = @Content(
+                    mediaType = "application/json",
+                    schema = @Schema(implementation = ErrorResponse.class),
+                    examples = @ExampleObject(
+                            value = "{\"status\": 401, \"errorType\": \"Unauthorized\", \"message\": \"로그인이 필요합니다.\"}"
+                    )
+            )),
+            @ApiResponse(responseCode = "403", description = "권한이 없습니다.", content = @Content(
+                    mediaType = "application/json",
+                    schema = @Schema(implementation = ErrorResponse.class),
+                    examples = @ExampleObject(
+                            value = "{\"status\": 403, \"errorType\": \"Forbidden\", \"message\": \"권한이 없습니다.\"}"
+                    )
+            )),
+            @ApiResponse(responseCode = "404", description = "가입 요청을 찾을 수 없습니다.", content = @Content(
+                    mediaType = "application/json",
+                    schema = @Schema(implementation = ErrorResponse.class),
+                    examples = @ExampleObject(
+                            value = "{\"status\": 404, \"errorType\": \"Not Found\", \"message\": \"가입 요청을 찾을 수 없습니다.\"}"
+                    )
+            ))
+    })
+    @PutMapping("/{clubId}/requests/{requestId}/approve")
+    public ResponseEntity<String> approveJoinRequest(
+            @PathVariable("clubId") Long clubId,
+            @PathVariable("requestId") Long requestId,
+            @AuthenticationPrincipal LoginedInfo logined) {
+
+        if (logined == null) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("로그인이 필요합니다.");
+        }
+
+        log.info("[ClubMemberController] 구단 ID={}의 가입 요청 ID={} 승인 시도", clubId, requestId);
+
+        try {
+            clubMemberService.approveJoinRequest(clubId, requestId, logined.getUserId());
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).body(e.getMessage());
+        } catch (ClubNotFoundException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
+        }
+
+        return ResponseEntity.ok("가입 요청이 승인되었습니다.");
+    }
+
+
+    /**
+     * 구단 가입 거절
+     */
+    @Operation(summary = "구단 가입 요청 거절", description = "구단주나 매니저가 구단 가입 요청을 거절합니다.")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "가입 요청이 성공적으로 거절되었습니다."),
+            @ApiResponse(responseCode = "401", description = "로그인이 필요합니다.", content = @Content(
+                    mediaType = "application/json",
+                    schema = @Schema(implementation = ErrorResponse.class),
+                    examples = @ExampleObject(
+                            value = "{\"status\": 401, \"errorType\": \"Unauthorized\", \"message\": \"로그인이 필요합니다.\"}"
+                    )
+            )),
+            @ApiResponse(responseCode = "403", description = "권한이 없습니다.", content = @Content(
+                    mediaType = "application/json",
+                    schema = @Schema(implementation = ErrorResponse.class),
+                    examples = @ExampleObject(
+                            value = "{\"status\": 403, \"errorType\": \"Forbidden\", \"message\": \"권한이 없습니다.\"}"
+                    )
+            )),
+            @ApiResponse(responseCode = "404", description = "가입 요청을 찾을 수 없습니다.", content = @Content(
+                    mediaType = "application/json",
+                    schema = @Schema(implementation = ErrorResponse.class),
+                    examples = @ExampleObject(
+                            value = "{\"status\": 404, \"errorType\": \"Not Found\", \"message\": \"가입 요청을 찾을 수 없습니다.\"}"
+                    )
+            ))
+    })
+    @PutMapping("/{clubId}/requests/{requestId}/reject")
+    public ResponseEntity<String> rejectJoinRequest(
+            @PathVariable("clubId") Long clubId,
+            @PathVariable("requestId") Long requestId,
+            @AuthenticationPrincipal LoginedInfo logined) {
+
+        if (logined == null) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("로그인이 필요합니다.");
+        }
+
+        log.info("[ClubMemberController] 구단 ID={}의 가입 요청 ID={} 거절 시도", clubId, requestId);
+
+        try {
+            clubMemberService.rejectJoinRequest(clubId, requestId, logined.getUserId());
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).body(e.getMessage());
+        } catch (ClubNotFoundException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
+        }
+
+        return ResponseEntity.ok("가입 요청이 거절되었습니다.");
+    }
+
 
     /**
      * 구단원 탈퇴

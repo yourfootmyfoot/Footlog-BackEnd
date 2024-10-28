@@ -2,13 +2,18 @@ package com.yfmf.footlog.domain.club.service;
 
 import com.yfmf.footlog.domain.club.entity.Club;
 import com.yfmf.footlog.domain.club.entity.ClubMember;
+import com.yfmf.footlog.domain.club.entity.JoinRequest;
 import com.yfmf.footlog.domain.club.enums.ClubMemberRole;
+import com.yfmf.footlog.domain.club.enums.JoinRequestStatus;
 import com.yfmf.footlog.domain.club.exception.ClubAlreadyJoinedException;
 import com.yfmf.footlog.domain.club.exception.ClubNotFoundException;
+import com.yfmf.footlog.domain.club.exception.DuplicateJoinRequestException;
 import com.yfmf.footlog.domain.club.repository.ClubMemberRepository;
 import com.yfmf.footlog.domain.club.repository.ClubRepository;
+import com.yfmf.footlog.domain.club.repository.JoinRequestRepository;
 import com.yfmf.footlog.domain.member.domain.Member;
 import com.yfmf.footlog.domain.member.repository.MemberRepository;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -19,24 +24,21 @@ import java.util.stream.Collectors;
 
 @Slf4j
 @Service
+@RequiredArgsConstructor(onConstructor_ = {@Autowired})
 public class ClubMemberService {
 
     private final ClubRepository clubRepository;
     private final ClubMemberRepository clubMemberRepository;
     private final MemberRepository memberRepository;
+    private final JoinRequestRepository joinRequestRepository;
+    private final ClubService clubService;
 
-    @Autowired
-    public ClubMemberService(ClubRepository clubRepository, ClubMemberRepository clubMemberRepository, MemberRepository memberRepository) {
-        this.clubRepository = clubRepository;
-        this.clubMemberRepository = clubMemberRepository;
-        this.memberRepository = memberRepository;
-    }
 
     /**
-     * 구단원 가입
+     * 구단원 가입요청
      */
     @Transactional
-    public void joinClub(Long userId, Long clubId) {
+    public void requestJoinClub(Long userId, Long clubId) {
         log.info("[ClubMemberService] 구단 ID={}에 사용자 ID={}를 추가하려고 합니다.", clubId, userId);
 
         // 구단이 존재하는지 확인
@@ -50,16 +52,74 @@ public class ClubMemberService {
             throw new ClubAlreadyJoinedException("사용자가 이미 구단에 가입되어 있습니다.", "[ClubMemberService] joinClub");
         }
 
+        // 가입 요청이 이미 존재하는지 확인하는 로직
+        boolean isAlreadyRequested = clubMemberRepository.existsByMemberIdAndClubId(userId, clubId);
+        if (isAlreadyRequested) {
+            throw new DuplicateJoinRequestException();
+        }
+
         // 구단원 추가
         ClubMember clubMember = new ClubMember(clubId, userId, ClubMemberRole.MEMBER);
         clubMemberRepository.save(clubMember);
 
 
-        // 구단원 수 업데이트
-        club.setMemberCount(club.getMemberCount() + 1);
-        clubRepository.save(club);  // 구단 정보 업데이트
+        // 가입 요청 생성
+        Member member = memberRepository.findById(userId)
+                .orElseThrow(() -> new IllegalArgumentException("회원 정보를 찾을 수 없습니다."));
+        JoinRequest joinRequest = new JoinRequest(club, member);
+        joinRequestRepository.save(joinRequest);
 
-        log.info("[ClubMemberService] 사용자 ID={}가 구단 ID={}에 성공적으로 가입되었으며, 구단원 수가 {}로 업데이트되었습니다.", userId, clubId, club.getMemberCount());
+        log.info("[ClubMemberService] 사용자 ID={}의 클럽 ID={} 가입 요청이 성공적으로 저장되었습니다.", userId, clubId);
+    }
+
+    /**
+     * 구단원 가입승인
+     */
+    @Transactional
+    public void approveJoinRequest(Long clubId, Long requestId, Long requestingUserId) {
+        log.info("[ClubMemberService] 구단 ID={}의 가입 요청 ID={} 승인 시도", clubId, requestId);
+
+        // 구단주 또는 매니저 권한 확인
+        ClubMember requester = clubMemberRepository.findByMemberIdAndClubId(requestingUserId, clubId)
+                .orElseThrow(() -> new IllegalArgumentException("권한이 없습니다."));
+        if (requester.getRole() != ClubMemberRole.OWNER && requester.getRole() != ClubMemberRole.MANAGER) {
+            throw new IllegalArgumentException("권한이 없습니다. 승인 권한이 없습니다.");
+        }
+
+        // 가입 요청 조회 및 승인 처리
+        JoinRequest joinRequest = joinRequestRepository.findById(requestId)
+                .orElseThrow(() -> new IllegalArgumentException("가입 요청을 찾을 수 없습니다."));
+        joinRequest.setStatus(JoinRequestStatus.APPROVED);
+
+        // 구단원 추가
+        ClubMember clubMember = new ClubMember(clubId, joinRequest.getMember().getId(), ClubMemberRole.MEMBER);
+        clubMemberRepository.save(clubMember);
+
+        // 구단원 수 업데이트
+        clubService.updateMemberCount(clubId);
+    }
+
+    /**
+     * 구단원 가입거절
+     */
+    @Transactional
+    public void rejectJoinRequest(Long clubId, Long requestId, Long requestingUserId) {
+        log.info("[ClubMemberService] 구단 ID={}의 가입 요청 ID={} 거절 시도", clubId, requestId);
+
+        // 구단주 또는 매니저 권한 확인
+        ClubMember requester = clubMemberRepository.findByMemberIdAndClubId(requestingUserId, clubId)
+                .orElseThrow(() -> new IllegalArgumentException("권한이 없습니다."));
+        if (requester.getRole() != ClubMemberRole.OWNER && requester.getRole() != ClubMemberRole.MANAGER) {
+            throw new IllegalArgumentException("권한이 없습니다. 거절 권한이 없습니다.");
+        }
+
+        // 가입 요청 조회 및 거절 처리
+        JoinRequest joinRequest = joinRequestRepository.findById(requestId)
+                .orElseThrow(() -> new IllegalArgumentException("가입 요청을 찾을 수 없습니다."));
+        joinRequest.setStatus(JoinRequestStatus.REJECTED);
+        joinRequestRepository.save(joinRequest);
+
+        log.info("[ClubMemberService] 구단 ID={}의 가입 요청 ID={}이 성공적으로 거절되었습니다.", clubId, requestId);
     }
 
     /**
@@ -87,6 +147,8 @@ public class ClubMemberService {
         int updatedMemberCount = Math.max(0, club.getMemberCount() - 1);
         club.setMemberCount(updatedMemberCount);
         clubRepository.save(club);  // 구단 정보 업데이트
+        // 구단원 수 업데이트
+        clubService.updateMemberCount(clubId);
 
         log.info("[ClubMemberService] 사용자 ID={}가 구단 ID={}에서 성공적으로 탈퇴하였으며, 구단원 수가 {}로 업데이트되었습니다.", userId, clubId, club.getMemberCount());
     }

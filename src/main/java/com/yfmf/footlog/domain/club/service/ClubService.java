@@ -31,7 +31,7 @@ public class ClubService {
     }
 
     /**
-     * 구단주 등록
+     * 구단 등록
      * */
     @Transactional
     public ClubRegistResponseDTO registClub(ClubRegistRequestDTO clubInfo) {
@@ -54,6 +54,9 @@ public class ClubService {
         // 구단 생성자를 구단주(OWNER)로 구단에 추가
         ClubMember clubOwner = new ClubMember(newClub.getClubId(), newClub.getUserId(), ClubMemberRole.OWNER);
         clubMemberRepository.save(clubOwner);
+
+        // 구단원 수 업데이트
+        updateMemberCount(newClub.getClubId());
 
         log.info("[ClubService] 구단 등록 및 구단주 추가 완료: 구단 ID={}, 구단주 ID={}", newClub.getClubId(), newClub.getUserId());
 
@@ -179,5 +182,19 @@ public class ClubService {
     public boolean isClubCodeDuplicate(String code) {
         log.info("구단 코드 중복 확인: {}", code);
         return clubRepository.existsByClubCode(code);
+    }
+
+    /**
+     * 구단원 수 업데이트
+     * */
+    @Transactional
+    public void updateMemberCount(Long clubId) {
+        long memberCount = clubMemberRepository.countByClubId(clubId);
+        Club club = clubRepository.findById(clubId)
+                .orElseThrow(() -> new ClubNotFoundException("구단을 찾을 수 없습니다.", "[ClubService] updateMemberCount"));
+
+        club.setMemberCount((int) memberCount);
+        clubRepository.save(club);
+        log.info("[ClubService] 구단 ID={}의 구단원 수가 {}명으로 업데이트되었습니다.", clubId, memberCount);
     }
 }

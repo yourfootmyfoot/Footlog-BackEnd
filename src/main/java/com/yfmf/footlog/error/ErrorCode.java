@@ -38,6 +38,7 @@ public enum ErrorCode {
     INVALID_CLUB(HttpStatus.CONFLICT, "Invalid Club", "유효하지 않은 구단입니다.", "CLUB-001"),
     DUPLICATED_CLUB(HttpStatus.CONFLICT, "Duplicated Club", "이미 존재하는 구단입니다.", "CLUB-002"),
     NOT_FOUND_CLUB(HttpStatus.NOT_FOUND, "Not Found Club", "해당 구단을 찾을 수 없습니다.", "CLUB-003"),
+    DUPLICATE_JOIN_REQUEST(HttpStatus.CONFLICT, "Duplicate Join Request", "이미 구단 가입 요청을 보냈습니다.", "CLUB-004"),
     /* Club 도메인 예외 */
     REDIS_SAVE_FAILED(HttpStatus.BAD_REQUEST, "Not Saved RefreshToken", "리프레시 토큰이 저장되지 않았습니다.", "REDIS-001");
 
