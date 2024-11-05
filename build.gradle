@@ -71,6 +71,10 @@ dependencies {
     // Logback-spring
     implementation 'ch.qos.logback:logback-classic'
 
+    // Spring Boot 애플리케이션의 모니터링과 관리
+    implementation 'org.springframework.boot:spring-boot-starter-actuator'
+    implementation 'io.micrometer:micrometer-registry-prometheus'
+
 }
 
 tasks.named('test') {
