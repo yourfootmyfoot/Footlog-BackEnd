@@ -31,7 +31,6 @@ public class MemberSocialLoginController {
     public ResponseEntity<?> kakaoLogin(@RequestParam(name = "code") String code, HttpServletResponse response, HttpServletRequest request) {
         // 로그인 후 토큰 발급
         MemberResponseDTO.authTokenDTO tokenDTO = memberSocialLoginService.kakaoLogin(code, request);
-        System.out.println("hi");
 
         // 리프레시 토큰을 HttpOnly 쿠키에 저장
         ResponseCookie refreshTokenCookie = ResponseCookie.from("refreshToken", tokenDTO.refreshToken())
@@ -40,7 +39,7 @@ public class MemberSocialLoginController {
                 .path("/")  // 루트 경로에서 모든 페이지에서 접근 가능
                 .secure(false)  // HTTPS 환경에서는 true로 설정
                 .sameSite("Lax")  // sameSite 설정
-                .domain("192.168.0.35")
+                .domain("localhost")
                 .build();
 
         // Refresh Token은 Redis에만 저장 (userId와 함께)

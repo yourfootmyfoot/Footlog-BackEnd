@@ -160,7 +160,7 @@ public class ClubService {
         log.info("구단 권한 확인: 구단 ID={}, 사용자 ID={}", clubId, userId);
 
         // 구단 소유자 또는 매니저인지 확인
-        Optional<ClubMember> member = clubMemberRepository.findByClubIdAndMemberId(clubId, userId);
+        Optional<ClubMember> member = clubMemberRepository.findByMemberIdAndClubId(userId, clubId);
         if (member.isPresent()) {
             ClubMemberRole role = member.get().getRole();
             return role == ClubMemberRole.OWNER || role == ClubMemberRole.MANAGER;

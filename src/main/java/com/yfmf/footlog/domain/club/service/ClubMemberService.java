@@ -202,16 +202,15 @@ public class ClubMemberService {
         ClubMember clubMember = clubMemberRepository.findByMemberIdAndClubId(userId, clubId)
                 .orElseThrow(() -> new IllegalArgumentException("해당 구단원을 찾을 수 없습니다."));
 
-        // 일반 구단원을 매니저로 승격하거나, 매니저를 다시 일반 구단원으로 전환할 수 있음
-        if (clubMember.getRole() == ClubMemberRole.MEMBER && newRole == ClubMemberRole.MANAGER) {
-            clubMember.setRole(ClubMemberRole.MANAGER);
-        } else if (clubMember.getRole() == ClubMemberRole.MANAGER && newRole == ClubMemberRole.MEMBER) {
-            clubMember.setRole(ClubMemberRole.MEMBER);
-        } else {
-            throw new IllegalArgumentException("잘못된 역할 전환 요청입니다.");
+        // 동일한 역할로의 전환 요청에 대한 검증
+        if (clubMember.getRole() == newRole) {
+            throw new IllegalArgumentException("해당 사용자는 이미 " + newRole + " 등급을 가지고 있습니다.");
         }
 
+        // 등급 변경 처리
+        clubMember.setRole(newRole);
         clubMemberRepository.save(clubMember);
+
         log.info("[ClubMemberService] 사용자 ID={}의 역할이 {}로 성공적으로 수정되었습니다.", userId, newRole);
     }
 
@@ -239,5 +238,20 @@ public class ClubMemberService {
     public List<JoinRequest> getJoinRequestsByClubId(Long clubId) {
         log.info("[ClubMemberService] 구단 ID={}의 가입 요청 목록을 조회합니다.", clubId);
         return joinRequestRepository.findByClubClubIdAndStatus(clubId, JoinRequestStatus.PENDING);
+    }
+
+    /**
+     * 특정 회원의 클럽 내 역할 조회
+     */
+    @Transactional(readOnly = true)
+    public String getMemberRole(Long clubId, Long userId) {
+        log.info("[ClubMemberService] 구단 ID={}의 사용자 ID={}의 역할을 조회합니다.", clubId, userId);
+
+        // 구단과 회원이 존재하는지 확인
+        ClubMember clubMember = clubMemberRepository.findByMemberIdAndClubId(userId, clubId)
+                .orElseThrow(() -> new IllegalArgumentException("해당 구단원의 정보를 찾을 수 없습니다."));
+
+        log.info("[ClubMemberService] 사용자 ID={}의 역할은 {}입니다.", userId, clubMember.getRole());
+        return clubMember.getRole().name();
     }
 }
