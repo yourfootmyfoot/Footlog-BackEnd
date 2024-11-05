@@ -37,7 +37,8 @@ public class SecurityConfig {
             "/swagger-ui.html",     // Swagger UI HTML
             "/api/v1/**",
             "/match/**",
-            "/admin/**"
+            "/admin/**",
+            "/actuator/**"
 
     };
 

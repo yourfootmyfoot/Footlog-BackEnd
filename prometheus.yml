@@ -1,0 +1,8 @@
+global:
+  scrape_interval: 15s
+
+scrape_configs:
+  - job_name: 'springboot-app'
+    metrics_path: '/actuator/prometheus'
+    static_configs:
+      - targets: ['192.168.0.31:8080']  # Docker 내부에서 호스트로 접근
