@@ -11,10 +11,12 @@ public class WebConfig implements WebMvcConfigurer {
     public void addCorsMappings(CorsRegistry registry) {
         registry.addMapping("/**")
                 .allowedOrigins("http://localhost:3000")  // React 앱이 돌아가는 도메인
+                .allowedOrigins("https://localhost:3002")
                 .allowedMethods("GET", "POST", "PUT", "DELETE")
                 .allowCredentials(true)  // 쿠키를 포함하는 요청 허용
                 .allowedHeaders("*")
                 .exposedHeaders("Authorization");
+
     }
 }
 
