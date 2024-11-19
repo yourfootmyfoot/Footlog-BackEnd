@@ -76,10 +76,6 @@ public class JWTTokenProvider {
         throw new RuntimeException("알 수 없는 principal 타입입니다.");
     }
 
-    public MemberResponseDTO.authTokenDTO generateToken(Authentication authentication) {
-        LoginedInfo loginedInfo = createLoginedInfo(authentication);
-        return generateToken(loginedInfo.getEmail(), loginedInfo.getUserId(), loginedInfo.getName(), authentication.getAuthorities());
-    }
 
     public MemberResponseDTO.authTokenDTO generateToken(String email, Long userId, String name, Collection<? extends GrantedAuthority> grantedAuthorities) {
         String authorities = extractAuthorities(grantedAuthorities);
@@ -149,8 +145,9 @@ public class JWTTokenProvider {
         String email = claims.getSubject();
         Long userId = claims.get("userId", Long.class);
         String name = claims.get("name", String.class);
+        Authority authority = claims.get(CLAIM_TYPE, Authority.class);
 
-        LoginedInfo loginedInfo = new LoginedInfo(userId, name, email, Authority.ROLE_USER); // 기본 권한 부여
+        LoginedInfo loginedInfo = new LoginedInfo(userId, name, email, authority); // 기본 권한 부여
 
         return new UsernamePasswordAuthenticationToken(loginedInfo, "", authorities);
     }
