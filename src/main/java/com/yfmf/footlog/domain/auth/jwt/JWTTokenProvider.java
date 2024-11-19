@@ -39,15 +39,19 @@ public class JWTTokenProvider {
     private static final long REFRESH_TOKEN_LIFETIME = 3 * 24 * 60 * 60 * 1000L; // 3 days
 
     private final Key secretKey;
-    private final MemberRepository memberRepository;
 
-    public JWTTokenProvider(@Value("${jwt.secret}") String secretKey, MemberRepository memberRepository) {
+    public JWTTokenProvider(@Value("${jwt.secret}") String secretKey) {
         byte[] keyBytes = Decoders.BASE64.decode(secretKey);
         this.secretKey = Keys.hmacShaKeyFor(keyBytes);
-        this.memberRepository = memberRepository;
     }
 
-    // 권한 정보를 추출하는 공통 메서드
+
+    /**
+     * 권한 정보를 추출하여 문자열로 변환합니다.
+     *
+     * @param grantedAuthorities 권한 컬렉션
+     * @return 권한 문자열 (예: ROLE_USER,ROLE_ADMIN)
+     */
     private String extractAuthorities(Collection<? extends GrantedAuthority> grantedAuthorities) {
         return grantedAuthorities.stream()
                 .map(authority -> {
@@ -60,23 +64,16 @@ public class JWTTokenProvider {
                 .collect(Collectors.joining(","));
     }
 
-    // Principal에서 LoginedInfo 객체를 생성하는 메서드
-    private LoginedInfo createLoginedInfo(Authentication authentication) {
-        if (authentication.getPrincipal() instanceof org.springframework.security.core.userdetails.User) {
-            org.springframework.security.core.userdetails.User springUser =
-                    (org.springframework.security.core.userdetails.User) authentication.getPrincipal();
 
-            String email = springUser.getUsername();
-            Member member = memberRepository.findByEmail(email)
-                    .orElseThrow(() -> new RuntimeException("회원이 존재하지 않습니다."));
-
-            return new LoginedInfo(member.getId(), member.getName(), member.getEmail(), member.getAuthority());
-        }
-
-        throw new RuntimeException("알 수 없는 principal 타입입니다.");
-    }
-
-
+    /**
+     * AccessToken과 RefreshToken을 생성합니다.
+     *
+     * @param email              사용자 이메일
+     * @param userId             사용자 ID
+     * @param name               사용자 이름
+     * @param grantedAuthorities 권한 컬렉션
+     * @return 생성된 토큰 정보
+     */
     public MemberResponseDTO.authTokenDTO generateToken(String email, Long userId, String name, Collection<? extends GrantedAuthority> grantedAuthorities) {
         String authorities = extractAuthorities(grantedAuthorities);
         Date now = new Date();
@@ -110,6 +107,12 @@ public class JWTTokenProvider {
         );
     }
 
+    /**
+     * JWT 토큰의 유효성을 검증합니다.
+     *
+     * @param token 검증할 토큰
+     * @return 유효한 경우 true, 그렇지 않으면 false
+     */
     public boolean validateToken(String token) {
         try {
             Jwts.parserBuilder().setSigningKey(secretKey).build().parseClaimsJws(token);
@@ -120,6 +123,12 @@ public class JWTTokenProvider {
         return false;
     }
 
+    /**
+     * JWT 토큰의 Claims를 파싱합니다.
+     *
+     * @param accessToken 파싱할 토큰
+     * @return 파싱된 Claims
+     */
     public Claims parseClaims(String accessToken) {
         try {
             return Jwts.parserBuilder().setSigningKey(secretKey).build().parseClaimsJws(accessToken).getBody();
@@ -129,7 +138,12 @@ public class JWTTokenProvider {
         }
     }
 
-    // 토큰에서 권한 정보를 추출하고, 권한 문자열을 다루는 부분 수정
+    /**
+     * JWT 토큰에서 인증 정보를 생성합니다.
+     *
+     * @param token 토큰
+     * @return 인증 정보
+     */
     public Authentication getAuthentication(String token) {
         Claims claims = parseClaims(token);
         String authoritiesClaim = claims.get(AUTHORITIES_KEY, String.class);
@@ -152,10 +166,13 @@ public class JWTTokenProvider {
         return new UsernamePasswordAuthenticationToken(loginedInfo, "", authorities);
     }
 
-    public boolean isRefreshToken(String token) {
-        return TYPE_REFRESH.equals(Jwts.parserBuilder().setSigningKey(secretKey).build().parseClaimsJws(token).getBody().get(CLAIM_TYPE));
-    }
-
+    /**
+     * HttpServletRequest Access Token 또는 Refresh Token을 추출합니다.
+     *
+     * @param request   HTTP 요청 객체
+     * @param tokenType 추출할 토큰 타입 ("accessToken" 또는 "refreshToken")
+     * @return 추출된 토큰 값
+     */
     public String resolveToken(HttpServletRequest request, String tokenType) {
         if ("accessToken".equals(tokenType)) {
             // Access Token은 헤더에서 가져옴
@@ -167,7 +184,24 @@ public class JWTTokenProvider {
         return null;
     }
 
-    // 헤더에서 Access Token 추출
+
+    /**
+     * 토큰에서 사용자 ID를 추출합니다.
+     *
+     * @param token 토큰
+     * @return 사용자 ID
+     */
+    public Long getUserIdFromToken(String token) {
+        Claims claims = parseClaims(token); // 토큰을 파싱하여 Claims 추출
+        return claims.get("userId", Long.class); // Claims에서 userId 추출
+    }
+
+    /**
+     * HttpServletRequest 헤더에서 Access Token을 추출합니다.
+     *
+     * @param request HTTP 요청 객체
+     * @return 추출된 Access Token 값
+     */
     private String resolveAccessTokenFromHeader(HttpServletRequest request) {
         String bearerToken = request.getHeader("Authorization");
         if (bearerToken != null && bearerToken.startsWith("Bearer ")) {
@@ -179,7 +213,12 @@ public class JWTTokenProvider {
         return null;
     }
 
-    // 쿠키에서 Refresh Token 추출
+    /**
+     * HttpServletRequest 쿠키에서 Refresh Token을 추출합니다.
+     *
+     * @param request HTTP 요청 객체
+     * @return 추출된 Refresh Token 값
+     */
     private String resolveRefreshTokenFromCookies(HttpServletRequest request) {
         Cookie[] cookies = request.getCookies();
         if (cookies != null) {
@@ -194,8 +233,13 @@ public class JWTTokenProvider {
         return null;
     }
 
-    public Long getUserIdFromToken(String token) {
-        Claims claims = parseClaims(token); // 토큰을 파싱하여 Claims 추출
-        return claims.get("userId", Long.class); // Claims에서 userId 추출
+    /**
+     * 토큰이 Refresh Token인지 확인합니다.
+     *
+     * @param token 확인할 토큰
+     * @return Refresh Token인 경우 true, 그렇지 않으면 false
+     */
+    public boolean isRefreshToken(String token) {
+        return TYPE_REFRESH.equals(Jwts.parserBuilder().setSigningKey(secretKey).build().parseClaimsJws(token).getBody().get(CLAIM_TYPE));
     }
 }
