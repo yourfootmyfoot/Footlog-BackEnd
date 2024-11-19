@@ -1,4 +1,8 @@
-# ⚽ Footlog ⚽ 당신의 축구를 기록하세요
+<div align="center">
+
+# ⚽ Footlog 백엔드⚽
+
+</div>
 
 <!--목차-->
 ## 목차
@@ -6,7 +10,7 @@
 - [[2] 팀원 소개](#2-팀원-소개)
 
 
-## [1] 사용 기술
+## ⚽ 1. TECH STACK
 
 ### 사용 언어
 ![Java Badge](https://img.shields.io/badge/Java%2017-%23ED8B00.svg?style=for-the-badge&logo=openjdk&logoColor=fff)
