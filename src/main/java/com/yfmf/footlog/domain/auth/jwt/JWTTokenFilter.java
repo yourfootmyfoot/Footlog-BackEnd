@@ -26,15 +26,6 @@ public class JWTTokenFilter extends GenericFilterBean {
         String token = jwtTokenProvider.resolveToken((HttpServletRequest) servletRequest, "accessToken");
         String requestURI = ((HttpServletRequest) servletRequest).getRequestURI();
 
-        // 토큰 유효성 검사
-        /*
-            토큰 재발급 요청 시 
-            refresh token을 요청 headers에 Authorization 키로 받으면 
-            token이 존재하기 때문에 
-            getAuthentication 메소드가 동작
-            -> 내부적으로 권한에 대한 정보가 없기 때문에 Exception 발생
-            => 토큰 재발급 요청 path인 경우 필터 패스
-         */
         if(token != null && jwtTokenProvider.validateToken(token)) {
             if(!requestURI.equals("/api/auth/reissue") && !requestURI.equals("/api/auth/logout")) {
                 Authentication authentication = jwtTokenProvider.getAuthentication(token);
