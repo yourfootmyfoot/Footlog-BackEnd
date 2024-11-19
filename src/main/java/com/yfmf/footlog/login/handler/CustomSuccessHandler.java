@@ -1,3 +1,4 @@
+/*
 package com.yfmf.footlog.login.handler;
 
 import com.yfmf.footlog.login.dto.CustomOAuth2User;
@@ -84,3 +85,4 @@ public class CustomSuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
         refreshRepository.save(newRefresh);
     }
 }
+*/
