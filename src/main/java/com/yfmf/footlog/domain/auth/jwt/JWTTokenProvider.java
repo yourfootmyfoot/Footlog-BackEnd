@@ -145,7 +145,7 @@ public class JWTTokenProvider {
         String email = claims.getSubject();
         Long userId = claims.get("userId", Long.class);
         String name = claims.get("name", String.class);
-        Authority authority = claims.get(CLAIM_TYPE, Authority.class);
+        Authority authority = claims.get(AUTHORITIES_KEY, Authority.class);
 
         LoginedInfo loginedInfo = new LoginedInfo(userId, name, email, authority); // 기본 권한 부여
 
