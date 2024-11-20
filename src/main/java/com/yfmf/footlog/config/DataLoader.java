@@ -1,9 +1,9 @@
 package com.yfmf.footlog.config;
 
 import com.yfmf.footlog.domain.member.domain.Authority;
-import com.yfmf.footlog.domain.member.domain.Gender;
+import com.yfmf.footlog.domain.member.enums.Gender;
 import com.yfmf.footlog.domain.member.domain.Member;
-import com.yfmf.footlog.domain.member.domain.SocialType;
+import com.yfmf.footlog.domain.member.enums.SocialType;
 import com.yfmf.footlog.domain.member.repository.MemberRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.CommandLineRunner;

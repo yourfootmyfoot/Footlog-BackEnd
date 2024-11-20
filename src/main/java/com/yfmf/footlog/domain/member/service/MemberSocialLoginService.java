@@ -2,13 +2,12 @@ package com.yfmf.footlog.domain.member.service;
 
 
 import com.yfmf.footlog.domain.auth.jwt.JWTTokenProvider;
-import com.yfmf.footlog.domain.auth.refreshToken.domain.RefreshToken;
 import com.yfmf.footlog.domain.auth.refreshToken.service.RefreshTokenService;
 import com.yfmf.footlog.domain.auth.utils.ClientUtils;
 import com.yfmf.footlog.domain.member.domain.Authority;
-import com.yfmf.footlog.domain.member.domain.Gender;
+import com.yfmf.footlog.domain.member.enums.Gender;
 import com.yfmf.footlog.domain.member.domain.Member;
-import com.yfmf.footlog.domain.member.domain.SocialType;
+import com.yfmf.footlog.domain.member.enums.SocialType;
 import com.yfmf.footlog.domain.member.dto.MemberResponseDTO;
 import com.yfmf.footlog.domain.member.property.KakaoProviderProperties;
 import com.yfmf.footlog.domain.member.property.KakaoRegistrationProperties;
@@ -22,11 +21,7 @@ import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.Authentication;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
-import org.springframework.security.core.userdetails.User;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;

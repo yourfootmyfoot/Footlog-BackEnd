@@ -1,10 +1,10 @@
 package com.yfmf.footlog.domain.member.domain;
 
 import com.yfmf.footlog.BaseTimeEntity;
-import com.yfmf.footlog.domain.member.enums.Area;
-import com.yfmf.footlog.domain.member.enums.MainFoot;
-import com.yfmf.footlog.domain.member.enums.Position;
+import com.yfmf.footlog.domain.member.dto.MemberUpdateRequestDTO;
+import com.yfmf.footlog.domain.member.enums.*;
 import jakarta.persistence.*;
+import jakarta.validation.constraints.*;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
@@ -24,13 +24,21 @@ public class Member extends BaseTimeEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    // 기본 회원 정보
     @Column(length = 20, nullable = false)
+    @NotBlank(message = "이름은 필수 입력값입니다.")
+    @Size(min = 2, max = 20, message = "이름은 2자 이상 20자 이하로 입력해주세요.")
     private String name;
 
     @Column(length = 100, nullable = false, unique = true)
+    @NotBlank(message = "이메일은 필수 입력값입니다.")
+    @Email(message = "올바른 이메일 형식이 아닙니다.")
     private String email;
 
     @Column(length = 100, nullable = false)
+    @NotBlank(message = "비밀번호는 필수 입력값입니다.")
+    @Pattern(regexp = "^(?=.*[A-Za-z])(?=.*\\d)[A-Za-z\\d]{4,}$",
+            message = "비밀번호는 4자 이상의 영문자와 숫자 조합이어야 합니다.")
     private String password;
 
     @Column(nullable = false)
@@ -46,6 +54,8 @@ public class Member extends BaseTimeEntity {
     @ColumnDefault("'ROLE_USER'")
     private Authority authority;
 
+    @Column
+    @Past(message = "생년월일은 과거 날짜여야 합니다.")
     private LocalDate birth;
 
     @Enumerated(EnumType.STRING)
@@ -57,18 +67,13 @@ public class Member extends BaseTimeEntity {
     @Enumerated(EnumType.STRING)
     private Position position;
 
+    @Column(length = 500)
+    @Size(max = 500, message = "자기소개는 500자 이하로 작성해주세요.")
     private String introduction;
-
-    private Boolean isPro;
-
-    private Double height;
-
-    private Double weight;
 
     private String profileImageUrl;
 
     private String phoneNumber;
-
 
     @Embedded
     private Stat stat;
@@ -78,7 +83,7 @@ public class Member extends BaseTimeEntity {
 
     public Member(Long id, String name, String email, String password, Gender gender, SocialType socialType,
                   Authority authority, LocalDate birth, MainFoot mainFoot, Area area, Position position,
-                  String introduction, Boolean isPro, Double height, Double weight, String profileImageUrl,
+                  String introduction, String profileImageUrl,
                   String phoneNumber, Stat stat, Record record) {
         this.id = id;
         this.name = name;
@@ -92,9 +97,6 @@ public class Member extends BaseTimeEntity {
         this.area = area;
         this.position = position;
         this.introduction = introduction;
-        this.isPro = isPro;
-        this.height = height;
-        this.weight = weight;
         this.profileImageUrl = profileImageUrl;
         this.phoneNumber = phoneNumber;
         this.stat = stat;
@@ -103,19 +105,43 @@ public class Member extends BaseTimeEntity {
 
     @Builder
     public Member(LocalDate birth, MainFoot mainFoot, Area area, Position position,
-                  String introduction, Boolean isPro, Double height, Double weight, String profileImageUrl,
+                  String introduction, String profileImageUrl,
                   String phoneNumber, Stat stat, Record record) {
         this.birth = birth;
         this.mainFoot = mainFoot;
         this.area = area;
         this.position = position;
         this.introduction = introduction;
-        this.isPro = isPro;
-        this.height = height;
-        this.weight = weight;
         this.profileImageUrl = profileImageUrl;
         this.phoneNumber = phoneNumber;
         this.stat = stat;
         this.record = record;
+    }
+
+    // 회원 정보 수정 메서드
+    public void updateProfile(MemberUpdateRequestDTO updateDto) {
+        if (updateDto.getName() != null) this.name = updateDto.getName();
+        if (updateDto.getBirth() != null) this.birth = updateDto.getBirth();
+        if (updateDto.getMainFoot() != null) this.mainFoot = updateDto.getMainFoot();
+        if (updateDto.getArea() != null) this.area = updateDto.getArea();
+        if (updateDto.getPosition() != null) this.position = updateDto.getPosition();
+        if (updateDto.getIntroduction() != null) this.introduction = updateDto.getIntroduction();
+        if (updateDto.getProfileImageUrl() != null) this.profileImageUrl = updateDto.getProfileImageUrl();
+        if (updateDto.getPhoneNumber() != null) this.phoneNumber = updateDto.getPhoneNumber();
+    }
+
+    // 비밀번호 변경 메서드
+    public void updatePassword(String newPassword) {
+        this.password = newPassword;
+    }
+
+    // 능력치 수정 메서드
+    public void updateStat(Stat newStat) {
+        this.stat = newStat;
+    }
+
+    // 기록 수정 메서드
+    public void updateRecord(Record newRecord) {
+        this.record = newRecord;
     }
 }

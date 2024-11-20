@@ -2,9 +2,7 @@ package com.yfmf.footlog.domain.member.dto;
 
 import com.yfmf.footlog.domain.member.domain.*;
 import com.yfmf.footlog.domain.member.domain.Record;
-import com.yfmf.footlog.domain.member.enums.Area;
-import com.yfmf.footlog.domain.member.enums.MainFoot;
-import com.yfmf.footlog.domain.member.enums.Position;
+import com.yfmf.footlog.domain.member.enums.*;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -13,7 +11,7 @@ import java.time.LocalDate;
 
 @Data
 @NoArgsConstructor
-public class MemberSaveRequestDto {
+public class MemberSaveRequestDTO {
 
     private Long id;
     private String name;
@@ -27,16 +25,13 @@ public class MemberSaveRequestDto {
     private Area area;
     private Position position;
     private String introduction;
-    private Boolean isPro;
-    private Double height;
-    private Double weight;
     private String profileImageUrl;
     private String phoneNumber;
     private Stat stat;
     private Record record;
 
     @Builder
-    public MemberSaveRequestDto(Long id, String name, LocalDate birth, MainFoot mainFoot, Area area, Position position, String introduction, Boolean isPro, Double height, Double weight, String profileImageUrl, String phoneNumber, UserRole role, Stat stat, Record record) {
+    public MemberSaveRequestDTO(Long id, String name, LocalDate birth, MainFoot mainFoot, Area area, Position position, String introduction, String profileImageUrl, String phoneNumber, Stat stat, Record record) {
         this.id = id;
         this.name = name;
         this.birth = birth;
@@ -44,9 +39,6 @@ public class MemberSaveRequestDto {
         this.area = area;
         this.position = position;
         this.introduction = introduction;
-        this.isPro = isPro;
-        this.height = height;
-        this.weight = weight;
         this.profileImageUrl = profileImageUrl;
         this.phoneNumber = phoneNumber;
         this.stat = stat;
@@ -60,9 +52,6 @@ public class MemberSaveRequestDto {
                 .area(area)
                 .position(position)
                 .introduction(introduction)
-                .isPro(isPro)
-                .height(height)
-                .weight(weight)
                 .profileImageUrl(profileImageUrl)
                 .phoneNumber(phoneNumber)
                 .stat(stat)
