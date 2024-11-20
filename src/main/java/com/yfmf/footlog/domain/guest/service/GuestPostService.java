@@ -25,6 +25,14 @@ public class GuestPostService {
     private final GuestPostRepository guestPostRepository;
     private final MemberRepository memberRepository;
 
+
+    /**
+     * 새로운 게스트 게시글을 생성합니다.
+     *
+     * @param memberId 작성자 회원 ID
+     * @param dto      게시글 생성 DTO
+     * @return 생성된 게시글의 응답 DTO
+     */
     @Transactional
     public GuestPostResponseDTO createGuestPost(Long memberId, GuestPostCreateDTO dto) {
         Member member = memberRepository.findById(memberId)
@@ -44,6 +52,13 @@ public class GuestPostService {
         return new GuestPostResponseDTO(savedPost, member);
     }
 
+
+    /**
+     * 상태에 따라 게스트 게시글 목록을 조회합니다.
+     *
+     * @param status 게시글 상태 (선택적으로 지정 가능)
+     * @return 게시글 응답 DTO 리스트
+     */
     public List<GuestPostResponseDTO> getAllGuestPosts(PostStatus status) {
         List<GuestPost> posts;
         if (status != null) {
@@ -61,6 +76,12 @@ public class GuestPostService {
                 .collect(Collectors.toList());
     }
 
+    /**
+     * 특정 게시글의 상세 정보를 조회합니다.
+     *
+     * @param postId 게시글 ID
+     * @return 상세 응답 DTO
+     */
     public GuestPostDetailDTO getGuestPost(Long postId) {
         GuestPost post = guestPostRepository.findById(postId)
                 .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 게시글입니다."));
@@ -71,6 +92,15 @@ public class GuestPostService {
         return new GuestPostDetailDTO(post, member);
     }
 
+
+    /**
+     * 특정 게시글을 수정합니다.
+     *
+     * @param postId   게시글 ID
+     * @param memberId 작성자 회원 ID
+     * @param dto      게시글 수정 DTO
+     * @return 수정된 게시글의 응답 DTO
+     */
     @Transactional
     public GuestPostResponseDTO updateGuestPost(Long postId, Long memberId, GuestPostUpdateDTO dto) {
         GuestPost post = guestPostRepository.findById(postId)
@@ -96,6 +126,13 @@ public class GuestPostService {
         return new GuestPostResponseDTO(post, member);
     }
 
+
+    /**
+     * 특정 게시글을 삭제합니다.
+     *
+     * @param postId   게시글 ID
+     * @param memberId 작성자 회원 ID
+     */
     @Transactional
     public void deleteGuestPost(Long postId, Long memberId) {
         GuestPost post = guestPostRepository.findById(postId)
