@@ -11,7 +11,7 @@ public class WebConfig implements WebMvcConfigurer {
     public void addCorsMappings(CorsRegistry registry) {
         registry.addMapping("/**")
 
-                .allowedOrigins("https://localhost:3002")
+                .allowedOrigins("https://localhost:3000")
                 .allowedOrigins("http://192.168.0.35:3000")  // React 앱이 돌아가는 도메인
 
                 .allowedMethods("GET", "POST", "PUT", "DELETE")
