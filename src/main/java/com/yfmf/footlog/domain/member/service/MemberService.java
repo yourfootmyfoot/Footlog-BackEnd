@@ -2,13 +2,12 @@ package com.yfmf.footlog.domain.member.service;
 
 import com.yfmf.footlog.domain.auth.dto.LoginedInfo;
 import com.yfmf.footlog.domain.auth.jwt.JWTTokenProvider;
-import com.yfmf.footlog.domain.auth.refreshToken.domain.RefreshToken;
 import com.yfmf.footlog.domain.auth.refreshToken.service.RefreshTokenService;
 import com.yfmf.footlog.domain.auth.utils.ClientUtils;
 import com.yfmf.footlog.domain.member.domain.Authority;
-import com.yfmf.footlog.domain.member.domain.Gender;
+import com.yfmf.footlog.domain.member.enums.Gender;
 import com.yfmf.footlog.domain.member.domain.Member;
-import com.yfmf.footlog.domain.member.domain.SocialType;
+import com.yfmf.footlog.domain.member.enums.SocialType;
 import com.yfmf.footlog.domain.member.dto.MemberRequestDTO;
 import com.yfmf.footlog.domain.member.dto.MemberResponseDTO;
 import com.yfmf.footlog.domain.member.repository.MemberRepository;
