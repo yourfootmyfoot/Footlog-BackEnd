@@ -30,6 +30,13 @@ public class GuestRecruitmentService {
     private final ClubRepository clubRepository;
     private final MemberRepository memberRepository;
 
+    /**
+     * 새로운 게스트 모집 글을 생성합니다.
+     *
+     * @param userId 작성자 회원 ID
+     * @param dto    모집 글 생성 DTO
+     * @return 생성된 모집 글의 응답 DTO
+     */
     @Transactional
     public GuestRecruitmentResponseDTO createRecruitment(Long userId, GuestRecruitmentCreateDTO dto) {
         // 구단 존재 여부 및 권한 확인
@@ -54,6 +61,12 @@ public class GuestRecruitmentService {
         return new GuestRecruitmentResponseDTO(savedRecruitment, club);
     }
 
+    /**
+     * 상태에 따라 모든 게스트 모집 글을 조회합니다.
+     *
+     * @param status 모집 상태 (선택적으로 지정 가능)
+     * @return 모집 글 응답 DTO 리스트
+     */
     public List<GuestRecruitmentResponseDTO> getAllRecruitments(RecruitmentStatus status) {
         List<GuestRecruitment> recruitments;
         if (status != null) {
@@ -71,6 +84,14 @@ public class GuestRecruitmentService {
                 .collect(Collectors.toList());
     }
 
+    /**
+     * 게스트 모집 글에 지원합니다.
+     *
+     * @param recruitmentId 모집 글 ID
+     * @param userId        지원자 회원 ID
+     * @param dto           지원 정보 DTO
+     * @return 생성된 지원 응답 DTO
+     */
     @Transactional
     public GuestApplicationResponseDTO applyForRecruitment(
             Long recruitmentId, Long userId, GuestApplicationCreateDTO dto) {
@@ -102,6 +123,14 @@ public class GuestRecruitmentService {
         return new GuestApplicationResponseDTO(savedApplication, applicant);
     }
 
+    /**
+     * 게스트 모집 글 지원 상태를 업데이트합니다.
+     *
+     * @param applicationId 지원 ID
+     * @param userId        관리자 회원 ID
+     * @param status        업데이트할 상태
+     * @return 업데이트된 지원 응답 DTO
+     */
     @Transactional
     public GuestApplicationResponseDTO updateApplicationStatus(
             Long applicationId, Long userId, ApplicationStatus status) {
@@ -127,6 +156,12 @@ public class GuestRecruitmentService {
         return true; // 임시 구현
     }
 
+    /**
+     * 모집 글의 세부 정보를 조회합니다.
+     *
+     * @param recruitmentId 모집 글 ID
+     * @return 모집 글 세부 응답 DTO
+     */
     @Transactional(readOnly = true)
     public GuestRecruitmentDetailDTO getRecruitment(Long recruitmentId) {
         // 모집글 조회
@@ -143,6 +178,12 @@ public class GuestRecruitmentService {
         return new GuestRecruitmentDetailDTO(recruitment, club, applications);
     }
 
+    /**
+     * 특정 사용자가 작성한 모든 지원 목록을 조회합니다.
+     *
+     * @param userId 사용자 ID
+     * @return 지원 응답 DTO 리스트
+     */
     @Transactional(readOnly = true)
     public List<GuestApplicationResponseDTO> getApplicationsByUserId(Long userId) {
         List<GuestApplication> applications = applicationRepository.findByApplicantId(userId);
@@ -156,6 +197,13 @@ public class GuestRecruitmentService {
                 .collect(Collectors.toList());
     }
 
+    /**
+     * 모집 글에 대한 모든 지원 목록을 조회합니다.
+     *
+     * @param recruitmentId 모집 글 ID
+     * @param requestUserId 요청 사용자 ID
+     * @return 지원 응답 DTO 리스트
+     */
     @Transactional(readOnly = true)
     public List<GuestApplicationResponseDTO> getApplicationsByRecruitmentId(Long recruitmentId, Long requestUserId) {
         // 모집글 조회 및 권한 확인
