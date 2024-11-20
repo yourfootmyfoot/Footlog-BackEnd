@@ -1,3 +1,4 @@
+/*
 package com.yfmf.footlog.login.dto;
 
 import com.yfmf.footlog.users.dto.UserOAuth2Dto;
@@ -41,3 +42,4 @@ public class CustomOAuth2User implements OAuth2User {
         return userDto.getUsername();
     }
 }
+*/

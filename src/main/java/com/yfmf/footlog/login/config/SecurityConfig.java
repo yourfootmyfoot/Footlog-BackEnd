@@ -1,10 +1,10 @@
+/*
 package com.yfmf.footlog.login.config;
 
 import com.yfmf.footlog.login.filter.CustomLogoutFilter;
 import com.yfmf.footlog.login.handler.CustomSuccessHandler;
 import com.yfmf.footlog.login.jwt.filter.JwtFilter;
 import com.yfmf.footlog.login.repository.RefreshRepository;
-import com.yfmf.footlog.login.service.CustomOAuth2UserService;
 import com.yfmf.footlog.login.jwt.util.JwtUtil;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
@@ -95,3 +95,4 @@ public class SecurityConfig {
         return http.build();
     }
 }
+*/

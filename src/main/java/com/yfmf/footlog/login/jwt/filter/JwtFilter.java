@@ -1,3 +1,4 @@
+/*
 package com.yfmf.footlog.login.jwt.filter;
 
 import com.yfmf.footlog.login.dto.CustomOAuth2User;
@@ -87,3 +88,4 @@ public class JwtFilter extends OncePerRequestFilter {
         filterChain.doFilter(request, response);
     }
 }
+*/

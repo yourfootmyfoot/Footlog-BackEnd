@@ -2,12 +2,7 @@ package com.yfmf.footlog.domain.member.dto;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.yfmf.footlog.domain.member.domain.Authority;
-import com.yfmf.footlog.domain.member.domain.Gender;
-import jakarta.validation.constraints.NotBlank;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.RequiredArgsConstructor;
-import lombok.Setter;
+import com.yfmf.footlog.domain.member.enums.Gender;
 
 import java.time.LocalDateTime;
 
