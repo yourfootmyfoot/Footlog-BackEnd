@@ -2,9 +2,7 @@ package com.yfmf.footlog.domain.auth.jwt;
 
 import com.yfmf.footlog.domain.auth.dto.LoginedInfo;
 import com.yfmf.footlog.domain.member.domain.Authority;
-import com.yfmf.footlog.domain.member.domain.Member;
 import com.yfmf.footlog.domain.member.dto.MemberResponseDTO;
-import com.yfmf.footlog.domain.member.repository.MemberRepository;
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
@@ -145,7 +143,9 @@ public class JWTTokenProvider {
      * @return 인증 정보
      */
     public Authentication getAuthentication(String token) {
+
         Claims claims = parseClaims(token);
+
         String authoritiesClaim = claims.get(AUTHORITIES_KEY, String.class);
         if (authoritiesClaim == null || authoritiesClaim.isEmpty()) {
             throw new RuntimeException("권한 정보가 없는 Token 입니다.");
@@ -159,9 +159,8 @@ public class JWTTokenProvider {
         String email = claims.getSubject();
         Long userId = claims.get("userId", Long.class);
         String name = claims.get("name", String.class);
-        Authority authority = claims.get(AUTHORITIES_KEY, Authority.class);
 
-        LoginedInfo loginedInfo = new LoginedInfo(userId, name, email, authority); // 기본 권한 부여
+        LoginedInfo loginedInfo = new LoginedInfo(userId, name, email, null); // 기본 권한 부여
 
         return new UsernamePasswordAuthenticationToken(loginedInfo, "", authorities);
     }
