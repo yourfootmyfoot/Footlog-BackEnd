@@ -25,10 +25,6 @@ public class GuestRecruitmentCreateDTO {
     @NotNull(message = "모집글 제목을 입력해주세요.")
     private String title;
 
-    @Schema(description = "작성자 닉네임", example = "송호진", required = true)
-    @NotNull(message = "작성자 닉네임를 입력해주세요.")
-    private Long userId;
-
     @Schema(description = "구단 ID", example = "1", required = true)
     @NotNull(message = "구단 ID를 입력해주세요.")
     private Long clubId;
