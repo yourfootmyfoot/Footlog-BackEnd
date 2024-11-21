@@ -28,7 +28,7 @@ public class GuestRecruitment extends BaseTimeEntity {
     private String title;
 
     @Column(nullable = false)
-    private String name;
+    private Long userId;
 
     @Column(nullable = false)
     private Long clubId;  // 구단 ID
@@ -66,12 +66,12 @@ public class GuestRecruitment extends BaseTimeEntity {
     private RecruitmentStatus status = RecruitmentStatus.RECRUITING;  // 모집 상태 (RECRUITING, COMPLETED, EXPIRED)
 
     @Builder
-    public GuestRecruitment(String title, String name,Long clubId, LocalDate matchDate, LocalTime matchStartTime,
+    public GuestRecruitment(String title, Long userId,Long clubId, LocalDate matchDate, LocalTime matchStartTime,
                             LocalTime matchEndTime, String location,
                             Integer requiredNumber, List<Position> requiredPositions,
                             Integer pay, String description) {
         this.title = title;
-        this.name = name;
+        this.userId = userId;
         this.clubId = clubId;
         this.matchDate = matchDate;
         this.matchStartTime = matchStartTime;

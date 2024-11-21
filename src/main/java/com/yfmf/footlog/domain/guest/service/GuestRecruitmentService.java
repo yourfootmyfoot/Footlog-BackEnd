@@ -49,7 +49,7 @@ public class GuestRecruitmentService {
 
         GuestRecruitment recruitment = GuestRecruitment.builder()
                 .title(dto.getTitle())
-                .name(dto.getName())
+                .userId(userId)
                 .clubId(dto.getClubId())
                 .matchDate(dto.getMatchDate())
                 .matchStartTime(dto.getMatchStartTime())
