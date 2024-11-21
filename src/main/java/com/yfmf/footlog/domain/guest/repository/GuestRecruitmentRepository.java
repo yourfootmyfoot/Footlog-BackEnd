@@ -14,6 +14,6 @@ import java.util.List;
 public interface GuestRecruitmentRepository extends JpaRepository<GuestRecruitment, Long> {
     List<GuestRecruitment> findByStatus(RecruitmentStatus status);
     List<GuestRecruitment> findByClubId(Long clubId);
-    List<GuestRecruitment> findByMatchDateTimeGreaterThanEqual(LocalDateTime dateTime);
+    List<GuestRecruitment> findByMatchDateGreaterThanEqual(LocalDateTime dateTime);
     Page<GuestRecruitment> findAll(Pageable pageable);
 }
