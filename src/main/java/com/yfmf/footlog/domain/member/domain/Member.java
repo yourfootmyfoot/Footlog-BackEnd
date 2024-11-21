@@ -27,7 +27,7 @@ public class Member extends BaseTimeEntity {
     // 기본 회원 정보
     @Column(length = 20, nullable = false)
     @NotBlank(message = "이름은 필수 입력값입니다.")
-    @Size(min = 2, max = 20, message = "이름은 2자 이상 20자 이하로 입력해주세요.")
+    @Size(min = 1, max = 20, message = "이름은 2자 이상 20자 이하로 입력해주세요.")
     private String name;
 
     @Column(length = 100, nullable = false, unique = true)
@@ -37,8 +37,6 @@ public class Member extends BaseTimeEntity {
 
     @Column(length = 100, nullable = false)
     @NotBlank(message = "비밀번호는 필수 입력값입니다.")
-    @Pattern(regexp = "^(?=.*[A-Za-z])(?=.*\\d)[A-Za-z\\d]{4,}$",
-            message = "비밀번호는 4자 이상의 영문자와 숫자 조합이어야 합니다.")
     private String password;
 
     @Column(nullable = false)
