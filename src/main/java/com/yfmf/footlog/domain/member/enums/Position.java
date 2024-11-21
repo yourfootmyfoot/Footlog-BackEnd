@@ -1,7 +1,7 @@
 package com.yfmf.footlog.domain.member.enums;
 
 public enum Position {
-    LW, ST, RW, LM, CM,
-    RM, LB, CB, RB, SW,
+    ST, RW, LW, CM,
+    LB, CB, RB,
     GK
 }
