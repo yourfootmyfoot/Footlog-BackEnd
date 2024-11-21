@@ -9,7 +9,9 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.List;
 
 @Entity
@@ -25,8 +27,16 @@ public class GuestRecruitment extends BaseTimeEntity {
     @Column(nullable = false)
     private Long clubId;  // 구단 ID
 
+
     @Column(nullable = false)
-    private LocalDateTime matchDateTime;  // 경기 일시
+    private LocalDate matchDate;  // 경기 날짜
+
+    @Column(nullable = false)
+    private LocalTime matchStartTime;  // 경기 시작 시간
+
+    @Column(nullable = false)
+    private LocalTime matchEndTime;  // 경기 종료 시간
+
 
     @Column(nullable = false)
     private String location;  // 경기 장소
@@ -50,11 +60,14 @@ public class GuestRecruitment extends BaseTimeEntity {
     private RecruitmentStatus status = RecruitmentStatus.RECRUITING;  // 모집 상태 (RECRUITING, COMPLETED, EXPIRED)
 
     @Builder
-    public GuestRecruitment(Long clubId, LocalDateTime matchDateTime, String location,
+    public GuestRecruitment(Long clubId, LocalDate matchDate, LocalTime matchStartTime,
+                            LocalTime matchEndTime, String location,
                             Integer requiredNumber, List<Position> requiredPositions,
                             Integer pay, String description) {
         this.clubId = clubId;
-        this.matchDateTime = matchDateTime;
+        this.matchDate = matchDate;
+        this.matchStartTime = matchStartTime;
+        this.matchEndTime = matchEndTime;
         this.location = location;
         this.requiredNumber = requiredNumber;
         this.requiredPositions = requiredPositions;

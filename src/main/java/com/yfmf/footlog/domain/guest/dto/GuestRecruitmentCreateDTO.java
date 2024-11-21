@@ -10,7 +10,9 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.List;
 
 @Data
@@ -23,9 +25,17 @@ public class GuestRecruitmentCreateDTO {
     @NotNull(message = "구단 ID를 입력해주세요.")
     private Long clubId;
 
-    @Schema(description = "경기 일시", example = "2024-12-25T14:00:00", required = true)
-    @NotNull(message = "경기 일시를 입력해주세요.")
-    private LocalDateTime matchDateTime;
+    @Schema(description = "경기 날짜", example = "2024-12-25", required = true)
+    @NotNull(message = "경기 날짜를 입력해주세요.")
+    private LocalDate matchDate;
+
+    @Schema(description = "경기 시작 시간", example = "14:00", required = true)
+    @NotNull(message = "경기 시작 시간을 입력해주세요.")
+    private LocalTime matchStartTime;
+
+    @Schema(description = "경기 종료 시간", example = "16:00", required = true)
+    @NotNull(message = "경기 종료 시간을 입력해주세요.")
+    private LocalTime matchEndTime;
 
     @Schema(description = "경기 장소", example = "서울월드컵경기장", required = true)
     @NotBlank(message = "경기 장소를 입력해주세요.")
