@@ -2,12 +2,15 @@ package com.yfmf.footlog.domain.guest.service;
 
 import com.yfmf.footlog.domain.club.entity.Club;
 import com.yfmf.footlog.domain.club.repository.ClubRepository;
+import com.yfmf.footlog.domain.club.service.ClubMemberService;
 import com.yfmf.footlog.domain.guest.dto.*;
 import com.yfmf.footlog.domain.guest.entity.GuestApplication;
 import com.yfmf.footlog.domain.guest.entity.GuestRecruitment;
 import com.yfmf.footlog.domain.guest.enums.ApplicationStatus;
 import com.yfmf.footlog.domain.guest.enums.RecruitmentStatus;
+import com.yfmf.footlog.domain.guest.exception.InvalidTimeException;
 import com.yfmf.footlog.domain.guest.exception.RecruitmentNotFoundException;
+import com.yfmf.footlog.domain.guest.exception.UnauthorizedException;
 import com.yfmf.footlog.domain.guest.repository.GuestApplicationRepository;
 import com.yfmf.footlog.domain.guest.repository.GuestRecruitmentRepository;
 import com.yfmf.footlog.domain.member.domain.Member;
@@ -17,6 +20,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalTime;
+import java.time.temporal.ChronoUnit;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -29,6 +34,7 @@ public class GuestRecruitmentService {
     private final GuestApplicationRepository applicationRepository;
     private final ClubRepository clubRepository;
     private final MemberRepository memberRepository;
+    private final ClubMemberService clubMemberService;
 
     /**
      * 새로운 게스트 모집 글을 생성합니다.
@@ -235,5 +241,63 @@ public class GuestRecruitmentService {
                     return a1.getStatus().getOrder() - a2.getStatus().getOrder();
                 })
                 .collect(Collectors.toList());
+    }
+
+    @Transactional
+    public GuestRecruitmentResponseDTO updateRecruitment(Long recruitmentId, GuestRecruitmentUpdateDTO request, Long userId) {
+
+        log.info("용병 모집글 수정 시작 - ID: {}, UserId: {}", recruitmentId, userId);
+        log.info("수정 요청 데이터: {}", request.toString());
+
+        GuestRecruitment recruitment = recruitmentRepository.findById(recruitmentId)
+                .orElseThrow(() -> new RecruitmentNotFoundException("해당 모집글을 찾을 수 없습니다."));
+
+        if (!hasUpdateAuthority(recruitment, userId)) {
+            throw new UnauthorizedException("수정 권한이 없습니다.");
+        }
+
+        validateMatchTime(request.getMatchStartTime(), request.getMatchEndTime());
+
+        // 수정 전 상태 로깅
+        log.info("수정 전 모집글 상태: {}", recruitment);
+
+        // 모집글 수정
+        recruitment.updateRecruitment(
+                request.getTitle(),
+                request.getMatchDate(),
+                LocalTime.parse(request.getMatchStartTime()),
+                LocalTime.parse(request.getMatchEndTime()),
+                request.getLocation(),
+                request.getRequiredNumber(),
+                request.getRequiredPositions(),
+                request.getPay(),
+                request.getDescription()
+        );
+
+        // 수정 후 상태 로깅
+        log.info("수정 후 모집글 상태: {}", recruitment);
+
+        // 명시적 저장
+        GuestRecruitment savedRecruitment = recruitmentRepository.saveAndFlush(recruitment);
+
+        log.info("용병 모집글 수정 완료 - ID: {}", recruitmentId);
+
+        return new GuestRecruitmentResponseDTO(savedRecruitment);
+    }
+
+    private boolean hasUpdateAuthority(GuestRecruitment recruitment, Long userId) {
+        return recruitment.getMatchEnrollUserId().equals(userId) ||
+                clubMemberService.hasClubPermission(userId, recruitment.getClubId());
+    }
+
+    private void validateMatchTime(String startTime, String endTime) {
+        LocalTime start = LocalTime.parse(startTime);
+        LocalTime end = LocalTime.parse(endTime);
+
+        if (start.isAfter(end) || start.equals(end)) {
+            throw new InvalidTimeException("종료 시간은 시작 시간보다 이후여야 합니다.");
+        }
+
+        long durationInMinutes = ChronoUnit.MINUTES.between(start, end);
     }
 }

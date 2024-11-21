@@ -30,9 +30,6 @@ public class GuestRecruitmentResponseDTO {
     @Schema(description = "작성자 아이디)", example = "1", required = true)
     private Long userId;
 
-    @Schema(description = "구단 정보 (간략화)", required = true)
-    private ClubSimpleDTO club;
-
     @Schema(description = "경기 날짜", example = "2024-12-25", required = true)
     private LocalDate matchDate;
 
@@ -60,6 +57,9 @@ public class GuestRecruitmentResponseDTO {
     @Schema(description = "모집 상태", example = "RECRUITING", required = true)
     private RecruitmentStatus status;
 
+    @Schema(description = "구단 정보")
+    private Club club;
+
     @Schema(description = "모집글 생성 일시", example = "2024-11-20T10:00:00", required = true)
     private LocalDateTime createdAt;
 
@@ -70,7 +70,6 @@ public class GuestRecruitmentResponseDTO {
         this.id = recruitment.getId();
         this.title = recruitment.getTitle();
         this.userId = recruitment.getUserId();
-        this.club = new ClubSimpleDTO(club);
         this.matchDate = recruitment.getMatchDate();
         this.matchStartTime = recruitment.getMatchStartTime();
         this.matchEndTime = recruitment.getMatchEndTime();
@@ -81,5 +80,10 @@ public class GuestRecruitmentResponseDTO {
         this.description = recruitment.getDescription();
         this.status = recruitment.getStatus();
         this.createdAt = recruitment.getCreatedAt();
+        this.club = club;
+    }
+
+    public GuestRecruitmentResponseDTO(GuestRecruitment recruitment) {
+        this(recruitment, null);
     }
 }

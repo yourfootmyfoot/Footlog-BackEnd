@@ -82,4 +82,30 @@ public class GuestRecruitment extends BaseTimeEntity {
         this.pay = pay;
         this.description = description;
     }
+
+    public Long getMatchEnrollUserId() {
+        return this.userId;
+    }
+
+    public void updateRecruitment(
+            String title,
+            LocalDate matchDate,
+            LocalTime matchStartTime,
+            LocalTime matchEndTime,
+            String location,
+            int requiredNumber,
+            List<Position> requiredPositions,
+            int pay,
+            String description) {
+
+        this.title = title;
+        this.matchDate = matchDate;
+        this.matchStartTime = matchStartTime;
+        this.matchEndTime = matchEndTime;
+        this.location = location;
+        this.requiredNumber = requiredNumber;
+        this.requiredPositions = requiredPositions;
+        this.pay = pay;
+        this.description = description;
+    }
 }

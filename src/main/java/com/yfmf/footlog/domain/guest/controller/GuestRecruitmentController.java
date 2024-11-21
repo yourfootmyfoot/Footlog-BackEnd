@@ -8,6 +8,8 @@ import com.yfmf.footlog.domain.guest.enums.RecruitmentStatus;
 import com.yfmf.footlog.domain.guest.service.GuestRecruitmentService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -232,5 +234,29 @@ public class GuestRecruitmentController {
         List<GuestApplicationResponseDTO> applications =
                 guestRecruitmentService.getApplicationsByRecruitmentId(recruitmentId, logined.getUserId());
         return ResponseEntity.ok(applications);
+    }
+
+    @Operation(summary = "용병 모집글 수정", description = "기존 용병 모집글을 수정합니다.")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "성공적으로 수정됨"),
+            @ApiResponse(responseCode = "400", description = "잘못된 요청"),
+            @ApiResponse(responseCode = "404", description = "모집글을 찾을 수 없음")
+    })
+    @PutMapping("/{id}")
+    public ResponseEntity<GuestRecruitmentResponseDTO> updateRecruitment(
+            @PathVariable Long id,
+            @Valid @RequestBody GuestRecruitmentUpdateDTO request,
+            @AuthenticationPrincipal LoginedInfo logined) {
+
+        if (logined == null) {
+            throw new LoginRequiredException("로그인이 필요합니다.", "GuestRecruitmentController.updateRecruitment");
+        }
+
+        log.info("용병 모집글 수정 요청 - ID: {}, 사용자: {}", id, logined.getUserId());
+
+        GuestRecruitmentResponseDTO updatedRecruitment =
+                guestRecruitmentService.updateRecruitment(id, request, logined.getUserId());
+
+        return ResponseEntity.ok(updatedRecruitment);
     }
 }
