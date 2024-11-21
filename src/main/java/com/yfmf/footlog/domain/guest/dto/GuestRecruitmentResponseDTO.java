@@ -27,7 +27,7 @@ public class GuestRecruitmentResponseDTO {
     @Schema(description = "모집글 제목", example = "같이 축구해요", required = true)
     private String title;
 
-    @Schema(description = "작성자 이름(닉네임)", example = "송호진", required = true)
+    @Schema(description = "작성자 아이디)", example = "1", required = true)
     private Long userId;
 
     @Schema(description = "구단 정보 (간략화)", required = true)
@@ -68,6 +68,8 @@ public class GuestRecruitmentResponseDTO {
 
     public GuestRecruitmentResponseDTO(GuestRecruitment recruitment, Club club) {
         this.id = recruitment.getId();
+        this.title = recruitment.getTitle();
+        this.userId = recruitment.getUserId();
         this.club = new ClubSimpleDTO(club);
         this.matchDate = recruitment.getMatchDate();
         this.matchStartTime = recruitment.getMatchStartTime();
