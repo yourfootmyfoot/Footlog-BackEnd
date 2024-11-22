@@ -111,7 +111,6 @@ public class GuestRecruitmentController {
      * 용병 신청
      * @param recruitmentId
      * @param logined
-     * @param request
      * @return
      */
     @PostMapping("/{recruitmentId}/applications")
@@ -119,13 +118,6 @@ public class GuestRecruitmentController {
             parameters = {
                     @Parameter(name = "recruitmentId", description = "모집글 ID", required = true)
             },
-            requestBody = @io.swagger.v3.oas.annotations.parameters.RequestBody(
-                    description = "용병 신청 데이터",
-                    required = true,
-                    content = @io.swagger.v3.oas.annotations.media.Content(
-                            schema = @io.swagger.v3.oas.annotations.media.Schema(implementation = GuestApplicationCreateDTO.class)
-                    )
-            ),
             responses = {
                     @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "201", description = "용병 신청 성공"),
                     @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "401", description = "로그인이 필요합니다."),
@@ -133,9 +125,8 @@ public class GuestRecruitmentController {
             }
     )
     public ResponseEntity<GuestApplicationResponseDTO> applyForRecruitment(
-            @PathVariable Long recruitmentId,
-            @AuthenticationPrincipal LoginedInfo logined,
-            @Valid @RequestBody GuestApplicationCreateDTO request) {
+            @PathVariable("recruitmentId") Long recruitmentId,
+            @AuthenticationPrincipal LoginedInfo logined) {
 
         if (logined == null) {
             throw new LoginRequiredException("로그인이 필요합니다.", "GuestRecruitmentController.applyForRecruitment");
@@ -143,7 +134,7 @@ public class GuestRecruitmentController {
 
         log.info("용병 신청 요청: recruitmentId={}, userId={}", recruitmentId, logined.getUserId());
         GuestApplicationResponseDTO response =
-                guestRecruitmentService.applyForRecruitment(recruitmentId, logined.getUserId(), request);
+                guestRecruitmentService.applyForRecruitment(recruitmentId, logined.getUserId());
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
 
