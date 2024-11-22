@@ -99,12 +99,11 @@ public class GuestRecruitmentService {
      *
      * @param recruitmentId 모집 글 ID
      * @param userId        지원자 회원 ID
-     * @param dto           지원 정보 DTO
      * @return 생성된 지원 응답 DTO
      */
     @Transactional
     public GuestApplicationResponseDTO applyForRecruitment(
-            Long recruitmentId, Long userId, GuestApplicationCreateDTO dto) {
+            Long recruitmentId, Long userId) {
 
         GuestRecruitment recruitment = recruitmentRepository.findById(recruitmentId)
                 .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 모집글입니다."));
@@ -121,8 +120,6 @@ public class GuestRecruitmentService {
         GuestApplication application = GuestApplication.builder()
                 .recruitment(recruitment)
                 .applicantId(userId)
-                .applyPosition(dto.getApplyPosition())
-                .message(dto.getMessage())
                 .build();
 
         GuestApplication savedApplication = applicationRepository.save(application);

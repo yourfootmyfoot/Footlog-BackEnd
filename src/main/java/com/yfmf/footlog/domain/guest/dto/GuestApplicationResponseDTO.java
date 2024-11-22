@@ -27,12 +27,6 @@ public class GuestApplicationResponseDTO {
     @Schema(description = "신청자 정보", implementation = MemberSimpleDTO.class)
     private MemberSimpleDTO applicant;
 
-    @Schema(description = "신청자가 지원한 포지션", example = "FORWARD")
-    private Position applyPosition;
-
-    @Schema(description = "신청 메시지", example = "용병으로 팀에 기여하고 싶습니다!")
-    private String message;
-
     @Schema(description = "신청 상태", example = "PENDING")
     private ApplicationStatus status;
 
@@ -43,8 +37,6 @@ public class GuestApplicationResponseDTO {
         this.id = application.getId();
         this.recruitmentId = application.getRecruitment().getId();
         this.applicant = new MemberSimpleDTO(applicant);
-        this.applyPosition = application.getApplyPosition();
-        this.message = application.getMessage();
         this.status = application.getStatus();
         this.createdAt = application.getCreatedAt();
     }
